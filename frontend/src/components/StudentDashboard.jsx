@@ -62,6 +62,9 @@ export default function StudentDashboard() {
     try {
       const { data } = await getMyCourses();
       setMyCourses(data);
+      console.log("Fetched my courses:", data);
+      
+      
     } catch (err) {
       console.error("Failed to fetch my courses", err);
     }
@@ -94,6 +97,9 @@ export default function StudentDashboard() {
     if (activeTab === "courses") fetchAvailableCourses();
     if (activeTab === "mycourses") fetchMyCourses();
   }, [activeTab]);
+
+  useEffect(() => { console.log(myCourses,"my courses in useEffect");
+  ; }, [myCourses]);
 
   // ---------------- Render ----------------
   return (
@@ -187,7 +193,7 @@ export default function StudentDashboard() {
       )}
 
       {/* My Courses */}
-      {activeTab === "mycourses" && (
+      {activeTab === "mycourses" && (        
         <div className="space-y-4">
           <h2 className="font-semibold text-lg">My Courses</h2>
           {myCourses.map((c) => (

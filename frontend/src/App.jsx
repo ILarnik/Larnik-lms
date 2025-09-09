@@ -12,11 +12,11 @@ import WhatsappButoon from "./components/WhatsappButoon";
 import CoursePage from "./pages/CoursePage";
 import TeacherPage from "./pages/TeacherPage";
 import Studentpage from "./pages/StudentPage";
-import CertificateItem from "./components/Certificatemanagement/CertificateItem";
-import CertificateList from "./components/Certificatemanagement/CertificateList";
-import CertificateManagerDashboard from "./components/dashboard components/CertificateManagerDashboard";
-import CertificatePreview from "./components/Certificatemanagement/CertificatePreview";
-import CertificateTemplateForm from "./components/Certificatemanagement/CertificateTemplateForm";
+// import CertificateItem from "./components/Certificatemanagement/CertificateItem";
+// import CertificateList from "./components/Certificatemanagement/CertificateList";
+// import CertificateManagerDashboard from "./components/dashboard components/CertificateManagerDashboard";
+// import CertificatePreview from "./components/Certificatemanagement/CertificatePreview";
+// import CertificateTemplateForm from "./components/Certificatemanagement/CertificateTemplateForm";
 import CertificateManagerPage from "./pages/certificatepage";
 
  

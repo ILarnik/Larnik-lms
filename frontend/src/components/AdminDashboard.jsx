@@ -26,7 +26,7 @@ import ManageSubAdmins from "./dashboard components/ManageSubAdmins";
 import UserManagement from "./UserManagement";
 import CourseDashboard from "./dashboard components/CourseManagement";
 import BlogManagerDashboard from "./dashboard components/BlogManagerDashboard";
-import CertificateManagerDashboard from "./dashboard components/CertificateManagerDashboard.jsx";
+//import CertificateManagerDashboard from "./dashboard components/CertificateManagerDashboard.jsx";
 import ReportsDashboard from "./dashboard components/ReportsDashboard.jsx";
 
 // Sidebar menu structure

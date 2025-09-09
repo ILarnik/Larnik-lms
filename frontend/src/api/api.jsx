@@ -82,10 +82,7 @@ export const approveUniversity = (id, status, note = "") =>
 // ✅ Delete User (needs /superadmin/delete-user/:id in backend)
 export const deleteUser = (id) => API.delete(`/superadmin/delete-user/${id}`);
 
-// ✅ Update Sub-Admin Role (needs /superadmin/update-role/:id in backend)
-// export const updateSubRole = (id, subAdminRole) =>
-//   // API.patch(`/superadmin/update-role/${id}`, { subAdminRole });
-//   API.patch(`/superadmin/update-role/${id}`, { subAdminRole });
+ 
 export const updateSubRole = (id, subAdminRole) =>
   API.put(`/superadmin/${id}/role`, { subAdminRole });
 
@@ -180,40 +177,7 @@ export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
 
 
 
-
-//  /* ====================== CERTIFICATE APIs ====================== */
-
-// // ✅ Create Certificate Template (JSON only)
-// export const createCertificateTemplate = (data) =>
-//   API.post("/certificates/templates", data);
-
-// // ✅ Get All Templates
-// export const getCertificateTemplates = () =>
-//   API.get("/certificates/templates");
-
-// // ✅ Delete Template
-// export const deleteCertificateTemplate = (id) =>
-//   API.delete(`/certificates/templates/${id}`);
-
-// // ✅ Issue Certificate (Teacher / University / SuperAdmin)
-// export const issueCertificate = (data) =>
-//   API.post("/certificates/issue", data);
-
-// //✅ Approve Certificate (University)
-// export const approveCertificate = (id) =>
-//   API.put(`/certificates/approve/${id}`);
-
-// // ✅ Verify Certificate (Public)
-// export const verifyCertificate = (certificateId) =>
-//   API.get(`/certificates/verify/${certificateId}`);
-
-// // ✅ Get My Certificates (Student)
-// export const getMyCertificates = () =>
-//   API.get("/certificates/my");
-
-// // Student download certificate
-// export const downloadCertificate = (certificateId) =>
-//   API.get(`/certificates/download/${certificateId}`, { responseType: "blob" });
+ 
 
 /* ====================== CERTIFICATE APIs ====================== */
 

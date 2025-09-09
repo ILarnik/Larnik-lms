@@ -3,6 +3,7 @@
 import User from "../models/user.js";
 import Payment from "../models/payment.js"; // uncomment to use
 // import {CertificateTemplate } from "../models/certificate.js";
+import Wallet from "../models/wallet.js";
 
 // ✅ Get student profile
 export const getStudentProfile = async (req, res) => {
@@ -98,6 +99,31 @@ console.log("Student ObjectId:", studentObjectId);
 //       .json({ error: "Failed to enroll in course", details: err.message });
 //   }
 // };
+//  export const enrollCourse = async (req, res) => {
+//   try {
+//     const { courseId } = req.body;
+//     if (!courseId) return res.status(400).json({ error: "courseId is required" });
+
+//     const studentId = req.user?.id;
+//     if (!studentId) return res.status(401).json({ error: "Unauthorized" });
+
+//     const course = await Course.findById(courseId.trim());
+//     if (!course) return res.status(404).json({ error: "Course not found" });
+
+//     const studentObjectId = new mongoose.Types.ObjectId(studentId);
+
+//     // Add student if not already enrolled
+//     if (!course.enrolledStudents.some(id => id.equals(studentObjectId))) {
+//       course.enrolledStudents.push(studentObjectId);
+//       await course.save();
+//     }
+
+//     res.json({ message: "Student enrolled successfully", courseId });
+//   } catch (err) {
+//     console.error("EnrollCourse Error:", err);
+//     res.status(500).json({ error: "Failed to enroll in course", details: err.message });
+//   }
+// };
  export const enrollCourse = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -106,24 +132,44 @@ console.log("Student ObjectId:", studentObjectId);
     const studentId = req.user?.id;
     if (!studentId) return res.status(401).json({ error: "Unauthorized" });
 
-    const course = await Course.findById(courseId.trim());
+    const course = await Course.findById(courseId.trim()).populate("createdBy");
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     const studentObjectId = new mongoose.Types.ObjectId(studentId);
 
-    // Add student if not already enrolled
+    // Enroll student if not already enrolled
     if (!course.enrolledStudents.some(id => id.equals(studentObjectId))) {
       course.enrolledStudents.push(studentObjectId);
       await course.save();
+
+      // Wallet logic
+      const teacherId = course.createdBy._id;
+      const amount = course.price;
+
+      let wallet = await Wallet.findOne({ teacherId });
+      if (!wallet) {
+        wallet = new Wallet({ teacherId, balance: 0, transactions: [] });
+      }
+
+      wallet.balance += amount;
+      wallet.transactions.push({
+        studentId,
+        courseId,
+        amount,
+        type: "credit",
+        date: new Date(),
+      });
+
+      await wallet.save();
+      console.log("Wallet created/updated successfully for teacher:", teacherId);
     }
 
-    res.json({ message: "Student enrolled successfully", courseId });
+    res.json({ message: "Student enrolled successfully & teacher credited", courseId });
   } catch (err) {
     console.error("EnrollCourse Error:", err);
     res.status(500).json({ error: "Failed to enroll in course", details: err.message });
   }
 };
-
 
 // ✅ Get my enrolled courses
 //   export const myCourses = async (req, res) => {
@@ -146,7 +192,7 @@ console.log("Student ObjectId:", studentObjectId);
 
 export const myCourses = async (req, res) => {
   try {
-    const studentId = new mongoose.Types.ObjectId(St        ring(req.user.id));
+    const studentId = new mongoose.Types.ObjectId(String(req.user.id));
     const courses = await Course.find({
       enrolledStudents: studentId
     })

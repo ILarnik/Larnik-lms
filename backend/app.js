@@ -23,6 +23,7 @@ import userRoutes from "./src/Routes/user.js";
 import teacherRoutes from "./src/Routes/teacher.js";
 import studentRoutes from "./src/Routes/student.js";
 import { getReports } from "./src/controllers/superAdminController.js";
+import walletRoutes from "./src/Routes/wallet.js";
 
 
 
@@ -99,6 +100,7 @@ app.use("/api/rolemanager", roleManagerRoutes);
 app.use("/api/users", userRoutes); // done
 app.use("/api/student", studentRoutes); // done
 app.get("/api/superadmin/reports", getReports);
+app.use("/api/wallet", walletRoutes);
 // -------------------
 // Fallback
 // -------------------
