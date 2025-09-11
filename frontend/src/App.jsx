@@ -18,6 +18,8 @@ import Studentpage from "./pages/StudentPage";
 // import CertificatePreview from "./components/Certificatemanagement/CertificatePreview";
 // import CertificateTemplateForm from "./components/Certificatemanagement/CertificateTemplateForm";
 import CertificateManagerPage from "./pages/certificatepage";
+import Financemanagerpage from "./pages/Financemanagerpage";
+
 
  
 
@@ -51,6 +53,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/courses" element={<CoursePage />} />
           <Route path="/certificate" element={<CertificateManagerPage />} />
+          <Route path="/financemanager" element={<Financemanagerpage />} />
          
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>

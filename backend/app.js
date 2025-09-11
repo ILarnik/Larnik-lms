@@ -15,7 +15,7 @@ import superAdminRoutes from "./src/Routes/superAdmin.js";
 import courseRoutes from "./src/Routes/course.js";
 import blogRoutes from "./src/Routes/blog.js";
 import financeRoutes from "./src/Routes/finance.js";
-import governanceRoutes from "./src/Routes/governance.js";
+import mouRoutes from "./src/Routes/mou.js";
 import certificateRoutes from "./src/Routes/certificate.js";
 import couponRoutes from "./src/Routes/coupon.js";
 import roleManagerRoutes from "./src/Routes/rolemanager.js";
@@ -52,6 +52,9 @@ app.use(
 // Middlewares
 // -------------------
  // JSON parser first
+
+app.use("/api/mou", mouRoutes);
+
 app.use(express.json({ limit: "2mb" }));
 
 // File upload middleware
@@ -60,7 +63,7 @@ app.use(
     useTempFiles: true,
     tempFileDir: path.join(__dirname, "tmp"),
     createParentPath: true,
-    limits: { fileSize: 10 * 1024 * 1024 },
+    limits: { fileSize: 20 * 1024 * 1024 },
   })
 );
 
@@ -87,7 +90,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/finance", financeRoutes);
-app.use("/api/governance", governanceRoutes);
+// app.use("/api/mou", mouRoutes);
 // app.use("/api/certificates", certificateRoutes);
 app.use("/api/certificates", certificateRoutes);
 // serve static certificates

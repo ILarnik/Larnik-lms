@@ -1,106 +1,17 @@
  import Wallet from "../models/wallet.js";
 import Course from "../models/course.js";
+import mongoose from "mongoose";
 
-// ✅ Credit teacher when student enrolls (or admin wants to simulate credit)
-export const creditWallet = async (req, res) => {
+// ======================
+// Teacher requests settlement
+// ======================
+ export const requestSettlement = async (req, res) => {
   try {
-    const { studentId, courseId } = req.body;
-
-    // 1. Find course and teacher
-    const course = await Course.findById(courseId).populate("createdBy");
-    if (!course) return res.status(404).json({ message: "Course not found" });
-
-    const amount = course.price;
-    const teacherId = course.createdBy._id;
-
-    // 2. Check if wallet exists, else create
-    let wallet = await Wallet.findOne({ teacherId });
-    if (!wallet) {
-      wallet = new Wallet({ teacherId, balance: 0, transactions: [] });
-    }
-
-    // 3. Credit balance and add transaction
-    wallet.balance += amount; // 💡 commission logic here
-    wallet.transactions.push({
-      studentId,
-      courseId,
-      amount,
-      type: "credit",
-    });
-
-    await wallet.save();
-
-    res.json({
-      success: true,
-      message: `₹${amount} credited to teacher wallet`,
-      wallet,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// ✅ Get teacher wallet details
- export const getWallet = async (req, res) => {
-  try {
-    const { teacherId } = req.params;  // expect teacherId from route
-
-    const wallet = await Wallet.findOne({ teacherId })
-      .populate("transactions.studentId", "name email")
-      .populate("transactions.courseId", "title price");
-
-    if (!wallet) {
-      return res.status(404).json({ message: "Wallet not found" });
-    }
-
-    res.json(wallet);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// ✅ Debit teacher wallet (admin settles)
-export const debitWallet = async (req, res) => {
-  try {
-    const { teacherId, amount } = req.body;
-
-    let wallet = await Wallet.findOne({ teacherId });
-    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-    if (wallet.balance < amount) {
-      return res.status(400).json({ message: "Insufficient balance" });
-    }
-
-    // Deduct balance
-    wallet.balance -= amount;
-    wallet.transactions.push({
-      studentId: null,
-      courseId: null,
-      amount,
-      type: "debit",
-    });
-
-    await wallet.save();
-
-    res.json({
-      success: true,
-      message: `₹${amount} debited from teacher wallet`,
-      wallet,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-
- 
-// ✅ Teacher requests a settlement
-export const requestSettlement = async (req, res) => {
-  try {
-    const { teacherId, split } = req.body; // split: { teacher: %, university: %, platform: % }
+    // ✅ Use logged-in teacher ID
+    const teacherId = req.user.id;
 
     // 1️⃣ Find teacher wallet
-    const wallet = await Wallet.findOne({ teacherId });
+    const wallet = await Wallet.findOne({ teacherId: new mongoose.Types.ObjectId(teacherId) });
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
     if (wallet.balance <= 0) {
@@ -115,13 +26,18 @@ export const requestSettlement = async (req, res) => {
       affiliatedUniversityId = courses[0].university._id;
     }
 
-    // 3️⃣ Determine initial transaction status
+    // 3️⃣ Determine transaction status
     let status = "pending"; // default for freelancers
     let note = "Teacher requested payout";
 
+    // Default split placeholders; actual split will be determined later
+    let split = { teacher: 0, university: 0, platform: 0 };
+
     if (affiliatedUniversityId) {
-      status = "pending_university"; // waiting for university approval
+      status = "pending_university"; // awaiting university approval
       note = "Teacher requested payout (awaiting university approval)";
+      split.university = 0; // university will assign the teacher share later
+      split.teacher = 0; // teacher share not yet defined
     }
 
     // 4️⃣ Add settlement_request transaction
@@ -137,47 +53,150 @@ export const requestSettlement = async (req, res) => {
 
     await wallet.save();
 
-    res.json({ success: true, message: "Settlement requested successfully", wallet });
+    res.json({
+      success: true,
+      message: "Settlement requested successfully. Split will be determined by university/finance manager.",
+      wallet
+    });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-
-// ✅ University approves settlement request
+// ======================
+// University approves teacher request & creates university wallet transaction
+// ======================
 export const universityApproveSettlement = async (req, res) => {
   try {
-    const { teacherId, transactionId, split } = req.body;
-    // split: optional adjustments for teacher/university/platform
+    const { teacherId, transactionId, teacherShare } = req.body; // teacherShare = amount university approves for teacher
 
     // 1️⃣ Find teacher wallet
     const wallet = await Wallet.findOne({ teacherId });
-    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+    if (!wallet) return res.status(404).json({ message: "Teacher wallet not found" });
 
-    // 2️⃣ Find the pending settlement request
+    // 2️⃣ Find teacher transaction
     const transaction = wallet.transactions.id(transactionId);
-    if (!transaction) {
-      return res.status(404).json({ message: "Transaction not found" });
+    if (!transaction || transaction.status !== "pending_university") {
+      return res.status(400).json({ message: "Invalid or already processed transaction" });
     }
 
-    if (transaction.status !== "pending_university") {
-      return res.status(400).json({ message: "Transaction not pending university approval" });
-    }
-
-    // 3️⃣ Update status and optionally update split percentages
+    // 3️⃣ Update teacher transaction
     transaction.status = "approved_by_university";
-    if (split) {
-      transaction.split = split;
+    transaction.note = "Approved by University, pending Finance Manager";
+    await wallet.save();
+
+    // 4️⃣ Find or create university wallet
+    const universityId = transaction.universityId;
+    if (!universityId) return res.status(400).json({ message: "No affiliated university found" });
+
+    let uniWallet = await Wallet.findOne({ teacherId: universityId });
+    if (!uniWallet) {
+      uniWallet = new Wallet({ teacherId: universityId, balance: 0, transactions: [] });
     }
-    transaction.note = "Approved by university";
+
+    // 5️⃣ Create university settlement request transaction
+    uniWallet.transactions.push({
+      type: "settlement_request",
+      status: "pending", // pending finance manager approval
+      amount: teacherShare, // amount approved for teacher by university
+      split: {
+        teacher: 100, // university decides teacher's share
+        university: 0, // university keeps the rest after platform cut by finance
+        platform: 0
+      },
+      note: `Settlement request from university for teacher ${teacherId}`,
+      date: new Date(),
+      originalTeacherTransactionId: transaction._id
+    });
+
+    await uniWallet.save();
+
+    res.json({ success: true, message: "University approved teacher request and created settlement", uniWallet });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ======================
+// Credit teacher (manual/admin action)
+// ======================
+export const creditWallet = async (req, res) => {
+  try {
+    const { studentId, courseId } = req.body;
+
+    const course = await Course.findById(courseId).populate("createdBy");
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const amount = course.price;
+    const teacherId = course.createdBy._id;
+
+    let wallet = await Wallet.findOne({ teacherId });
+    if (!wallet) {
+      wallet = new Wallet({ teacherId, balance: 0, transactions: [] });
+    }
+
+    wallet.balance += amount;
+    wallet.transactions.push({
+      studentId,
+      courseId,
+      amount,
+      type: "credit",
+      note: "Manual credit"
+    });
 
     await wallet.save();
 
-    res.json({
-      success: true,
-      message: "Settlement approved by university",
-      wallet,
+    res.json({ success: true, message: `₹${amount} credited`, wallet });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ======================
+// Get teacher or university wallet
+// ======================
+export const getWallet = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const wallet = await Wallet.findOne({ teacherId })
+      .populate("transactions.studentId", "name email")
+      .populate("transactions.courseId", "title price");
+
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+    res.json(wallet);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ======================
+// Debit wallet (manual/admin action)
+// ======================
+export const debitWallet = async (req, res) => {
+  try {
+    const { teacherId, amount } = req.body;
+
+    let wallet = await Wallet.findOne({ teacherId });
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+    if (wallet.balance < amount) {
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
+
+    wallet.balance -= amount;
+    wallet.transactions.push({
+      type: "debit",
+      amount,
+      note: "Manual debit",
+      date: new Date()
     });
+
+    await wallet.save();
+
+    res.json({ success: true, message: `₹${amount} debited`, wallet });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

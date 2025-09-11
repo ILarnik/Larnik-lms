@@ -1,8 +1,11 @@
  import express from "express";
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
-import { requestSettlement, universityApproveSettlement } from "../controllers/walletcontroller.js";
+
 import { approveSettlement } from "../controllers/financeController.js";
+import{
+    creditWallet,debitWallet
+}from "../controllers/walletcontroller.js";
 
 const router = express.Router();
 
@@ -10,26 +13,19 @@ const router = express.Router();
 // Teacher routes
 // ======================
 
-// Teacher requests payout
-router.post("/request", authMiddleware, allowRoles("teacher"), requestSettlement);
-
-// ======================
-// University routes
-// ======================
-
-// University approves teacher settlement
-router.post(
-  "/university/approve",
-  authMiddleware,
-  allowRoles("university"),
-  universityApproveSettlement
-);
-
-// ======================
+ 
 // Finance Manager routes
 // ======================
 
-// Finance manager approves final payout
-router.post("/approve", authMiddleware, allowRoles("finance_manager"), approveSettlement);
+// Finance manager approves final payout (applies platform cut)
+router.post("/approve", authMiddleware, allowRoles("sub-admin"), approveSettlement);
+
+
+
+
+// Force credit/debit by finance manager
+router.post("/credit", authMiddleware, allowRoles("finance_manager"), creditWallet);
+router.post("/debit", authMiddleware, allowRoles("finance_manager"), debitWallet);
+
 
 export default router;

@@ -1,0 +1,40 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+    "name": "MoU API Upload",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Upload MoU",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <YOUR_JWT_TOKEN>",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "mouFile",
+              "type": "file",
+              "src": "C:/Users/Admin/Desktop/RMIS-15.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/mous/upload",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "mous", "upload"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

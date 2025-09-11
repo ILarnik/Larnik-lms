@@ -254,3 +254,50 @@ export const getReports = () => API.get("/superadmin/reports");
 
 
 
+
+/* ====================== WALLET & FINANCE APIs ====================== */
+
+//////////////////////////
+// Wallet (Teacher) APIs //
+//////////////////////////
+
+// Get teacher wallet details
+export const getWallet = (teacherId) =>
+  // console.log(teacherId,"teacherId");
+  
+  API.get(`/wallet/${teacherId}`);
+
+// ======================
+// Settlement Requests
+// ======================
+
+// Teacher requests a payout/settlement
+// For freelancer teacher or affiliated teacher (will go to university first)
+export const requestSettlement = (teacherId) =>
+  API.post("/wallet/request", { teacherId });
+
+// University approves teacher settlement and decides teacher share
+// body: { teacherId, transactionId, teacherShare }
+export const universityApproveSettlement = (data) =>
+  API.post("/wallet/university/approve", data);
+
+// Finance Manager approves final payout (applies platform cut)
+// body: { walletOwnerId, transactionId, platformShare }
+export const approveSettlement = (data) =>
+  API.post("/finance/approve", data);
+
+// ======================
+// Wallet Credit/Debit (Finance Manager only)
+// ======================
+
+// Credit a teacher wallet manually
+// body: { studentId, courseId, amount }
+export const creditWallet = (data) =>
+  API.post("/finance/credit", data);
+
+// Debit a teacher wallet manually
+// body: { teacherId, amount }
+export const debitWallet = (data) =>
+  API.post("/finance/debit", data);
+
+
