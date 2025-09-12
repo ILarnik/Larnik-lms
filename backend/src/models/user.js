@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     // Fixed sub-admin role (only for sub-admins)
     subAdminRole: {
       type: String,
-      enum: ["blog_manager", "finance_manager", "governance", "role_manager"],
+      enum: ["blog_manager", "finance_manager", "governance", "role_manager", "career_cell"],
       default: null,
     },
 

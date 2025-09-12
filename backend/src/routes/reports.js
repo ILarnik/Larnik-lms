@@ -1,17 +1,46 @@
-// src/routes/reports.js
+ // src/routes/reportRoutes.js
 import express from "express";
-import { getReports } from "../controllers/superAdmincontroller.js"; // import real controller
+import {
+  createReport,
+  getReports,
+  downloadReport,
+  deleteReport,
+} from "../controllers/reportController.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
 
 const router = express.Router();
 
-// GET /api/superadmin/reports
+// Create new report (Super Admin only)
+router.post(
+  "/report",
+  authMiddleware,
+  allowRoles("superadmin"),
+  createReport
+);
+
+// Get all reports (Super Admin only)
 router.get(
-  "/reports",
-  authMiddleware,           // optional: only if you want auth
-  allowRoles("superadmin"), // optional: only superadmin can access
+  "/report",
+  authMiddleware,
+  allowRoles("superadmin"),
   getReports
+);
+
+// Download report by ID (Super Admin only)
+router.get(
+  "/report/:id/download",
+  authMiddleware,
+  allowRoles("superadmin"),
+  downloadReport
+);
+
+// Delete report by ID (Super Admin only)
+router.delete(
+  "/report/:id",
+  authMiddleware,
+  allowRoles("superadmin"),
+  deleteReport
 );
 
 export default router;

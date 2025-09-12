@@ -9,7 +9,7 @@ import {
   approveCourse,
   approveUniversity,
   deleteUser, updateSubRole
-  , getReports
+ 
 } from "../controllers/superAdminController.js";
 const router = express.Router();
 
@@ -22,13 +22,13 @@ router.post(
   createManager
 );
 
-// GET /api/superadmin/reports
-router.get(
-  "/reports",
-  authMiddleware,           // optional: only if you want auth
-  allowRoles("superadmin"), // optional: only superadmin can access
-  getReports
-);
+// // GET /api/superadmin/reports
+// router.get(
+//   "/reports",
+//   authMiddleware,           // optional: only if you want auth
+//   allowRoles("superadmin"), // optional: only superadmin can access
+//   getReports
+// );
 
 // 2️⃣ Fetch users by role
 router.get(

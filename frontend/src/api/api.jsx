@@ -301,3 +301,35 @@ export const debitWallet = (data) =>
   API.post("/finance/debit", data);
 
 
+
+
+
+//  career cell APIs
+export const addJob = (data) => API.post("/careercell/job", data);
+export const getJobs = () => API.get("/careercell/jobs");
+export const getJobsByMode = (mode) => API.get(`/careercell/jobs/mode/${mode}`);
+export const addWebinar = (data) => API.post("/careercell/webinar", data);
+export const getWebinars = () => API.get("/careercell/webinars");
+export const addGuide = (data) => API.post("/careercell/guide", data);
+export const getGuides = () => API.get("/careercell/guides");
+
+
+
+//governance and mou  APIs
+// MoU APIs
+export const uploadMouFile = (formData) =>
+  API.post("/mou/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+export const downloadMouFile = (id) =>
+  API.get(`/mou/${id}/download`, { responseType: "blob" });
+
+export const approveMou = (id) =>
+  API.post(`/mou/${id}/approve`);
+
+export const rejectMou = (id) =>
+  API.post(`/mou/${id}/reject`);
+
+export const getMous = () =>
+  API.get("/mou");

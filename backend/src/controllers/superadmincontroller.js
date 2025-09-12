@@ -10,7 +10,7 @@ export const createManager = async (req, res) => {
   try {
     const { name, email,phone, password, subAdminRole } = req.body;
 
-    if (!["blog_manager", "finance_manager", "governance", "role_manager"].includes(subAdminRole)) {
+    if (!["blog_manager", "finance_manager", "governance", "role_manager" , "career_cell"].includes(subAdminRole)) {
       return res.status(400).json({ success: false, message: "Invalid sub-admin role" });
     }
 
@@ -195,50 +195,4 @@ export const updateSubRole = async (req, res) => {
 
 
 
-// -------------------- REPORTS --------------------
-export const getReports = async (req, res) => {
-  
-  try {
-    // Count users
-    const totalStudents = await User.countDocuments({ role: "student" });
-    const totalTeachers = await User.countDocuments({ role: "teacher" });
-    const totalUniversities = await User.countDocuments({ role: "university" });
-    const totalReferrals = await User.countDocuments({ role: "referral" });
-
-    // Courses
-    const totalCourses = await Course.countDocuments();
-    const courses = await Course.find().populate("enrolledStudents");
-
-    // Enrollments count
-    const totalEnrollments = courses.reduce(
-      (acc, c) => acc + (c.enrolledStudents?.length || 0),
-      0
-    );
-
-    // Top 3 courses by enrollment
-    const topCourses = courses
-      .sort((a, b) => b.enrolledStudents.length - a.enrolledStudents.length)
-      .slice(0, 3)
-      .map((c) => ({
-        title: c.title,
-        enrollments: c.enrolledStudents.length,
-      }));
-
-    res.json({
-      success: true,
-      users: {
-        students: totalStudents,
-        teachers: totalTeachers,
-        universities: totalUniversities,
-        referrals: totalReferrals,
-      },
-      courses: {
-        totalCourses,
-        totalEnrollments,
-        topCourses,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+ 

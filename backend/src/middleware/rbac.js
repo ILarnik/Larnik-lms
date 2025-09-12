@@ -132,7 +132,7 @@ export const requireDynamicSubRole = (...allowedDynamicRoles) => {
 export const requireApproved = () => {
   return (req, res, next) => {
     const user = req.user;
-    if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
+    if (!user) return res.status(401).json({ success: false, message: "qUnauthorized" });
 
     if (user.status !== "approved") {
       return res.status(403).json({
