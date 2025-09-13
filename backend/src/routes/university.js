@@ -10,6 +10,11 @@ import {
   myRevenue,
   enrolledStudents,
   myCertificates,
+  getUniversityAnalytics,
+   
+  exportAnalyticsExcel,
+  exportAnalyticsPDF
+
 } from "../controllers/universitycontroller.js";
 
 const router = express.Router();
@@ -32,5 +37,9 @@ router.get("/students/:courseId", authMiddleware, allowRoles("university"), enro
 
 // --- Certificates ---
 router.get("/certificates", authMiddleware, allowRoles("university"), myCertificates);
+
+router.get("/analytics", authMiddleware, allowRoles("university"), getUniversityAnalytics);
+router.get("/analytics/export/excel", exportAnalyticsExcel);
+router.get("/analytics/export/pdf", exportAnalyticsPDF);
 
 export default router;

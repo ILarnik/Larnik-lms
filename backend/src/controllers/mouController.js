@@ -183,24 +183,51 @@ export const approveMou = async (req, res) => {
 
 /**
  * Governance Officer rejects MoU
- */
-export const rejectMou = async (req, res) => {
+//  */
+// export const rejectMou = async (req, res) => {
+//   try {
+//     const mou = await Mou.findById(req.params.id);
+//     if (!mou) return res.status(404).json({ success: false, message: "MoU not found" });
+
+//     mou.status = "rejected";
+//     mou.governanceOfficer = req.user.id;
+//     mou.governanceComment = req.body.comment || "";
+//     mou.timestamps.reviewedAt = new Date();
+
+//     await mou.save();
+
+//     res.json({ success: true, message: "MoU rejected", data: mou });
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+
+ export const rejectMou = async (req, res) => {
   try {
     const mou = await Mou.findById(req.params.id);
-    if (!mou) return res.status(404).json({ success: false, message: "MoU not found" });
+    if (!mou)
+      return res.status(404).json({ success: false, message: "MoU not found" });
 
     mou.status = "rejected";
     mou.governanceOfficer = req.user.id;
-    mou.governanceComment = req.body.comment || "";
+    mou.governanceComment = req.body?.comment || "";
+
+    if (!mou.timestamps) mou.timestamps = {};
     mou.timestamps.reviewedAt = new Date();
 
     await mou.save();
 
     res.json({ success: true, message: "MoU rejected", data: mou });
   } catch (err) {
+    console.error("Error rejecting MoU:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+
+
 
 /**
  * List MoUs (both roles see their data)

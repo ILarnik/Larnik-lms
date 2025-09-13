@@ -23,7 +23,7 @@ import GovernancePage from "./pages/GovernancePage";
 // import Finance_Settlement from "./pages/FinanceManager";
 import UnivesityPage from "./pages/Universitypage";
 import Careercellpage from "./pages/Careercellpage";
- 
+ import ReferralPage from "./pages/ReferralPartnerPage";
 
 
 
@@ -64,6 +64,7 @@ export default function App() {
           <Route path="/University" element={<UnivesityPage />} />
           <Route path="/CareerCell" element={<Careercellpage />} />
           {/* <Route path="/FinanceManager" element={<FinanceManager />} /> */}
+          <Route path="/ReferralPartner" element={<ReferralPage />} />
          
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>

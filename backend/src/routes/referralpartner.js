@@ -1,20 +1,23 @@
-// routes/referralPartnerRoutes.js
+ // routes/referralPartnerRoutes.js
 import express from "express";
 import {
   getProfile,
   myReferrals,
   myEarnings,
-  requestSettlement,
-} from "../controllers/referralpartnercontroller.js";
+  updateReferralProfile
+  // requestSettlement,
+} from "../controllers/referralpartnercontroller.js"; // fixed casing for import
+import { requestSettlement } from "../controllers/walletcontroller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
 
 const router = express.Router();
 
 // All referral partner endpoints protected
-router.get("/profile", authMiddleware, allowRoles("referralpartner"), getProfile);
-router.get("/my-referrals", authMiddleware, allowRoles("referralpartner"), myReferrals);
-router.get("/earnings", authMiddleware, allowRoles("referralpartner"), myEarnings);
-router.post("/settlement", authMiddleware, allowRoles("referralpartner"), requestSettlement);
+router.get("/profile", authMiddleware, allowRoles("referral"), getProfile);
+router.get("/my-referrals", authMiddleware, allowRoles("referral"), myReferrals);
+router.get("/earnings", authMiddleware, allowRoles("referral"), myEarnings);
+router.post("/settlement", authMiddleware, allowRoles("referral"), requestSettlement);
+router.put("/profile", authMiddleware, allowRoles("referral"), updateReferralProfile);
 
 export default router;

@@ -3,6 +3,9 @@ import User from "../models/user.js";
 import Course from "../models/course.js";
 //import Payment from "../models/payment.js";
 import { IssuedCertificate } from "../models/certificate.js";
+import ExamResult from "../models/ExamResult.js";
+import ExcelJS from "exceljs";
+import PDFDocument from "pdfkit";
 
 // Helper: ensure user is university
 const ensureUniversity = (user) => user && user.role === "university";
@@ -116,5 +119,132 @@ export const myCertificates = async (req, res) => {
     res.json(certs);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+
+// // controllers/universityController.js
+// export const getUniversityAnalytics = async (req, res) => {
+//   try {
+//     const totalStudents = await User.countDocuments({ role: "student" });
+//     const totalCourses = await Course.countDocuments();
+//     const passed = await ExamResult.countDocuments({ status: "pass" });
+//     const failed = await ExamResult.countDocuments({ status: "fail" });
+
+//     res.json({
+//       success: true,
+//       data: {
+//         totalStudents,
+//         totalCourses,
+//         passed,
+//         failed,
+//         passRate: totalStudents ? ((passed / totalStudents) * 100).toFixed(2) + "%" : "0%",
+//       },
+//     });
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+// ✅ Existing Analytics Endpoint
+export const getUniversityAnalytics = async (req, res) => {
+  try {
+    const totalStudents = await User.countDocuments({ role: "student" });
+    const totalCourses = await Course.countDocuments();
+    const passed = await ExamResult.countDocuments({ status: "pass" });
+    const failed = await ExamResult.countDocuments({ status: "fail" });
+
+    res.json({
+      success: true,
+      data: {
+        totalStudents,
+        totalCourses,
+        passed,
+        failed,
+        passRate: totalStudents
+          ? ((passed / totalStudents) * 100).toFixed(2) + "%"
+          : "0%",
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// 🔹 Helper function to get analytics data (reusable)
+const _getAnalyticsData = async () => {
+  const totalStudents = await User.countDocuments({ role: "student" });
+  const totalCourses = await Course.countDocuments();
+  const passed = await ExamResult.countDocuments({ status: "pass" });
+  const failed = await ExamResult.countDocuments({ status: "fail" });
+
+  return {
+    totalStudents,
+    totalCourses,
+    passed,
+    failed,
+    passRate: totalStudents
+      ? ((passed / totalStudents) * 100).toFixed(2) + "%"
+      : "0%",
+  };
+};
+
+// ✅ Export as Excel
+export const exportAnalyticsExcel = async (req, res) => {
+  try {
+    const analytics = await _getAnalyticsData();
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("University Analytics");
+
+    sheet.columns = [
+      { header: "Metric", key: "metric", width: 25 },
+      { header: "Value", key: "value", width: 25 },
+    ];
+
+    Object.entries(analytics).forEach(([key, value]) => {
+      sheet.addRow({ metric: key, value });
+    });
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=analytics-report.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ✅ Export as PDF
+export const exportAnalyticsPDF = async (req, res) => {
+  try {
+    const analytics = await _getAnalyticsData();
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=analytics-report.pdf"
+    );
+    res.setHeader("Content-Type", "application/pdf");
+
+    const doc = new PDFDocument();
+    doc.pipe(res);
+
+    doc.fontSize(18).text("📊 University Analytics Report", { align: "center" });
+    doc.moveDown();
+
+    Object.entries(analytics).forEach(([key, value]) => {
+      doc.fontSize(12).text(`${key}: ${value}`);
+    });
+
+    doc.end();
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };

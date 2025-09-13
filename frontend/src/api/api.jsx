@@ -248,7 +248,7 @@ export const submitReview = (data) => API.post("/student/review", data);
 // ---------------- SUPERADMIN REPORTS API ----------------
 
 
-export const getReports = () => API.get("/superadmin/reports");
+ 
 
 
 
@@ -325,11 +325,58 @@ export const uploadMouFile = (formData) =>
 export const downloadMouFile = (id) =>
   API.get(`/mou/${id}/download`, { responseType: "blob" });
 
-export const approveMou = (id) =>
-  API.post(`/mou/${id}/approve`);
+export const approveMou = (id,data) =>
+  API.post(`/mou/${id}/approve`,data);
 
-export const rejectMou = (id) =>
-  API.post(`/mou/${id}/reject`);
+export const rejectMou = (id,data) =>
+  API.post(`/mou/${id}/reject`,data);
 
 export const getMous = () =>
   API.get("/mou");
+
+
+
+
+
+
+
+//report aPI 
+// ---------------- SUPERADMIN REPORTS API ----------------
+
+// Create a new report (Super Admin)
+export const createReport = (data) => API.post("/report", data);
+
+// Get all reports (Super Admin)
+export const getReports = () => API.get("/report");
+
+// Download a report by ID (Super Admin)
+export const downloadReport = (id) =>
+  API.get(`/report/${id}/download`, { responseType: "blob" });
+
+// Delete a report by ID (Super Admin)
+export const deleteReport = (id) => API.delete(`/report/${id}`);
+
+
+
+//university API
+// University Analytics API
+ // University Analytics API
+export const getUniversityAnalytics = () => API.get("/university/analytics");
+export const exportAnalyticsPDF = () =>
+  API.get("/university/analytics/export/pdf", { responseType: "blob" });
+
+export const exportAnalyticsExcel = () =>
+  API.get("/university/analytics/export/excel", { responseType: "blob" });
+
+
+
+
+//referral partner API
+// Referral Partner Dashboard APIs
+ // Referral Partner Dashboard APIs
+export const getReferralProfile = () => API.get("/referralpartner/profile");
+export const getMyReferrals = () => API.get("/referralpartner/my-referrals");
+export const getMyEarnings = () => API.get("/referralpartner/earnings");
+export const requestReferralSettlement = () => API.post("/referralpartner/settlement");
+export const updateReferralProfile = (data) =>
+  API.put("/referralpartner/profile", data);

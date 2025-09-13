@@ -1,6 +1,7 @@
  import Wallet from "../models/wallet.js";
 import Course from "../models/course.js";
 import mongoose from "mongoose";
+import User from "../models/user.js"; 
 
 // ======================
 // Teacher requests settlement
@@ -201,3 +202,101 @@ export const debitWallet = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+
+
+
+
+
+
+
+// referral partner 
+ 
+// ======================
+export const creditReferralWallet = async (studentId, courseId, amount) => {
+  try {
+    // 🔍 Find student
+    const student = await User.findById(studentId);
+    if (!student || !student.referredBy) {
+      return null; // no referral applied
+    }
+
+    const partnerId = student.referredBy;
+
+    // 🔍 Find or create referral partner wallet
+    let wallet = await Wallet.findOne({ ownerId: partnerId, ownerType: "referral" });
+    if (!wallet) {
+      wallet = new Wallet({
+        ownerId: partnerId,
+        ownerType: "referral",
+        balance: 0,
+        transactions: [],
+      });
+    }
+
+    // 🔍 Count referrals to decide commission %
+    const referredCount = await User.countDocuments({ role: "student", referredBy: partnerId });
+    let rate = 0.01;
+    if (referredCount >= 11 && referredCount <= 20) rate = 0.025;
+    else if (referredCount >= 21 && referredCount <= 40) rate = 0.05;
+    else if (referredCount > 40) rate = 0.1;
+
+    const commission = amount * rate;
+
+    // 🔍 Credit wallet
+    wallet.balance += commission;
+    wallet.transactions.push({
+      studentId,
+      courseId,
+      amount: commission,
+      type: "credit",
+      note: `Referral commission credited (rate: ${rate * 100}%)`,
+      date: new Date(),
+    });
+
+    await wallet.save();
+
+    return wallet;
+  } catch (err) {
+    console.error("Error crediting referral wallet:", err.message);
+    return null;
+  }
+};
+
+// ======================
+// Request settlement (for referral partners only)
+// ======================
+export const referralRequestSettlement = async (req, res) => {
+  try {
+    const partnerId = req.user.id;
+
+    // 1️⃣ Find referral partner wallet
+    const wallet = await Wallet.findOne({ ownerId: partnerId, ownerType: "referral" });
+    if (!wallet) return res.status(404).json({ message: "Referral wallet not found" });
+
+    if (wallet.balance <= 0) {
+      return res.status(400).json({ message: "No balance available for settlement" });
+    }
+
+    // 2️⃣ Create settlement request
+    wallet.transactions.push({
+      type: "settlement_request",
+      status: "pending",
+      amount: wallet.balance,
+      note: "Referral partner requested payout",
+      date: new Date(),
+    });
+
+    await wallet.save();
+
+    res.json({
+      success: true,
+      message: "Referral settlement requested successfully (pending Finance Manager approval).",
+      wallet,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+

@@ -345,7 +345,15 @@ export default function Signup({ role }) {
           onChange={handleChange}
           className="w-full border rounded-lg p-2 mb-3"
         />
-
+        {role.toLowerCase() === "student" && (
+          <input
+            name="referralCode"
+            placeholder="Referral Code"
+            value={form.referralCode}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-2 mb-3"
+          />
+        )}
         {/* Role specific fields */}
         {role.toLowerCase() === "teacher" && (
           <input
@@ -357,15 +365,7 @@ export default function Signup({ role }) {
           />
         )}
 
-        {role.toLowerCase() === "referral" && (
-          <input
-            name="referralCode"
-            placeholder="Referral Code"
-            value={form.referralCode}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mb-3"
-          />
-        )}
+        
 
         <button
           onClick={handleSignup}

@@ -53,34 +53,64 @@ export default function GovernanceDashboard({ userRole = "Governance" }) {
   };
 
   // Approve MoU
-  const approveMoU = async (id) => {
-    const remarks = remarkInput[id] || "";
-    try {
-      await apiApproveMou(id);
-      setDocuments((prev) =>
-        prev.map((d) =>
-          d._id === id ? { ...d, status: "approved", governanceComment: remarks } : d
-        )
-      );
-    } catch (err) {
-      console.error("Failed to approve MoU:", err);
-    }
-  };
+  // const approveMoU = async (id) => {
+  //   const remarks = remarkInput[id] || "";
+  //   try {
+  //     await apiApproveMou(id);
+  //     setDocuments((prev) =>
+  //       prev.map((d) =>
+  //         d._id === id ? { ...d, status: "approved", governanceComment: remarks } : d
+  //       )
+  //     );
+  //   } catch (err) {
+  //     console.error("Failed to approve MoU:", err);
+  //   }
+  // };
 
-  // Reject MoU
-  const rejectMoU = async (id) => {
-    const remarks = remarkInput[id] || "";
-    try {
-      await apiRejectMou(id);
-      setDocuments((prev) =>
-        prev.map((d) =>
-          d._id === id ? { ...d, status: "rejected", governanceComment: remarks } : d
-        )
-      );
-    } catch (err) {
-      console.error("Failed to reject MoU:", err);
-    }
-  };
+  // // Reject MoU
+  // const rejectMoU = async (id) => {
+  //   const remarks = remarkInput[id] || "";
+  //   try {
+  //     await apiRejectMou(id);
+  //     setDocuments((prev) =>
+  //       prev.map((d) =>
+  //         d._id === id ? { ...d, status: "rejected", governanceComment: remarks } : d
+  //       )
+  //     );
+  //   } catch (err) {
+  //     console.error("Failed to reject MoU:", err);
+  //   }
+  // };
+
+const approveMoU = async (id) => {
+  const remarks = remarkInput[id] || "";
+  try {
+    await apiApproveMou(id, { comment: remarks }); // ✅ send comment
+    setDocuments((prev) =>
+      prev.map((d) =>
+        d._id === id ? { ...d, status: "approved", governanceComment: remarks } : d
+      )
+    );
+  } catch (err) {
+    console.error("Failed to approve MoU:", err);
+  }
+};
+
+const rejectMoU = async (id) => {
+  const remarks = remarkInput[id] || "";
+  try {
+    await apiRejectMou(id, { comment: remarks }); // ✅ send comment
+    setDocuments((prev) =>
+      prev.map((d) =>
+        d._id === id ? { ...d, status: "rejected", governanceComment: remarks } : d
+      )
+    );
+  } catch (err) {
+    console.error("Failed to reject MoU:", err);
+  }
+};
+
+
 
   // Download MoU
   const downloadMoU = async (id, filename) => {

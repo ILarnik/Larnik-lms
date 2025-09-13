@@ -25,7 +25,8 @@ import studentRoutes from "./src/Routes/student.js";
 import walletRoutes from "./src/Routes/wallet.js";
 import careerCellRoutes from "./src/Routes/careerCell.js";
  import reportRoutes from "./src/Routes/reports.js";
-
+import univerityRoutes from "./src/Routes/university.js";
+import  referralPartnerRoutes  from "./src/Routes/referralpartner.js";
 
 
 
@@ -92,7 +93,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/finance", financeRoutes);
-// app.use("/api/mou", mouRoutes);
+ app.use("/api/mou", mouRoutes);
 // app.use("/api/certificates", certificateRoutes);
 app.use("/api/certificates", certificateRoutes);
 // serve static certificates
@@ -108,7 +109,8 @@ app.use("/api/student", studentRoutes); // done
 app.use("/api/wallet", walletRoutes);
 app.use("/api/careercell", careerCellRoutes);
  app.use("/api", reportRoutes);
-
+app.use("/api/university", univerityRoutes);
+app.use("/api/referralpartner", referralPartnerRoutes);
 // -------------------
 // Fallback
 // -------------------
