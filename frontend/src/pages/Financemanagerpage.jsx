@@ -4,11 +4,11 @@ import FinanceSettlementDashboard from "../components/dashboard components/Finan
 
 export default function Financemanagerpage(){
 
-const  user = { role: "teacher" | "university" | "finance_manager", _id: "123" }
+// const  user = { role: "teacher" | "university" | "finance_manager", _id: "123" }
 
     return (
         <>
-        <FinanceSettlementDashboard user={user} />
+        <FinanceSettlementDashboard  />
         </>
     )
 }

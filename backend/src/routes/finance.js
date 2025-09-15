@@ -2,25 +2,33 @@
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
 
-import { approveSettlement } from "../controllers/financeController.js";
-import {
-  creditWallet,
-  debitWallet,
-} from "../controllers/walletcontroller.js";
+import { approveSettlement,getPendingSettlements,rejectSettlement } from "../controllers/financecontroller.js";
+ 
 
 const router = express.Router();
 
-// ======================
-// Finance Manager routes
-// ======================
 
-// ✅ Approve settlement (teacher, university, referral)
-//    - Teachers/Universities still work with teacherId
-//    - Referral partners pass ownerId + ownerType="referral"
-router.post("/approve", authMiddleware, allowRoles("finance_manager"), approveSettlement);
 
-// ✅ Force credit/debit (manual action by Finance Manager)
-router.post("/credit", authMiddleware, allowRoles("finance_manager"), creditWallet);
-router.post("/debit", authMiddleware, allowRoles("finance_manager"), debitWallet);
+router.get(
+  "/pending-settlements",
+  authMiddleware,
+  allowRoles("finance_manager", "sub-admin","finance"),
+  getPendingSettlements
+);
+
+// Approve settlement (Finance Manager)
+router.post("/approve", authMiddleware, allowRoles("finance_manager","sub-admin"), approveSettlement);
+
+ 
+router.post(
+  "/settlement/reject",
+  authMiddleware,
+  allowRoles("finance_manager", "sub-admin"),
+  rejectSettlement
+);
+// Manual credit/debit (Finance Manager)
+// router.post("/credit", authMiddleware, allowRoles("finance_manager"), creditWallet);
+// router.post("/debit", authMiddleware, allowRoles("finance_manager"), debitWallet);
+
 
 export default router;

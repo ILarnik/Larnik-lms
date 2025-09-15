@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
 
-    // Fixed sub-admin role (only for sub-admins)
     subAdminRole: {
       type: String,
       enum: ["blog_manager", "finance_manager", "governance", "role_manager", "career_cell"],
@@ -28,9 +27,10 @@ const userSchema = new mongoose.Schema(
     },
 
     referralCode: { type: String, unique: true, sparse: true }, // auto-generated for referral partners
-    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // who referred this user
+    universityCode: { type: String, unique: true, sparse: true }, // ✅ auto-generated for universities
 
-    // Dynamic sub-role (only for sub-admins)
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+
     dynamicSubRole: {
       type: String,
       enum: ["writer", "reviewer"],
@@ -83,21 +83,38 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 // =======================
 // Generate unique referral code for referral partners
 // =======================
- userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   try {
+    // ✅ Referral partner code
     if (this.role === "referral" && !this.referralCode) {
       let unique = false;
-
       while (!unique) {
-        // ✅ use substring instead of deprecated substr
         const code = `REF${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
         const existingUser = await mongoose.models.User.findOne({ referralCode: code });
-
         if (!existingUser) {
           this.referralCode = code;
           unique = true;
         }
       }
+    }
+
+    // ✅ University code
+    // if (this.role === "university" && !this.universityCode) {
+    //   let unique = false;
+    //   while (!unique) {
+    //     const code = `UNI${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    //     const existingUser = await mongoose.models.User.findOne({ universityCode: code });
+    //     if (!existingUser) {
+    //       this.universityCode = code;
+    //       unique = true;
+    //     }
+    //   }
+    // }
+if (this.role === "university" && !this.universityCode) {
+      this.universityCode = `UNI${Date.now().toString(36).toUpperCase()}${Math.random()
+        .toString(36)
+        .substring(2, 4)
+        .toUpperCase()}`;
     }
     next();
   } catch (err) {

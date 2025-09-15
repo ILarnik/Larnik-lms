@@ -261,12 +261,12 @@ export const submitReview = (data) => API.post("/student/review", data);
 // Wallet (Teacher) APIs //
 //////////////////////////
 
-// Get teacher wallet details
-export const getWallet = (teacherId) =>
-  // console.log(teacherId,"teacherId");
-  
-  API.get(`/wallet/${teacherId}`);
-
+// // Get teacher wallet details
+//  export const getWallet = (ownerId, ownerType = "teacher") => {
+//   return API.get(`/wallet/${ownerId}`, {
+//     params: { ownerType },
+//   });
+// }
 // ======================
 // Settlement Requests
 // ======================
@@ -283,9 +283,17 @@ export const universityApproveSettlement = (data) =>
 
 // Finance Manager approves final payout (applies platform cut)
 // body: { walletOwnerId, transactionId, platformShare }
-export const approveSettlement = (data) =>
-  API.post("/finance/approve", data);
+ export const approveSettlement = ({ walletOwnerId, transactionId, split }) => {
+  return API.post("/wallet/settlement/approve", {
+    walletOwnerId,
+    transactionId,
+    split, // { teacher: 70, university: 20, platform: 10 }
+  });
+};
 
+export const rejectSettlement = ({ walletOwnerId, transactionId }) => {
+  return API.post("/wallet/settlement/reject", { walletOwnerId, transactionId });
+};
 // ======================
 // Wallet Credit/Debit (Finance Manager only)
 // ======================
@@ -300,6 +308,15 @@ export const creditWallet = (data) =>
 export const debitWallet = (data) =>
   API.post("/finance/debit", data);
 
+
+export const getPendingSettlements = () => {
+  return API.get("/finance/pending-settlements");
+};
+
+// api.jsx
+export const getWallet = (ownerId, ownerType = "teacher") => {
+  return API.get(`/wallet/${ownerId}?ownerType=${ownerType}`);
+};
 
 
 

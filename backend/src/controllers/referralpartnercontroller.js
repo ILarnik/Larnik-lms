@@ -114,3 +114,65 @@ export const updateReferralProfile = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+ 
+ 
+// Credit referral partner wallet
+export const creditReferralWallet = async (studentId, courseId, amount) => {
+  try {
+    const student = await User.findById(studentId);
+    if (!student || !student.referredBy) return null;
+
+    const partnerId = student.referredBy;
+    let wallet = await Wallet.findOne({ ownerId: partnerId, ownerType: "referral" });
+    if (!wallet) wallet = new Wallet({ ownerId: partnerId, ownerType: "referral", balance: 0, transactions: [] });
+
+    const referredCount = await User.countDocuments({ role: "student", referredBy: partnerId });
+
+    let rate = 0.01;
+    if (referredCount >= 11 && referredCount <= 20) rate = 0.025;
+    else if (referredCount >= 21 && referredCount <= 40) rate = 0.05;
+    else if (referredCount > 40) rate = 0.1;
+
+    const commission = amount * rate;
+
+    wallet.balance += commission;
+    wallet.transactions.push({
+      studentId,
+      courseId,
+      amount: commission,
+      type: "credit",
+      note: `Referral commission credited (rate: ${rate * 100}%)`,
+      date: new Date(),
+    });
+
+    await wallet.save();
+    return wallet;
+  } catch (err) {
+    console.error(err.message);
+    return null;
+  }
+};
+
+// Referral partner requests settlement
+export const referralRequestSettlement = async (req, res) => {
+  try {
+    const partnerId = req.user.id;
+
+    const wallet = await Wallet.findOne({ ownerId: partnerId, ownerType: "referral" });
+    if (!wallet) return res.status(404).json({ message: "Referral wallet not found" });
+    if (wallet.balance <= 0) return res.status(400).json({ message: "No balance available" });
+
+    wallet.transactions.push({
+      type: "settlement_request",
+      status: "pending",
+      amount: wallet.balance,
+      note: "Referral partner requested payout",
+      date: new Date(),
+    });
+
+    await wallet.save();
+    res.json({ success: true, message: "Referral settlement requested successfully", wallet });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

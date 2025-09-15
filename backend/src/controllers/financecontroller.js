@@ -1,260 +1,201 @@
-//  import Wallet from "../models/wallet.js";
-// import mongoose from "mongoose";
+ import Wallet from "../models/wallet.js";
+import mongoose from "mongoose";
+ 
+export const getPendingSettlements = async (req, res) => {
+  try {
+    const wallets = await Wallet.find({
+      "transactions.status": "pending",
+      "transactions.type": { $in: ["settlement_request", "credit"] }
+    })
+      .populate("transactions.studentId", "name email")
+      .populate("transactions.courseId", "title price")
+      .populate("ownerId", "name email role");
 
-// // ======================
-// // Finance Manager approves payout
-// // ======================
-// // export const approveSettlement = async (req, res) => {
-// //   try {
-// //     const { walletOwnerId, transactionId, platformShare } = req.body;
-// //     // walletOwnerId = either teacher (freelancer) or university (for affiliated teacher)
-
-// //     // 1️⃣ Find wallet
-// //     const wallet = await Wallet.findOne({ teacherId: walletOwnerId });
-// //     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-// //     // 2️⃣ Find settlement transaction
-// //     const transaction = wallet.transactions.id(transactionId);
-// //     if (!transaction || transaction.status !== "pending") {
-// //       return res.status(400).json({ message: "Invalid or already processed transaction" });
-// //     }
-
-// //     const totalAmount = transaction.amount;
-
-// //     // 3️⃣ Calculate shares
-// //     let teacherShare = 0;
-// //     let universityShare = 0;
-
-// //     if (transaction.type !== "settlement_request") {
-// //       return res.status(400).json({ message: "Transaction is not a settlement request" });
-// //     }
-
-// //     if (transaction.split.university && transaction.universityId) {
-// //       // Case: affiliated teacher -> transaction came from university wallet
-// //       universityShare = totalAmount - (platformShare || 0) - (transaction.split.teacher * totalAmount) / 100;
-// //       teacherShare = totalAmount - universityShare - (platformShare || 0);
-// //     } else {
-// //       // Case: freelancer teacher -> direct split
-// //       teacherShare = totalAmount - (platformShare || 0);
-// //       universityShare = 0;
-// //     }
-
-// //     // 4️⃣ Update wallet
-// //     wallet.balance -= totalAmount;
-// //     transaction.status = "approved";
-// //     transaction.note = `Settlement approved by Finance Manager (platformShare: ₹${platformShare || 0})`;
-// //     await wallet.save();
-
-// //     // 5️⃣ Credit teacher wallet if payout from university
-// //     if (transaction.split.university && transaction.universityId) {
-// //       const teacherId = transaction.split.teacherId; // teacher who belongs to university
-// //       if (teacherId) {
-// //         let teacherWallet = await Wallet.findOne({ teacherId });
-// //         if (!teacherWallet) {
-// //           teacherWallet = new Wallet({ teacherId, balance: 0, transactions: [] });
-// //         }
-// //         teacherWallet.balance += teacherShare;
-// //         teacherWallet.transactions.push({
-// //           type: "credit",
-// //           amount: teacherShare,
-// //           note: `Teacher share from university settlement`,
-// //           date: new Date(),
-// //         });
-// //         await teacherWallet.save();
-// //       }
-// //     }
-
-// //     // 6️⃣ Platform share: can be recorded/logged separately
-// //     // e.g., update a platform wallet or just store in transaction.note
-
-// //     res.json({
-// //       success: true,
-// //       message: "Settlement approved successfully",
-// //       totalAmount,
-// //       teacherShare,
-// //       universityShare,
-// //       platformShare: platformShare || 0,
-// //       wallet
-// //     });
-
-// //   } catch (err) {
-// //     res.status(500).json({ message: err.message });
-// //   }
-// // };
-
-
+    res.json({ success: true, wallets });
+  } catch (err) {
+    console.error("Error in getPendingSettlements:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+ 
 
 // export const approveSettlement = async (req, res) => {
 //   try {
-//     const { walletOwnerId, transactionId, platformShare = 0 } = req.body;
-//     // walletOwnerId: teacher (freelancer) or university (for affiliated teacher)
+//     const { walletOwnerId, transactionId, split } = req.body;
 
-//     // 1️⃣ Find the wallet
-//     const wallet = await Wallet.findOne({ teacherId: walletOwnerId });
-//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-//     // 2️⃣ Find the settlement transaction
-//     const transaction = wallet.transactions.id(transactionId);
-//     if (!transaction || transaction.status !== "pending") {
-//       return res.status(400).json({ message: "Invalid or already processed transaction" });
+//     // Validate required fields
+//     if (!walletOwnerId || !transactionId || !split) {
+//       return res.status(400).json({ message: "walletOwnerId, transactionId, and split are required" });
 //     }
 
-//     if (transaction.type !== "settlement_request") {
-//       return res.status(400).json({ message: "Transaction is not a settlement request" });
+//     // Validate ObjectId
+//     if (!mongoose.Types.ObjectId.isValid(walletOwnerId)) {
+//       return res.status(400).json({ message: "Invalid walletOwnerId" });
+//     }
+
+//     // Find wallet by ownerId or fallback to wallet _id
+//     let wallet = await Wallet.findOne({ ownerId: walletOwnerId });
+//     if (!wallet) wallet = await Wallet.findById(walletOwnerId);
+//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+//     // Find transaction
+//     const transaction = wallet.transactions.id(transactionId);
+//     if (!transaction || transaction.status !== "pending") {
+//       return res.status(400).json({ message: "Transaction not found or already processed" });
 //     }
 
 //     const totalAmount = transaction.amount;
-//     let teacherShare = 0;
-//     let universityShare = 0;
+//     const { teacher: teacherShare = 0, university: universityShare = 0, platform: platformShare = 0 } = split;
 
-//     // 3️⃣ Determine shares
-//     if (transaction.split.university && transaction.universityId) {
-//       // Affiliated teacher: university decides teacher portion
-//       universityShare = totalAmount - (platformShare || 0) - (transaction.split.teacher * totalAmount) / 100;
-//       teacherShare = totalAmount - universityShare - (platformShare || 0);
-//     } else {
-//       // Freelancer teacher: direct split with platform
-//       teacherShare = totalAmount - (platformShare || 0);
+//     // Ensure splits don’t exceed total
+//     if (teacherShare + universityShare + platformShare > totalAmount) {
+//       return res.status(400).json({ message: "Split exceeds total transaction amount" });
 //     }
 
-//     // 4️⃣ Debit wallet (teacher or university)
-//     wallet.balance -= totalAmount;
-//     transaction.status = "approved";
-//     transaction.note = `Settlement approved by Finance Manager (platformShare: ₹${platformShare})`;
-//     await wallet.save();
+//     // Update transaction
+//     transaction.split = { teacher: teacherShare, university: universityShare, platform: platformShare };
+//     transaction.status = "approved_by_finance";
 
-//     // 5️⃣ Credit teacher wallet if payout from university
-//     if (transaction.split.university && transaction.universityId) {
-//       const teacherId = transaction.split.teacherId;
-//       if (teacherId) {
-//         let teacherWallet = await Wallet.findOne({ teacherId: new mongoose.Types.ObjectId(teacherId) });
-//         if (!teacherWallet) {
-//           teacherWallet = new Wallet({ teacherId, balance: 0, transactions: [] });
-//         }
+//     // Deduct total pending amount from wallet
+//     wallet.balance -= totalAmount;
+
+//     // Credit respective wallets
+//     if (wallet.ownerType === "teacher" && teacherShare > 0) {
+//       // Teacher wallet itself
+//       wallet.balance += teacherShare;
+//     }
+
+//     if (wallet.ownerType === "university" && universityShare > 0) {
+//       wallet.balance += universityShare;
+//     }
+
+//     if (wallet.ownerType === "referral") {
+//       // Referral wallet gets teacher + university shares if present
+//       wallet.balance += teacherShare + universityShare;
+//     }
+
+//     // Handle linked teacher wallet if transaction has teacherId
+//     if (transaction.teacherId && teacherShare > 0) {
+//       const teacherWallet = await Wallet.findOne({ ownerId: transaction.teacherId });
+//       if (teacherWallet) {
 //         teacherWallet.balance += teacherShare;
-//         teacherWallet.transactions.push({
-//           type: "credit",
-//           amount: teacherShare,
-//           note: `Teacher share from university settlement`,
-//           date: new Date(),
-//         });
 //         await teacherWallet.save();
 //       }
 //     }
 
-//     // 6️⃣ Platform share: log or handle separately if needed
+//     // Handle linked university wallet if transaction has universityId
+//     if (transaction.universityId && universityShare > 0) {
+//       const universityWallet = await Wallet.findOne({ ownerId: transaction.universityId });
+//       if (universityWallet) {
+//         universityWallet.balance += universityShare;
+//         await universityWallet.save();
+//       }
+//     }
 
-//     res.json({
-//       success: true,
-//       message: "Settlement approved successfully",
-//       totalAmount,
-//       teacherShare,
-//       universityShare,
-//       platformShare,
-//       wallet
-//     });
+//     await wallet.save();
+
+//     res.json({ success: true, message: "Settlement approved", wallet });
 //   } catch (err) {
+//     console.error("Error in approveSettlement:", err);
 //     res.status(500).json({ message: err.message });
 //   }
 // };
-
-
-
-
-import Wallet from "../models/wallet.js";
-import mongoose from "mongoose";
-
 export const approveSettlement = async (req, res) => {
   try {
-    const { walletOwnerId, transactionId, platformShare = 0, ownerType = "teacher" } = req.body;
-    // walletOwnerId = teacherId, universityId, or referral partner _id
-    // ownerType = "teacher" | "university" | "referral"
+    const { walletOwnerId, transactionId, split } = req.body;
+    if (!walletOwnerId || !transactionId || !split)
+      return res.status(400).json({ message: "walletOwnerId, transactionId, and split are required" });
 
-    let wallet;
-
-    // 1️⃣ Backward compatibility: teacher/university lookups by teacherId
-    if (ownerType === "teacher" || ownerType === "university") {
-      wallet = await Wallet.findOne({ teacherId: walletOwnerId });
-    }
-
-    // 2️⃣ For referral partners, use generic ownerId lookup
-    if (!wallet && ownerType === "referral") {
-      wallet = await Wallet.findOne({ ownerId: walletOwnerId, ownerType: "referral" });
-    }
-
+    let wallet = await Wallet.findOne({ ownerId: walletOwnerId }) || await Wallet.findById(walletOwnerId);
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
-    // 3️⃣ Find the settlement transaction
     const transaction = wallet.transactions.id(transactionId);
-    if (!transaction || transaction.status !== "pending") {
-      return res.status(400).json({ message: "Invalid or already processed transaction" });
-    }
+    if (!transaction || transaction.status !== "pending")
+      return res.status(400).json({ message: "Transaction not found or already processed" });
 
-    if (transaction.type !== "settlement_request") {
-      return res.status(400).json({ message: "Transaction is not a settlement request" });
-    }
-
+    const { teacher: teacherShare = 0, university: universityShare = 0, platform: platformShare = 0 } = split;
     const totalAmount = transaction.amount;
-    let teacherShare = 0;
-    let universityShare = 0;
 
-    // 4️⃣ Handle teacher/university logic (existing flow preserved)
-    if (ownerType !== "referral") {
-      if (transaction.split.university && transaction.universityId) {
-        // Affiliated teacher: university decides teacher portion
-        universityShare =
-          totalAmount -
-          (platformShare || 0) -
-          (transaction.split.teacher * totalAmount) / 100;
-        teacherShare = totalAmount - universityShare - (platformShare || 0);
-      } else {
-        // Freelancer teacher/university: direct split with platform
-        teacherShare = totalAmount - (platformShare || 0);
-      }
-    }
+    if (teacherShare + universityShare + platformShare > totalAmount)
+      return res.status(400).json({ message: "Split exceeds total transaction amount" });
 
-    // 5️⃣ Debit wallet (teacher/university/referral)
+    // Update transaction
+    transaction.split = { teacher: teacherShare, university: universityShare, platform: platformShare };
+    transaction.status = "approved_by_finance";
+
+    // Deduct total pending amount from wallet
     wallet.balance -= totalAmount;
-    transaction.status = "approved";
-    transaction.note = `Settlement approved by Finance Manager (platformShare: ₹${platformShare})`;
-    await wallet.save();
 
-    // 6️⃣ Teacher-specific extra flow: credit teacher from university wallet
-    if (transaction.split.university && transaction.universityId && ownerType !== "referral") {
-      const teacherId = transaction.split.teacherId;
-      if (teacherId) {
-        let teacherWallet = await Wallet.findOne({ teacherId: new mongoose.Types.ObjectId(teacherId) });
-        if (!teacherWallet) {
-          teacherWallet = new Wallet({ teacherId, balance: 0, transactions: [] });
-        }
+    // Handle teacher wallet
+    const teacherId = transaction.teacherId || wallet.teacherId;
+    if (teacherId && teacherShare > 0) {
+      const teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
+      if (teacherWallet) {
         teacherWallet.balance += teacherShare;
-        teacherWallet.transactions.push({
-          type: "credit",
-          amount: teacherShare,
-          note: `Teacher share from university settlement`,
-          date: new Date(),
-        });
         await teacherWallet.save();
+      } else if (wallet.ownerType === "teacher") {
+        // If wallet itself is teacher wallet
+        wallet.balance += teacherShare;
       }
     }
 
-    // 7️⃣ Referral-specific: no share splitting, just mark approved
-    if (ownerType === "referral") {
-      teacherShare = 0;
-      universityShare = 0;
-      // referral partner already has commission credited earlier
+    // Handle university wallet
+    const universityId = transaction.universityId || wallet.universityId;
+    if (universityId && universityShare > 0) {
+      const universityWallet = await Wallet.findOne({ ownerId: universityId, ownerType: "university" });
+      if (universityWallet) {
+        universityWallet.balance += universityShare;
+        await universityWallet.save();
+      } else if (wallet.ownerType === "university") {
+        wallet.balance += universityShare;
+      }
     }
 
-    res.json({
-      success: true,
-      message: "Settlement approved successfully",
-      totalAmount,
-      teacherShare,
-      universityShare,
-      platformShare,
-      wallet,
-    });
+    // Handle referral wallet
+    if (wallet.ownerType === "referral") {
+      wallet.balance += teacherShare + universityShare;
+    }
+
+    await wallet.save();
+    res.json({ success: true, message: "Settlement approved", wallet });
   } catch (err) {
+    console.error("Error in approveSettlement:", err);
     res.status(500).json({ message: err.message });
   }
 };
+
+
+export const rejectSettlement = async (req, res) => {
+  try {
+    const { walletOwnerId, transactionId } = req.body;
+
+    if (!walletOwnerId || !transactionId) {
+      return res.status(400).json({ message: "walletOwnerId and transactionId are required" });
+    }
+
+    // Validate walletOwnerId as ObjectId
+    if (!mongoose.Types.ObjectId.isValid(walletOwnerId)) {
+      return res.status(400).json({ message: "Invalid walletOwnerId" });
+    }
+
+    // Find wallet by ownerId
+    const wallet = await Wallet.findOne({ ownerId: walletOwnerId });
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+    // Find transaction
+    const transaction = wallet.transactions.id(transactionId);
+    if (!transaction) return res.status(404).json({ message: "Transaction not found" });
+
+    // Update status to rejected
+    transaction.status = "rejected";
+    await wallet.save();
+
+    res.json({ success: true, message: "Settlement request rejected", transaction });
+  } catch (err) {
+    console.error("Error in rejectSettlement:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+ 

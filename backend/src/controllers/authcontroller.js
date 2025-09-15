@@ -1,34 +1,48 @@
  // src/controllers/authController.js
-import User from "../models/user.js";
+ 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import User from "../models/user.js";
+// ---------------- SIGNUP ----------------
+ 
 
 // ---------------- SIGNUP ----------------
-// export const signup = async (req, res ,error) => {
+// export const signup = async (req, res) => {
 //   try {
 //     const { name, email, phone, password, roles, universityCode, referralCode } = req.body;
 
 //     if (!name || !email || !phone || !password || !roles) {
-//       // console.log(error.message,"my error");
 //       return res.status(400).json({ message: "Missing required fields or invalid roles" });
-      
 //     }
 
+//     // 🔍 Check if email already exists
 //     const existingUser = await User.findOne({ email });
-//     if (existingUser) return res.status(400).json({ message: "Email already exists" });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Email already exists" });
+//     }
 
-//     const user = new User({
+//     // 🎯 Default new user object
+//     const newUser = new User({
 //       name,
 //       email,
 //       phone,
-//       password, // hashed automatically by schema pre-save hook
+//       password, // hashed automatically
 //       role: roles[0], // primary role
 //       universityCode: universityCode || undefined,
-//       referralCode: referralCode || undefined,
-//       status: "approved" // comment this line if you want pending approval flow
+//       status: "approved" // or "pending" if you want an approval flow
 //     });
 
-//     await user.save();
+//     // 🟢 If referralCode was provided → map referredBy
+//     if (referralCode) {
+//       const partner = await User.findOne({ referralCode, role: "referral" });
+//       if (partner) {
+//         newUser.referredBy = partner._id;
+//       } else {
+//         console.warn(`Invalid referral code provided: ${referralCode}`);
+//       }
+//     }
+
+//     await newUser.save();
 //     res.status(201).json({ message: "User registered successfully" });
 //   } catch (error) {
 //     console.error(error);
@@ -36,7 +50,6 @@ import jwt from "jsonwebtoken";
 //   }
 // };
 
-// ---------------- SIGNUP ----------------
 export const signup = async (req, res) => {
   try {
     const { name, email, phone, password, roles, universityCode, referralCode } = req.body;
@@ -58,11 +71,24 @@ export const signup = async (req, res) => {
       phone,
       password, // hashed automatically
       role: roles[0], // primary role
-      universityCode: universityCode || undefined,
-      status: "approved" // or "pending" if you want an approval flow
+      status: "approved", // or "pending" if you want approval flow
     });
 
-    // 🟢 If referralCode was provided → map referredBy
+    // 🟢 If this is a university signup → universityCode will auto-generate in pre-save hook
+    if (roles[0] === "university") {
+      // nothing to set manually; code generated automatically
+    }
+
+    // 🟢 If this is a teacher signup with universityCode → link teacher to university
+    if (roles[0] === "teacher" && universityCode) {
+      const university = await User.findOne({ universityCode, role: "university" });
+      if (!university) {
+        return res.status(400).json({ message: "Invalid university code" });
+      }
+      newUser.universityId = university._id; // ✅ link teacher to university
+    }
+
+    // 🟢 If referralCode provided → map referredBy
     if (referralCode) {
       const partner = await User.findOne({ referralCode, role: "referral" });
       if (partner) {
@@ -73,7 +99,7 @@ export const signup = async (req, res) => {
     }
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "User registered successfully", user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
