@@ -8,18 +8,32 @@ export default function FinanceManager() {
   const [split, setSplit] = useState({ teacher: 100, university: 0, platform: 0 });
 
   // Utility: Get correct ownerId based on wallet type
+ 
+// const getOwnerId = (wallet) => {
+//   switch (wallet.ownerType) {
+//     case "teacher":
+//       return wallet.teacherId?._id || wallet.teacherId;
+//     case "university":
+//       return wallet.universityId?._id || wallet.universityId;
+//     case "referral":
+//       return wallet.referralId?._id || wallet.referralId;
+//     default:
+//       return wallet.ownerId || wallet._id; // fallback
+//   }
+// };
 const getOwnerId = (wallet) => {
   switch (wallet.ownerType) {
     case "teacher":
-      return wallet.teacherId?._id || wallet.teacherId; // some DBs return ObjectId directly
+      return wallet.teacherId?._id || wallet.teacherId;
     case "university":
       return wallet.universityId?._id || wallet.universityId;
     case "referral":
-      return wallet._id;
+      return wallet._id; // <-- use wallet's own _id
     default:
-      return wallet._id;
+      return wallet.ownerId || wallet._id;
   }
 };
+
 
 
 
@@ -68,27 +82,68 @@ const getOwnerId = (wallet) => {
     }
   };
 
+ 
+  // const handleReject = async (wallet, transaction) => {
+  //   const ownerId = getOwnerId(wallet);
+
+  //   // Validate ownerId
+  //   if (!ownerId || !/^[0-9a-fA-F]{24}$/.test(ownerId)) {
+  //     alert("Invalid owner ID. Cannot reject.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setApproving(true);
+  //     await rejectSettlement({ walletOwnerId: ownerId, transactionId: transaction._id });
+  //     fetchPending(); // refresh after rejection
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert(err.response?.data?.message || "Rejection failed");
+  //   } finally {
+  //     setApproving(false);
+  //   }
+  // };
   // Reject settlement
-  const handleReject = async (wallet, transaction) => {
-    const ownerId = getOwnerId(wallet);
+// const handleReject = async (wallet, transaction) => {
+//   const ownerId = getOwnerId(wallet);
 
-    // Validate ownerId
-    if (!ownerId || !/^[0-9a-fA-F]{24}$/.test(ownerId)) {
-      alert("Invalid owner ID. Cannot reject.");
-      return;
-    }
+//   // ❌ Remove strict ObjectId validation
+//   if (!ownerId) {
+//     alert("Invalid owner ID. Cannot reject.");
+//     return;
+//   }
 
-    try {
-      setApproving(true);
-      await rejectSettlement({ walletOwnerId: ownerId, transactionId: transaction._id });
-      fetchPending(); // refresh after rejection
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Rejection failed");
-    } finally {
-      setApproving(false);
-    }
-  };
+//   try {
+//     setApproving(true);
+//     await rejectSettlement({ walletOwnerId: ownerId, transactionId: transaction._id });
+//     fetchPending(); // refresh after rejection
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.response?.data?.message || "Rejection failed");
+//   } finally {
+//     setApproving(false);
+//   }
+// };
+const handleReject = async (wallet, transaction) => {
+  const ownerId = getOwnerId(wallet);
+
+  if (!ownerId) {
+    alert("Invalid owner ID. Cannot reject.");
+    return;
+  }
+
+  try {
+    setApproving(true);
+    await rejectSettlement({ walletOwnerId: ownerId, transactionId: transaction._id });
+    fetchPending(); // refresh after rejection
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Rejection failed");
+  } finally {
+    setApproving(false);
+  }
+};
+
 
   useEffect(() => {
     fetchPending();

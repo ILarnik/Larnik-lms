@@ -1,7 +1,7 @@
  
 import React, { useState } from "react";
-import CreateBlog from "../blog management/createblog";
-import BlogList from "../blog management/BlogList";
+import CreateBlog from "../blog_management/createblog";
+import BlogList from "../blog_management/BlogList";
 
 import { deleteBlog } from "../../api/api";
 

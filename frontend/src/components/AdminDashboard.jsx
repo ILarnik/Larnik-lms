@@ -21,13 +21,13 @@ import {
 
 import SearchBar from "./SearchBar";
 import DashboardCard from "./DashboardCard";
-import CouponManager from "./dashboard components/CouponManager";
-import ManageSubAdmins from "./dashboard components/ManageSubAdmins";
+import CouponManager from "./dashboard_components/CouponManager";
+import ManageSubAdmins from "./dashboard_components/ManageSubAdmins";
 import UserManagement from "./UserManagement";
-import CourseDashboard from "./dashboard components/CourseManagement";
-import BlogManagerDashboard from "./dashboard components/BlogManagerDashboard";
+import CourseDashboard from "./dashboard_components/CourseManagement";
+import BlogManagerDashboard from "./dashboard_components/BlogManagerDashboard";
 //import CertificateManagerDashboard from "./dashboard components/CertificateManagerDashboard.jsx";
-import ReportsDashboard from "./dashboard components/ReportsDashboard.jsx";
+import ReportsDashboard from "./dashboard_components/ReportsDashboard.jsx";
 
 // Sidebar menu structure
 const menuItems = [

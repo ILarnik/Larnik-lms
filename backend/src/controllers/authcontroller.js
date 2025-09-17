@@ -79,14 +79,15 @@ export const signup = async (req, res) => {
       // nothing to set manually; code generated automatically
     }
 
-    // 🟢 If this is a teacher signup with universityCode → link teacher to university
-    if (roles[0] === "teacher" && universityCode) {
-      const university = await User.findOne({ universityCode, role: "university" });
-      if (!university) {
-        return res.status(400).json({ message: "Invalid university code" });
-      }
-      newUser.universityId = university._id; // ✅ link teacher to university
-    }
+ // 🟢 If this is a teacher signup with universityCode → link teacher to university
+if (roles[0] === "teacher" && universityCode) {
+  const university = await User.findOne({ universityCode, role: "university" });
+  if (!university) {
+    return res.status(400).json({ message: "Invalid university code" });
+  }
+  newUser.affiliatedUniversity = university._id; // ✅ consistent field
+}
+
 
     // 🟢 If referralCode provided → map referredBy
     if (referralCode) {

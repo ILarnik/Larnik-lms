@@ -6,30 +6,70 @@ import mongoose from "mongoose";
 // ======================
 // Teacher requests settlement
 // ======================
+// export const requestSettlement = async (req, res) => {
+//   try {
+//     const { id: teacherId, universityId } = req.user; // assuming user contains universityId if affiliated
+//     const wallet = await Wallet.findOne({ teacherId });
+
+//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+//     if (wallet.balance <= 0) return res.status(400).json({ message: "No balance to settle" });
+
+//     // Check if teacher is affiliated with university
+//     if (universityId) {
+//       wallet.pendingSettlement = wallet.balance; // store pending amount
+//       wallet.status = "pending_university";
+//       await wallet.save();
+//       return res.json({ success: true, message: "Settlement request sent to university", wallet });
+//     }
+
+//     // Freelancer teacher → direct Finance Manager
+//     wallet.status = "pending_finance";
+//     await wallet.save();
+//     res.json({ success: true, message: "Settlement request sent to Finance Manager", wallet });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 export const requestSettlement = async (req, res) => {
   try {
-    const { id: teacherId, universityId } = req.user; // assuming user contains universityId if affiliated
-    const wallet = await Wallet.findOne({ teacherId });
+    const { id: teacherId, affiliatedUniversity } = req.user;
+    const wallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
 
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
     if (wallet.balance <= 0) return res.status(400).json({ message: "No balance to settle" });
 
-    // Check if teacher is affiliated with university
-    if (universityId) {
-      wallet.pendingSettlement = wallet.balance; // store pending amount
+    if (affiliatedUniversity) {
+      // Teacher is university-affiliated → first goes to university
+      wallet.pendingSettlement = wallet.balance;
       wallet.status = "pending_university";
+      wallet.transactions.push({
+        type: "settlement_request",
+        amount: wallet.balance,
+        status: "pending_university",
+        date: new Date(),
+        note: `Settlement request sent to university ${affiliatedUniversity}`,
+      });
       await wallet.save();
       return res.json({ success: true, message: "Settlement request sent to university", wallet });
     }
 
-    // Freelancer teacher → direct Finance Manager
+    // Freelancer → goes directly to finance
     wallet.status = "pending_finance";
+    wallet.transactions.push({
+      type: "settlement_request",
+      amount: wallet.balance,
+      status: "pending_finance",
+      date: new Date(),
+      note: "Settlement request sent directly to Finance Manager",
+    });
     await wallet.save();
+
     res.json({ success: true, message: "Settlement request sent to Finance Manager", wallet });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // ======================
 // University approves teacher settlement

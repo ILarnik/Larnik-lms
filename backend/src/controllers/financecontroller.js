@@ -165,6 +165,38 @@ export const approveSettlement = async (req, res) => {
 };
 
 
+// export const rejectSettlement = async (req, res) => {
+//   try {
+//     const { walletOwnerId, transactionId } = req.body;
+
+//     if (!walletOwnerId || !transactionId) {
+//       return res.status(400).json({ message: "walletOwnerId and transactionId are required" });
+//     }
+
+//     // Validate walletOwnerId as ObjectId
+//     if (!mongoose.Types.ObjectId.isValid(walletOwnerId)) {
+//       return res.status(400).json({ message: "Invalid walletOwnerId" });
+//     }
+
+//     // Find wallet by ownerId
+//     const wallet = await Wallet.findOne({ ownerId: walletOwnerId });
+//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+//     // Find transaction
+//     const transaction = wallet.transactions.id(transactionId);
+//     if (!transaction) return res.status(404).json({ message: "Transaction not found" });
+
+//     // Update status to rejected
+//     transaction.status = "rejected";
+//     await wallet.save();
+
+//     res.json({ success: true, message: "Settlement request rejected", transaction });
+//   } catch (err) {
+//     console.error("Error in rejectSettlement:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const rejectSettlement = async (req, res) => {
   try {
     const { walletOwnerId, transactionId } = req.body;
@@ -173,29 +205,40 @@ export const rejectSettlement = async (req, res) => {
       return res.status(400).json({ message: "walletOwnerId and transactionId are required" });
     }
 
-    // Validate walletOwnerId as ObjectId
-    if (!mongoose.Types.ObjectId.isValid(walletOwnerId)) {
-      return res.status(400).json({ message: "Invalid walletOwnerId" });
+    // 🔎 Try finding wallet across multiple possible ID fields
+    const wallet = await Wallet.findOne({
+      $or: [
+        { ownerId: walletOwnerId },      // for teacher/university wallets
+        { teacherId: walletOwnerId },    // in case teacherId is stored separately
+        { universityId: walletOwnerId }, // for university wallets
+        { referralId: walletOwnerId },   // for referral wallets
+        { _id: walletOwnerId },          // fallback: wallet’s own _id
+      ],
+    });
+
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
     }
 
-    // Find wallet by ownerId
-    const wallet = await Wallet.findOne({ ownerId: walletOwnerId });
-    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-    // Find transaction
+    // ✅ Find transaction inside wallet
     const transaction = wallet.transactions.id(transactionId);
-    if (!transaction) return res.status(404).json({ message: "Transaction not found" });
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
 
-    // Update status to rejected
+    // ✅ Update status
     transaction.status = "rejected";
     await wallet.save();
 
-    res.json({ success: true, message: "Settlement request rejected", transaction });
+    res.json({
+      success: true,
+      message: "Settlement request rejected",
+      transaction,
+    });
   } catch (err) {
     console.error("Error in rejectSettlement:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 
  

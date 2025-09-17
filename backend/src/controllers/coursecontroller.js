@@ -5,6 +5,7 @@ import User from "../models/user.js";
 import crypto from "crypto";
 import { createCertificatePDF } from "../utils/pdfGenerator.js";
 
+
 // --- permission helper: teacher/university owner or superadmin ---
 const canEditCourse = (course, user) => {
   if (!user) return false;
@@ -25,7 +26,7 @@ const canDeleteCourse = (course, user) => {
 };
 
  //--- CREATE COURSE ---
-export const createCourse = async (req, res) => {
+ export const createCourse = async (req, res) => {
   try {
     const {
       category,
@@ -40,6 +41,23 @@ export const createCourse = async (req, res) => {
 
     const teacher = await User.findById(req.user.id);
 
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    let isApprovedByUniversity = false;
+
+    if (teacher.role === "university") {
+      // University creating its own course
+      isApprovedByUniversity = true;
+    } else if (teacher.role === "teacher" && !teacher.affiliatedUniversity) {
+      // Freelancer teacher → wait for superadmin approval later
+      isApprovedByUniversity = false;
+    } else if (teacher.role === "teacher" && teacher.affiliatedUniversity) {
+      // University-affiliated teacher → needs university approval first
+      isApprovedByUniversity = false;
+    }
+
     const course = await Course.create({
       category,
       subCategory,
@@ -51,13 +69,10 @@ export const createCourse = async (req, res) => {
       tags,
       createdBy: req.user.id,
 
-      // ✅ Auto-generated course_id
+      // ✅ Auto-generated unique course ID
       courseuniqueId: crypto.randomBytes(5).toString("hex"),
 
-      isApprovedByUniversity:
-        teacher.role === "university" || !teacher.affiliatedUniversity
-          ? true
-          : false,
+      isApprovedByUniversity,
       isApprovedBySuperAdmin: false,
     });
 
@@ -69,70 +84,76 @@ export const createCourse = async (req, res) => {
     res.status(500).json({ message: e.message });
   }
 };
-// --- APPROVE COURSE ---
-// export const approveCourse = async (req, res) => {
-//   try {
-//     const { courseId } = req.params;
-//     const { action } = req.body;
 
-//     const course = await Course.findById(courseId).populate("createdBy");
-//     if (!course) return res.status(404).json({ message: "Course not found" });
-
-//     if (req.user.role === "university") {
-//       if (
-//         !course.createdBy.affiliatedUniversity ||
-//         String(course.createdBy.affiliatedUniversity) !== String(req.user.id)
-//       ) {
-//         return res
-//           .status(403)
-//           .json({ message: "You can only approve courses from your teachers" });
-//       }
-//       course.isApprovedByUniversity = action === "approve";
-//     } else if (req.user.role === "superadmin") {
-//       course.isApprovedBySuperAdmin = action === "approve";
-//     } else {
-//       return res.status(403).json({ message: "Not allowed to approve" });
-//     }
-
-//     if (!course.createdBy.affiliatedUniversity) {
-//       course.isApproved = course.isApprovedBySuperAdmin;
-//     } else {
-//       course.isApproved = course.isApprovedByUniversity && course.isApprovedBySuperAdmin;
-//     }
-
-//     await course.save();
-//     res.json({ message: `Course ${action}d successfully`, course });
-//   } catch (e) {
-//     res.status(500).json({ message: e.message });
-//   }
-// };
-
-export const approveCourse = async (req, res) => {
+ 
+ export const approveCourse = async (req, res) => {
   try {
     const { id } = req.params;
     const { status, note } = req.body;
+    const userRole = req.user.role; // from authMiddleware
 
-    const course = await Course.findById(id);
+    const course = await Course.findById(id).populate("createdBy university");
     if (!course) return res.status(404).json({ message: "Course not found" });
 
-    if (status === "approved") {
-      course.isApprovedBySuperAdmin = true;
-      course.rejectionNote = null;
-    } else if (status === "rejected") {
-      course.isApprovedBySuperAdmin = false;
-      course.rejectionNote = note || "Rejected by superadmin";
-    } else {
+    if (status !== "approved" && status !== "rejected") {
       return res.status(400).json({ message: "Invalid status" });
+    }
+
+    // Check if it's a freelancer course (no university assigned)
+    const isFreelancerCourse =
+      !course.university && course.createdBy.role === "teacher";
+
+    // --- UNIVERSITY APPROVAL ---
+    if (userRole === "university") {
+      if (isFreelancerCourse) {
+        return res.status(403).json({
+          message: "University cannot approve freelancer courses",
+        });
+      }
+
+      if (status === "approved") {
+        course.isApprovedByUniversity = true;
+        course.rejectionNote = null;
+      } else {
+        course.isApprovedByUniversity = false;
+        course.rejectionNote = note || "Rejected by university";
+      }
+    }
+
+    // --- SUPERADMIN APPROVAL ---
+    if (userRole === "superadmin") {
+      if (isFreelancerCourse) {
+        // Freelancer: auto-mark university as approved
+        course.isApprovedByUniversity = true;
+      } else {
+        // Affiliated: require university approval first
+        if (!course.isApprovedByUniversity) {
+          return res.status(400).json({
+            message: "University must approve this course first",
+          });
+        }
+      }
+
+      if (status === "approved") {
+        course.isApprovedBySuperAdmin = true;
+        course.rejectionNote = null;
+      } else {
+        course.isApprovedBySuperAdmin = false;
+        course.rejectionNote = note || "Rejected by superadmin";
+      }
     }
 
     await course.save();
 
-    res.json({ message: `Course ${status} successfully`, course });
+    res.json({
+      message: `Course ${status} by ${userRole}`,
+      course,
+    });
   } catch (error) {
+    console.error("Error in approveCourse:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // --- GET All  COURSES ---
 export const getCourses = async (_req, res) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import FinanceSettlementDashboard from "../components/dashboard components/FinanceSettlementDashboard.jsx";
+import FinanceSettlementDashboard from "../components/dashboard_components/FinanceSettlementDashboard.jsx";
 
 
 export default function Financemanagerpage(){

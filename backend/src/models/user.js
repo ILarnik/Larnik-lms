@@ -31,6 +31,12 @@ const userSchema = new mongoose.Schema(
 
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 
+    affiliatedUniversity: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User", // or "University" if you made a separate University model
+  default: null,
+},
+
     dynamicSubRole: {
       type: String,
       enum: ["writer", "reviewer"],

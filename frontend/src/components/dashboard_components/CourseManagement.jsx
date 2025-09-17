@@ -350,11 +350,11 @@
 // }
 
 import React from "react";
-import ApproveCourse from "../course management/ApproveCourse";
-import CourseList from "../course management/CourseList";
-import CreateCourse from "../course management/CreateCourse";
-import ManageModules from "../course management/ManageModules";
-import SubmitExam from "../course management/SubmitExam";
+import ApproveCourse from "../course_management/ApproveCourse";
+import CourseList from "../course_management/CourseList";
+import CreateCourse from "../course_management/CreateCourse";
+import ManageModules from "../course_management/ManageModules";
+import SubmitExam from "../course_management/SubmitExam";
 // import CreateCourse from "./CreateCourse";
 // import CourseList from "./CourseList";
 // import ApproveCourse from "./ApproveCourse";

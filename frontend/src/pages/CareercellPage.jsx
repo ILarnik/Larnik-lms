@@ -1,4 +1,4 @@
-import CareerCelldashboard from "../components/dashboard components/CareerCelldashboard"
+import CareerCelldashboard from "../components/dashboard_components/CareerCelldashboard"
 
 export default function Careercellpage(){
 

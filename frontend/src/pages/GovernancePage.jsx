@@ -1,4 +1,4 @@
-import GovernanceDashboard from "../components/dashboard components/GovernanceDashboard"
+import GovernanceDashboard from "../components/dashboard_components/GovernanceDashboard"
 
 export default function GovernancePage(){
 

@@ -4,7 +4,7 @@
 import crypto from "crypto";
 import path from "path";
 import { createCertificatePDF } from "../utils/pdfGenerator.js";
-
+import  {generateQrBuffer}  from "../utils/qrGenerator.js";
 /**
  * ==========================
  * CREATE A CERTIFICATE TEMPLATE

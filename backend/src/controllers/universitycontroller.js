@@ -248,3 +248,16 @@ export const exportAnalyticsPDF = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+export const getAffiliatedTeachers = async (req, res) => {
+  try {
+    const universityId = req.user.id; // logged in university
+    const teachers = await User.find({
+      role: "teacher",
+      affiliatedUniversity: universityId,
+    }).select("name email status createdAt");
+
+    res.json({ teachers });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

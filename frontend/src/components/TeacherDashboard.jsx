@@ -382,11 +382,11 @@ import {
 } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CreateCourse from "./course management/CreateCourse";
-import CourseList from "./course management/CourseList";
-import ApproveCourse from "./course management/ApproveCourse";
-import ManageModules from "./course management/ManageModules";
-import SubmitExam from "./course management/SubmitExam";
+import CreateCourse from "./course_management/CreateCourse";
+import CourseList from "./course_management/CourseList";
+import ApproveCourse from "./course_management/ApproveCourse";
+import ManageModules from "./course_management/ManageModules";
+import SubmitExam from "./course_management/SubmitExam";
 
 // ✅ Import only TeacherCertificates for issuing certificates
 import TeacherCertificates from "../pages/TeacherCertificatepage";
@@ -766,3 +766,6 @@ export default function TeacherDashboard() {
     </div>
   );
 }
+
+         
+

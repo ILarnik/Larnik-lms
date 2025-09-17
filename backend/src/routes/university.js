@@ -13,7 +13,8 @@ import {
   getUniversityAnalytics,
    
   exportAnalyticsExcel,
-  exportAnalyticsPDF
+  exportAnalyticsPDF,
+  getAffiliatedTeachers
 
 } from "../controllers/universitycontroller.js";
 
@@ -31,6 +32,9 @@ router.put("/review-course/:courseId", authMiddleware, allowRoles("university"),
 
 // --- Revenue ---
 router.get("/revenue", authMiddleware, allowRoles("university"), myRevenue);
+
+router.get("/AffiliatedTeachers", authMiddleware, allowRoles("university"), getAffiliatedTeachers);
+
 
 // --- Enrolled Students ---
 router.get("/students/:courseId", authMiddleware, allowRoles("university"), enrolledStudents);

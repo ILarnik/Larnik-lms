@@ -1,4 +1,4 @@
-import ReferralPartnerDashboard  from "../components/dashboard components/ReferralPartnerDashboard"
+import ReferralPartnerDashboard  from "../components/dashboard_components/ReferralPartnerDashboard"
 
 export default function ReferralPage(){
 

@@ -132,7 +132,7 @@ export const getApproveCourses = () => API.get("/courses/getApproveCourses");
 
 // ✅ Approve Course (university/superadmin)
 export const approveCourses = (courseId, action) =>
-  API.put(`/courses/${courseId}/approve`, { action });
+  API.patch(`/courses/${courseId}/approve`, { action });
 
 // ✅ Add Module
 export const addModule = (courseId, data) =>
@@ -291,8 +291,11 @@ export const universityApproveSettlement = (data) =>
   });
 };
 
-export const rejectSettlement = ({ walletOwnerId, transactionId }) => {
-  return API.post("/wallet/settlement/reject", { walletOwnerId, transactionId });
+ export const rejectSettlement = ({ walletOwnerId, transactionId }) => {
+  return API.post("/wallet/settlement/reject", {
+    walletOwnerId,
+    transactionId,
+  });
 };
 // ======================
 // Wallet Credit/Debit (Finance Manager only)

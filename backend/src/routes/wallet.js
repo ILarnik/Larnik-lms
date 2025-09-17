@@ -10,7 +10,7 @@ import {
 } from "../controllers/walletController.js";
 
 import { referralRequestSettlement } from "../controllers/referralPartnerController.js";
-import { approveSettlement } from "../controllers/financecontroller.js";
+import { approveSettlement,rejectSettlement } from "../controllers/financecontroller.js";
 
 const router = express.Router();
 
@@ -21,6 +21,13 @@ router.post("/settlement/request", authMiddleware, allowRoles("teacher"), reques
 router.post("/settlement/request", authMiddleware, allowRoles("university"), requestSettlement);
 
 router.post("/settlement/approve", authMiddleware, allowRoles("finance_manager","sub-admin"), approveSettlement);
+ 
+router.post(
+  "/settlement/reject",
+  authMiddleware,
+  allowRoles("finance_manager", "sub-admin"),
+  rejectSettlement
+);
 
 
 // router.post("/pending-settlements", authMiddleware, allowRoles("finance_manager"), approveSettlement);

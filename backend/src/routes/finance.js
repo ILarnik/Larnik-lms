@@ -16,16 +16,16 @@ router.get(
   getPendingSettlements
 );
 
-// Approve settlement (Finance Manager)
-router.post("/approve", authMiddleware, allowRoles("finance_manager","sub-admin"), approveSettlement);
+// // Approve settlement (Finance Manager)
+// router.post("/approve", authMiddleware, allowRoles("finance_manager","sub-admin"), approveSettlement);
 
  
-router.post(
-  "/settlement/reject",
-  authMiddleware,
-  allowRoles("finance_manager", "sub-admin"),
-  rejectSettlement
-);
+// router.post(
+//   "/settlement/reject",
+//   authMiddleware,
+//   allowRoles("finance_manager", "sub-admin"),
+//   rejectSettlement
+// );
 // Manual credit/debit (Finance Manager)
 // router.post("/credit", authMiddleware, allowRoles("finance_manager"), creditWallet);
 // router.post("/debit", authMiddleware, allowRoles("finance_manager"), debitWallet);

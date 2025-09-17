@@ -4,11 +4,11 @@ import { Users, BookOpen, Award, FileText, BarChart } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 // Course management components
-import ApproveCourse from "../course management/ApproveCourse";
-import CourseList from "../course management/CourseList";
-import CreateCourse from "../course management/CreateCourse";
-import ManageModules from "../course management/ManageModules";
-import SubmitExam from "../course management/SubmitExam";
+import ApproveCourse from "../course_management/ApproveCourse";
+import CourseList from "../course_management/CourseList";
+import CreateCourse from "../course_management/CreateCourse";
+import ManageModules from "../course_management/ManageModules";
+import SubmitExam from "../course_management/SubmitExam";
 
 // Certificate management
 import CertificateManagerPage from "../../pages/Certificatepage";
