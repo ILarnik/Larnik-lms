@@ -11,6 +11,7 @@ import {
   approveCertificate,
   uploadSignature,
   downloadCertificate,
+  getTemplateById
 } from "../../src/controllers/certificateController.js";
 
 import { allowRoles } from "../middleware/rbac.js";
@@ -79,11 +80,13 @@ router.patch(
  * STUDENT VIEW CERTIFICATES
  * ==========================
  */
-router.get("/my", authMiddleware, getCertificatesByStudent);
+router.get("/my", authMiddleware,allowRoles("student"),getCertificatesByStudent);
 
 
-router.get("/my/download/:id", authMiddleware, downloadCertificate);
+router.get("/my/download/:id", authMiddleware,allowRoles("student"), downloadCertificate);
 
+router.get("/templates/:id", authMiddleware,allowRoles("teacher", "university","superadmin"),  getTemplateById);
+ 
 
 
 /**

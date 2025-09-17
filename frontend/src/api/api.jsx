@@ -388,7 +388,15 @@ export const exportAnalyticsPDF = () =>
 export const exportAnalyticsExcel = () =>
   API.get("/university/analytics/export/excel", { responseType: "blob" });
 
-
+export const getAffiliatedTeachers = async () => {
+  try {
+    const { data } = await API.get("/AffiliatedTeachers");
+    return data;
+  } catch (error) {
+    console.error("Error fetching affiliated teachers:", error);
+    throw error.response?.data || { message: "Server error" };
+  }
+};
 
 
 //referral partner API

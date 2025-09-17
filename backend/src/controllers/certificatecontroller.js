@@ -178,20 +178,7 @@ export async function downloadCertificate(req, res) {
     res.status(500).send("Server error");
   }
 }
-// export async function getCertificatesByStudent(req, res) {
-//   try {
-//     const studentEmail = req.user?.id;
-//     if (!studentEmail)
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-
-//     const certs = await IssuedCertificate.find({ studentEmail, status: "approved" }).sort({ issuedAt: -1 });
-
-//     return res.json({ success: true, certificates: certs });
-//   } catch (err) {
-//     console.error("getCertificatesByStudent error:", err);
-//     return res.status(500).json({ success: false, message: "Server error" });
-//   }
-// }
+ 
 export async function getCertificatesByStudent(req, res) {
   try {
     const studentEmail = req.user?.email;
@@ -378,5 +365,41 @@ export async function uploadSignature(req, res) {
   } catch (err) {
     console.error("uploadSignature error:", err);
     return res.status(500).json({ success: false });
+  }
+}
+/**
+ * ==========================
+ * GET CERTIFICATE BY ID or UNIQUE ID
+ * GET /api/certificates/:id
+ * ==========================
+ */
+ /**
+ * ==========================
+ * GET CERTIFICATE TEMPLATE BY ID
+ * GET /api/certificates/templates/:id
+ * ==========================
+ */
+export async function getTemplateById(req, res) {
+  try {
+    const { id } = req.params;
+
+    const template = await certificatetemplates.findById(_id);
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      template,
+    });
+  } catch (err) {
+    console.error("getTemplateById error:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error while fetching template" });
   }
 }
