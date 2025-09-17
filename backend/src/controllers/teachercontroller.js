@@ -1,6 +1,7 @@
 // controllers/teacherController.js
 import User from "../models/user.js";
 import Course from "../models/course.js";
+import wallet from "../models/wallet.js";
 //import Payment from "../models/payment.js";
 
 // ✅ Get my teacher profile
@@ -34,28 +35,89 @@ export const updateProfile = async (req, res) => {
 };
 
 // ✅ Get my uploaded courses
-export const myCourses = async (req, res) => {
+ // Get courses created by the logged-in teacher
+export const getMyCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ createdBy: req.user.id });
-    res.json(courses);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const teacherId = req.user.id;
+
+    // Find courses created by this teacher
+    const courses = await Course.find({ createdBy: teacherId });
+
+    if (!courses || courses.length === 0) {
+      return res.status(404).json({ message: "No courses found" });
+    }
+
+    res.status(200).json({ success: true, courses });
+  } catch (error) {
+    console.error("Error fetching teacher's courses:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
 // ✅ Get earnings summary
-export const myEarnings = async (req, res) => {
+ export const myEarnings = async (req, res) => {
   try {
-    // total successful payments where course createdBy = me
+    // 1️⃣ Get courses created by this teacher
     const myCourses = await Course.find({ createdBy: req.user.id }).select("_id");
-    const ids = myCourses.map(c => c._id);
+    const courseIds = myCourses.map(c => c._id);
 
-    const payments = await Payment.find({ course: { $in: ids }, status: "success" });
+    // 2️⃣ Get all successful payments for these courses
+    const payments = await wallet.find({ course: { $in: courseIds }, status: "success" });
 
+    // 3️⃣ Calculate total earnings
     const totalEarnings = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-    res.json({ totalEarnings, payments });
+    res.status(200).json({ success: true, totalEarnings, payments });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Error fetching earnings:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+//  export const getCourseReviews = async (req, res) => {
+//   try {
+//     const teacherId = req.user.id;
+
+//     // Find courses created by this teacher
+//     const courses = await Course.find({ createdBy: teacherId }).populate({
+//       path: "reviews.student",
+//       select: "name email",
+//     });
+
+//     const allReviews = courses.map((course) => ({
+//       courseId: course._id,
+//       courseTitle: course.title,
+//       reviews: course.reviews,
+//     }));
+
+//     res.json({ success: true, reviews: allReviews });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch reviews", details: err.message });
+//   }
+// };
+
+
+export const getCourseReviews = async (req, res) => {
+  try {
+    const teacherId = req.user.id;
+
+    const courses = await Course.find({ createdBy: teacherId }).populate({
+      path: "reviews.student",
+      select: "name email",
+    });
+
+    const allReviews = courses
+      .map(course => ({
+        courseId: course._id,
+        courseTitle: course.title,
+        reviews: course.reviews || [],
+      }))
+      .filter(course => course.reviews.length > 0);
+
+    res.status(200).json(allReviews);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({ error: "Failed to fetch reviews", details: err.message });
   }
 };

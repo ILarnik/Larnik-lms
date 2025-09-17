@@ -124,7 +124,7 @@ export const deleteUsers = (id) => API.delete(`/users/${id}`);
 /* ----------------------- COURSE APIs ----------------------- */
 
 // ✅ Create Course (teacher/university)
-export const createCourse = (data) => API.post("/courses", data);
+// export const createCourse = (data) => API.post("/courses", data);
 
 // ✅ Get approved courses (public)
 export const getCourses = () => API.get("/courses/getCourses");
@@ -181,56 +181,91 @@ export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
 
 /* ====================== CERTIFICATE APIs ====================== */
 
-// ✅ Create Certificate Template
-export const createCertificateTemplate = (data) =>
-  API.post("/certificates/templates", data);
+// // ✅ Create Certificate Template
+// export const createCertificateTemplate = (data) =>
+//   API.post("/certificates/templates", data);
 
-// ✅ Get All Templates
-export const getCertificateTemplates = () =>
-  API.get("/certificates/templates");
+// // ✅ Get All Templates
+// export const getCertificateTemplates = () =>
+//   API.get("/certificates/templates");
 
 
+// // export const getCertificates = () =>
+// //   API.get("/certificates/mine"); // endpoint returns certificates for the logged-in student
+
+// // ✅ Delete Template
+// export const deleteCertificateTemplate = (id) =>
+//   API.delete(`/certificates/templates/${id}`);
+
+
+
+// // ✅ Update Certificate Template
+// export const updateCertificateTemplate = (templateId, data) =>
+//   API.put(`/certificates/templates/${templateId}`, data);
+
+// // ✅ Upload a Signature (SuperAdmin/University only)
+// // data = FormData with signature, name, title
+// export const uploadSignature = (templateId, data) =>
+//   API.post(`/certificates/signatures/${templateId}`, data, {
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+
+// // ✅ Issue Certificate (auto after exam OR manually by authorized roles)
+// export const issueCertificate = (data) =>
+//   API.post("/certificates/issue", data);
+
+// // ✅ Validate Certificate (Public check by uniqueId)
+// export const validateCertificate = (uniqueId) =>
+//   API.get(`/certificates/validate/${uniqueId}`);
+
+// // ✅ Approve Certificate (Governance body)
+// export const approveCertificate = (uniqueId) =>
+//   API.patch(`/certificates/validate/${uniqueId}`);
+
+// // ✅ Get My Certificates (Student)
 // export const getCertificates = () =>
-//   API.get("/certificates/mine"); // endpoint returns certificates for the logged-in student
+//   API.get("/certificates/MY");
 
-// ✅ Delete Template
-export const deleteCertificateTemplate = (id) =>
-  API.delete(`/certificates/templates/${id}`);
+// // ✅ Get Certificates for a Student (SuperAdmin/University)
+// export const getCertificatesByStudent = (studentId) =>
+//   API.get(`/certificates/student/${studentId}`);
 
 
+ 
 
-// ✅ Update Certificate Template
+/* ===================== CERTIFICATE APIS ===================== */
+
+// ✅ Update Certificate Template (Superadmin only)
 export const updateCertificateTemplate = (templateId, data) =>
   API.put(`/certificates/templates/${templateId}`, data);
 
-// ✅ Upload a Signature (SuperAdmin/University only)
-// data = FormData with signature, name, title
-export const uploadSignature = (templateId, data) =>
-  API.post(`/certificates/signatures/${templateId}`, data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
-// ✅ Issue Certificate (auto after exam OR manually by authorized roles)
+// ✅ Issue Certificate (Teacher/University)
 export const issueCertificate = (data) =>
   API.post("/certificates/issue", data);
 
-// ✅ Validate Certificate (Public check by uniqueId)
+// ✅ Approve Certificate (University/Superadmin)
+export const approveCertificate = (certificateId) =>
+  API.patch(`/certificates/approve/${certificateId}`);
+
+// ✅ Reject Certificate (University/Superadmin)
+export const rejectCertificate = (certificateId) =>
+  API.patch(`/certificates/reject/${certificateId}`);
+
+// ✅ Get Certificates of logged-in Student
+export const getCertificates = () =>
+  API.get("/certificates/my");
+
+// ✅ Download a Certificate (student)
+export const downloadCertificate = (certificateId) =>
+  API.get(`/certificates/download/${certificateId}`, { responseType: "blob" });
+
+// ✅ Validate Certificate (Public access via uniqueId/QR)
 export const validateCertificate = (uniqueId) =>
   API.get(`/certificates/validate/${uniqueId}`);
 
-// ✅ Approve Certificate (Governance body)
-export const approveCertificate = (uniqueId) =>
-  API.patch(`/certificates/validate/${uniqueId}`);
-
-// ✅ Get My Certificates (Student)
-export const getCertificates = () =>
-  API.get("/certificates/MY");
-
-// ✅ Get Certificates for a Student (SuperAdmin/University)
-export const getCertificatesByStudent = (studentId) =>
-  API.get(`/certificates/student/${studentId}`);
-
-
+// Optional: Get Certificate Template by ID (for teacher/university/superadmin)
+export const getCertificateTemplateById = (templateId) =>
+  API.get(`/certificates/templates/${templateId}`);
 
 
 
@@ -408,3 +443,36 @@ export const getMyEarnings = () => API.get("/referralpartner/earnings");
 export const requestReferralSettlement = () => API.post("/referralpartner/settlement");
 export const updateReferralProfile = (data) =>
   API.put("/referralpartner/profile", data);
+
+
+
+// ===================== TEACHER APIs =====================
+// export const getTeacherProfile = () => API.get("/profile");
+// export const updateTeacherProfile = (data) => API.put("/profile", data);
+
+// // ---------------- My Courses ----------------
+// export const getTeacherCourses = () => API.get("/my-courses");
+
+// // ---------------- Earnings ----------------
+// export const getTeacherEarnings = () => API.get("/earnings");
+
+// // ---------------- Reviews ----------------
+// export const getTeacherReviews = () => API.get("/teacher/reviews");
+
+// ===================== TEACHER APIs =====================
+export const getTeacherProfile = () => API.get("/teacher/profile");
+export const updateTeacherProfile = (data) => API.put("/teacher/profile", data);
+
+// My Courses
+export const getTeacherCourses = () => API.get("/teacher/my-courses");
+
+// Earnings
+export const getTeacherEarnings = () => API.get("/teacher/earnings");
+
+// Reviews
+export const getTeacherReviews = () => API.get("/teacher/reviews");
+
+// Create Course
+export const createCourse = (data) => API.post("/teacher", data);
+
+ 

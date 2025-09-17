@@ -57,7 +57,7 @@ app.use(
  // JSON parser first
 
 app.use("/api/mou", mouRoutes);
-app.use("/api/courses", courseRoutes);
+//app.use("/api/courses", courseRoutes);
 
 app.use(express.json({ limit: "2mb" }));
 
@@ -89,6 +89,7 @@ app.get("/healthz", (req, res) => res.json({ ok: true }));
 // -------------------
 app.use("/api/auth", authRoutes); //done
 app.use("/api/superadmin", superAdminRoutes); //DONE
+app.use("/api/courses", courseRoutes);
 // console.log("✅ superAdminRoutes loaded");
 // app.use("/api/courses", courseRoutes);
 app.use("/api/teacher", teacherRoutes);

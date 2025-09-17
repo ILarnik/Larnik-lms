@@ -6,11 +6,12 @@ import {
   createManager,
   getUsersByRole,
   approveUser,
-  approveCourse,
+  //approveCourse,
   approveUniversity,
   deleteUser, updateSubRole
  
 } from "../controllers/superAdminController.js";
+import { approveCourse } from "../controllers/coursecontroller.js";
 const router = express.Router();
 
 // 1️⃣ Create fixed sub-admin (blog_manager, finance_manager, governance, role_manager)
@@ -48,14 +49,7 @@ router.patch(
   approveUser
 );
 
-router.patch(
-  "/approve/course/:id",
-  authMiddleware,
-  allowRoles("superadmin"),
-  requireApproved(),
-  approveCourse
-);
-
+ 
 router.patch(
   "/approve/university/:id",
   authMiddleware,
@@ -64,13 +58,14 @@ router.patch(
   approveUniversity
 );
 
+router.patch(
+  "/superadmin/approve/course/:id",
+  authMiddleware,
+  allowRoles("superadmin", "university"),
+  approveCourse
+);
 
 
-// inside router.get("/reports")
-// router.get("/reports", (req, res, next) => {
-//   console.log("📊 Reports route triggered");
-//   next();
-// }, authMiddleware, allowRoles("superadmin"), getReports);
  
 
 

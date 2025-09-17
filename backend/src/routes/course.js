@@ -1,13 +1,13 @@
  import express from "express";
 import {
-  createCourse,
+  //createCourse,
   approveCourse,
   getCourses,
   getApproveCourses,
-  addModule,
-  addVideo,
-  addNotes,
-  addMcqs,
+  //addModule,
+  //addVideo,
+  //addNotes,
+  //addMcqs,
   submitExam,
   deleteCourse,
 } from "../controllers/coursecontroller.js";
@@ -18,12 +18,12 @@ import { uploadVideo, uploadNotes } from "../utils/uploadCourse.js";
 const router = express.Router();
 
 // CREATE COURSE
-router.post(
-  "/",
-  authMiddleware,
-  allowRoles("teacher", "university", "superadmin"),
-  createCourse
-);
+// router.post(
+//   "/",
+//   authMiddleware,
+//   allowRoles("teacher", "university", "superadmin"),
+//   createCourse
+// );
 
 // GET COURSES
 router.get("/getCourses", getCourses);
@@ -37,40 +37,40 @@ router.patch(
   approveCourse
 );
 
-// MODULES
-router.post(
-  "/:courseId/module",
-  authMiddleware,
-  allowRoles("teacher", "university"),
-  addModule
-);
+// // MODULES
+// router.post(
+//   "/:courseId/module",
+//   authMiddleware,
+//   allowRoles("teacher", "university"),
+//   addModule
+// );
 
-// VIDEOS
-router.post(
-  "/:courseId/module/:moduleId/video",
-  authMiddleware,
-  allowRoles("teacher", "university"),
-  uploadVideo.single("video"),
-  addVideo
-);
+// // VIDEOS
+// router.post(
+//   "/:courseId/module/:moduleId/video",
+//   authMiddleware,
+//   allowRoles("teacher", "university"),
+//   uploadVideo.single("video"),
+//   addVideo
+// );
 
-// NOTES
-router.post(
-  "/:courseId/module/:moduleId/notes",
-  authMiddleware,
-  allowRoles("teacher", "university"),
-  uploadNotes.single("notes"),
-  addNotes
-);
+// // NOTES
+// router.post(
+//   "/:courseId/module/:moduleId/notes",
+//   authMiddleware,
+//   allowRoles("teacher", "university"),
+//   uploadNotes.single("notes"),
+//   addNotes
+// );
 
-// MCQS
-router.post(
-  "/:courseId/module/:moduleId/mcqs",
-  authMiddleware,
-  allowRoles("teacher", "university"),
-    // uploadmcqs.single("mcqs"),
-  addMcqs
-);
+// // MCQS
+// router.post(
+//   "/:courseId/module/:moduleId/mcqs",
+//   authMiddleware,
+//   allowRoles("teacher", "university"),
+//     // uploadmcqs.single("mcqs"),
+//   addMcqs
+// );
 
 // EXAM
 router.post(

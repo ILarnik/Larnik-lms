@@ -1,9 +1,9 @@
  import React, { useEffect, useState } from "react";
 import {
-  createCertificateTemplate,
-  uploadSignature,
-  getCertificateTemplates,
-  deleteCertificateTemplate,
+  //createCertificateTemplate,
+  //uploadSignature,
+  //getCertificateTemplates,
+ // deleteCertificateTemplate,
   getCertificates,
   issueCertificate,
 } from "../api/api.jsx";

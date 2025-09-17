@@ -1,28 +1,24 @@
  // src/pages/StudentDashboard.jsx
 import React, { useEffect, useState } from "react";
-
-import { User, BookOpen, ClipboardList, Star } from "lucide-react";
+import { User, ClipboardList, Star } from "lucide-react";
 import {
   getStudentProfile,
   updateStudentProfile,
-  getAvailableCourses,
-  enrollInCourse,
   getMyCourses,
-  submitReview
+  submitReview,
+  getCertificates,
+  downloadCertificate
 } from "../api/api"; // ✅ corrected path
 import StudentCertificate from "../pages/StudentCertificate";
+ 
 
 export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [profile, setProfile] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [availableCourses, setAvailableCourses] = useState([]);
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
   const [myCourses, setMyCourses] = useState([]);
   const [reviewCourse, setReviewCourse] = useState("");
-  const [reviewText, setReviewText] = useState("");
+  const [reviewText, setReviewText] = useState([]);
+  const [certificates, setCertificates] = useState([]);
 
   // ---------------- Profile ----------------
   const fetchProfile = async () => {
@@ -48,34 +44,13 @@ export default function StudentDashboard() {
     }
   };
 
-  // ---------------- Courses ----------------
-  const fetchAvailableCourses = async () => {
-    try {
-      const { data } = await getAvailableCourses();
-      setAvailableCourses(data);
-    } catch (err) {
-      console.error("Failed to fetch courses", err);
-    }
-  };
-
+  // ---------------- My Courses ----------------
   const fetchMyCourses = async () => {
     try {
       const { data } = await getMyCourses();
-      setMyCourses(data);
-      console.log("Fetched my courses:", data);
-      
-      
+      if (data.success) setMyCourses(data.courses);
     } catch (err) {
       console.error("Failed to fetch my courses", err);
-    }
-  };
-
-  const handleEnroll = async (courseId) => {
-    try {
-      await enrollInCourse(courseId);
-      fetchMyCourses();
-    } catch (err) {
-      console.error("Enrollment failed", err);
     }
   };
 
@@ -91,15 +66,36 @@ export default function StudentDashboard() {
     }
   };
 
+  // ---------------- Certificates ----------------
+  const fetchCertificates = async () => {
+    try {
+      const { data } = await getCertificates();
+      if (data.success) setCertificates(data.certificates);
+    } catch (err) {
+      console.error("Failed to fetch certificates", err);
+    }
+  };
+
+  const handleDownloadCertificate = async (certId) => {
+    try {
+      const res = await downloadCertificate(certId);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${certId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (err) {
+      console.error("Download failed", err);
+    }
+  };
+
   // ---------------- Effects ----------------
   useEffect(() => {
     if (activeTab === "profile") fetchProfile();
-    if (activeTab === "courses") fetchAvailableCourses();
     if (activeTab === "mycourses") fetchMyCourses();
+    if (activeTab === "certificates") fetchCertificates();
   }, [activeTab]);
-
-  useEffect(() => { console.log(myCourses,"my courses in useEffect");
-  ; }, [myCourses]);
 
   // ---------------- Render ----------------
   return (
@@ -110,10 +106,9 @@ export default function StudentDashboard() {
       <div className="flex gap-4 border-b mb-6">
         {[
           { key: "profile", label: "Profile", icon: <User size={18} /> },
-          { key: "courses", label: "Available Courses", icon: <BookOpen size={18} /> },
           { key: "mycourses", label: "My Courses", icon: <ClipboardList size={18} /> },
           { key: "reviews", label: "Reviews", icon: <Star size={18} /> },
-          { key: "certificates", label: "Certificates", icon: <ClipboardList size={18} /> }, // ✅ new tab
+          { key: "certificates", label: "Certificates", icon: <ClipboardList size={18} /> },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -167,33 +162,8 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      {/* Available Courses */}
-      {activeTab === "courses" && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg">Available Courses</h2>
-          {availableCourses.map((c) => (
-            <div
-              key={c._id}
-              className="border p-4 rounded-lg flex justify-between items-center"
-            >
-              <div>
-                <h3 className="font-bold">{c.title}</h3>
-                <p>{c.description}</p>
-                <p className="text-sm text-gray-600">Duration: {c.duration}</p>
-              </div>
-              <button
-                onClick={() => handleEnroll(c._id)}
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                Enroll
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* My Courses */}
-      {activeTab === "mycourses" && (        
+      {/* My Courses Tab */}
+      {activeTab === "mycourses" && (
         <div className="space-y-4">
           <h2 className="font-semibold text-lg">My Courses</h2>
           {myCourses.map((c) => (
@@ -205,7 +175,7 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      {/* Reviews */}
+      {/* Reviews Tab */}
       {activeTab === "reviews" && (
         <div className="bg-white shadow rounded-xl p-6 space-y-3">
           <h2 className="font-semibold">Leave a Review</h2>
@@ -237,12 +207,26 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      {/* Certificates */}
+      {/* Certificates Tab */}
       {activeTab === "certificates" && (
-        <div className="bg-red-500">
-          <StudentCertificate />
+        <div className="space-y-4">
+          <h2 className="font-semibold text-lg">My Certificates</h2>
+          {certificates.map((cert) => (
+            <div
+              key={cert._id}
+              className="border p-4 rounded-lg flex justify-between items-center"
+            >
+              <p>{cert.courseTitle}</p>
+              <button
+                onClick={() => handleDownloadCertificate(cert._id)}
+                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Download
+              </button>
+            </div>
+          ))}
         </div>
-          )}
+      )}
     </div>
   );
 }

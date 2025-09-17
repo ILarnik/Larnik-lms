@@ -18,6 +18,7 @@ import {
 
 } from "../controllers/universitycontroller.js";
 
+import { approveCourse ,deleteCourse} from "../controllers/coursecontroller.js";
 const router = express.Router();
 
 // --- University Profile ---
@@ -45,5 +46,19 @@ router.get("/certificates", authMiddleware, allowRoles("university"), myCertific
 router.get("/analytics", authMiddleware, allowRoles("university"), getUniversityAnalytics);
 router.get("/analytics/export/excel", exportAnalyticsExcel);
 router.get("/analytics/export/pdf", exportAnalyticsPDF);
+
+router.patch(
+  "/superadmin/approve/course/:id",
+  authMiddleware,
+  allowRoles("superadmin", "university"),
+  approveCourse
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  allowRoles("teacher", "university", "superadmin"),
+  deleteCourse
+);
+
 
 export default router;
