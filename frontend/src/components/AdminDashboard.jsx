@@ -1,4 +1,4 @@
- import React, { useState } from "react";
+ import React, { useState, useEffect } from "react";
 import {
   Home,
   Users,
@@ -30,6 +30,16 @@ import ReportsDashboard from "./dashboard_components/ReportsDashboard.jsx";
 import CertificateManagerPage from "../pages/certificatepage";
 import GovernanceDashboard from "./dashboard_components/GovernanceDashboard";
 
+// ✅ Import APIs
+import {
+  getStudents,
+  getTeachers,
+  getUniversity,
+  getReferral,
+   
+  getSubAdmins,
+} from "../api/api"; // adjust path if needed
+
 // Sidebar menu structure
 const menuItems = [
   { title: "Dashboard", icon: <Home size={18} /> },
@@ -55,17 +65,49 @@ const menuItems = [
   { title: "doc uni", icon: <Landmark size={18} /> },
 ];
 
-// Dashboard cards
-const card = [
-  { title: "45,892", subtitle: "Total Users", data: "12", icon: Users, colour: "red" },
-  { title: "3,247", subtitle: "Total Courses", data: "8", icon: BookOpen, colour: "green" },
-  { title: "$12.5M", subtitle: "Platform Revenue", data: "15", icon: DollarSign, colour: "orange" },
-  { title: "8,945", subtitle: "Active Sessions", data: "5", icon: Globe, colour: "blue" },
-];
-
 export default function AdminDashboard() {
   const [openSections, setOpenSections] = useState({});
   const [activeItem, setActiveItem] = useState("Dashboard");
+
+  // ✅ Store counts
+  const [counts, setCounts] = useState({
+    students: 0,
+    teachers: 0,
+    universities: 0,
+    referrals: 0,
+     
+    subadmins: 0,
+  });
+
+  // ✅ Fetch counts from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [studentsRes, teachersRes, uniRes, referralRes,   subadminRes] =
+          await Promise.all([
+            getStudents(),
+            getTeachers(),
+            getUniversity(),
+            getReferral(),
+            
+            getSubAdmins(),
+          ]);
+
+        setCounts({
+          students: studentsRes?.data?.length || 0,
+          teachers: teachersRes?.data?.length || 0,
+          universities: uniRes?.data?.length || 0,
+          referrals: referralRes?.data?.length || 0,
+          
+          subadmins: subadminRes?.data?.length || 0,
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const toggleSection = (title) =>
     setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
@@ -90,9 +132,7 @@ export default function AdminDashboard() {
               {item.icon}
               <span className="flex-1">{item.title}</span>
               {item.children && (
-                <span className="text-xs">
-                  {openSections[item.title] ? "▲" : "▼"}
-                </span>
+                <span className="text-xs">{openSections[item.title] ? "▲" : "▼"}</span>
               )}
             </div>
 
@@ -149,16 +189,14 @@ export default function AdminDashboard() {
                 Quick Links
               </span>
 
-              <div className="flex w-full px-5 gap-2 mt-2">
-                {card.map((card, index) => (
-                  <DashboardCard
-                    key={index}
-                    title={card.title}
-                    icon={card.icon}
-                    data={card.data}
-                    colour={card.colour}
-                  />
-                ))}
+              {/* ✅ Real API Data in Cards */}
+              <div className="flex w-full px-5 gap-2 mt-2 flex-wrap">
+                <DashboardCard title={counts.students} subtitle="Students" icon={GraduationCap} colour="blue" />
+                <DashboardCard title={counts.teachers} subtitle="Teachers" icon={Users} colour="purple" />
+                <DashboardCard title={counts.universities} subtitle="Universities" icon={Building2} colour="orange" />
+                <DashboardCard title={counts.referrals} subtitle="Referral Partners" icon={UserPlus} colour="green" />
+          
+                <DashboardCard title={counts.subadmins} subtitle="Sub Admins" icon={Shield} colour="red" />
               </div>
 
               <div className="w-full">

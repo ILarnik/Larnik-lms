@@ -1,6 +1,6 @@
 # .gitignore (create at project root)
 node_modules
-.env
+
 dist
 .vscode
 npm-debug.log

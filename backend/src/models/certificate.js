@@ -49,7 +49,13 @@ const CertificateTemplateSchema = new mongoose.Schema({
 // });
  const IssuedCertificateSchema = new mongoose.Schema({
   certificateId: { type: String, required: true, unique: true, default: () => crypto.randomUUID() },
-  uniqueId: { type: String, required: true, unique: true, default: () => `CERT-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}` },
+  // uniqueId: { type: String, required: true, unique: true, default: () => `CERT-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}` },
+  uniqueId: { 
+  type: String, 
+  required: true, 
+  unique: true, 
+  default: () => crypto.randomBytes(4).toString("hex").toUpperCase() // 8 hex chars
+},
   studentEmail: { type: String, required: true },
   studentName: { type: String, required: true },
   courseuniqueId: { type: String, required: true },
