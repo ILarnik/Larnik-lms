@@ -24,7 +24,7 @@ import GovernancePage from "./pages/GovernancePage";
 import UnivesityPage from "./pages/Universitypage";
 import Careercellpage from "./pages/Careercellpage";
  import ReferralPage from "./pages/ReferralPartnerPage";
-
+import BlogPage from "./pages/BlogPage";
 
 
  
@@ -63,6 +63,7 @@ export default function App() {
           <Route path="/governance" element={<GovernancePage />} /> 
           <Route path="/University" element={<UnivesityPage />} />
           <Route path="/CareerCell" element={<Careercellpage />} />
+          <Route path="/blogs" element={<BlogPage />} />
           {/* <Route path="/FinanceManager" element={<FinanceManager />} /> */}
           <Route path="/ReferralPartner" element={<ReferralPage />} />
          

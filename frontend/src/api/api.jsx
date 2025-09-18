@@ -181,7 +181,7 @@ export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
 
 /* ====================== CERTIFICATE APIs ====================== */
 
-// // ✅ Create Certificate Template
+ 
 // export const createCertificateTemplate = (data) =>
 //   API.post("/certificates/templates", data);
 
@@ -292,7 +292,7 @@ export const submitReview = (data) => API.post("/student/review", data);
 
 /* ====================== WALLET & FINANCE APIs ====================== */
 
-//////////////////////////
+ 
 // Wallet (Teacher) APIs //
 //////////////////////////
 
@@ -423,9 +423,9 @@ export const exportAnalyticsPDF = () =>
 export const exportAnalyticsExcel = () =>
   API.get("/university/analytics/export/excel", { responseType: "blob" });
 
-export const getAffiliatedTeachers = async () => {
+ export const getAffiliatedTeachers = async () => {
   try {
-    const { data } = await API.get("/AffiliatedTeachers");
+    const { data } = await API.get("/university/affiliatedTeachers");
     return data;
   } catch (error) {
     console.error("Error fetching affiliated teachers:", error);
@@ -445,8 +445,7 @@ export const updateReferralProfile = (data) =>
   API.put("/referralpartner/profile", data);
 
 
-
-// ===================== TEACHER APIs =====================
+ 
 // export const getTeacherProfile = () => API.get("/profile");
 // export const updateTeacherProfile = (data) => API.put("/profile", data);
 
@@ -476,3 +475,10 @@ export const getTeacherReviews = () => API.get("/teacher/reviews");
 export const createCourse = (data) => API.post("/teacher", data);
 
  
+
+
+// contact APIs
+export const createContactApi = (formData) => API.post("/contacts", formData);
+
+// GET: all contacts (for admin dashboard)
+export const getContactsApi = () => API.get("/contacts");

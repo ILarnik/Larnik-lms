@@ -11,10 +11,11 @@ import ManageModules from "../course_management/ManageModules";
 import SubmitExam from "../course_management/SubmitExam";
 
 // Certificate management
-import CertificateManagerPage from "../../pages/Certificatepage";
+// import CertificateManagerPage from "../../pages/Certificatepage";
+import TeacherCertificates from "../../pages/TeacherCertificatepage"
 
 // APIs
-import { uploadMouFile, getMous, getUniversityAnalytics , exportAnalyticsPDF, exportAnalyticsExcel} from "../../api/api";
+import { uploadMouFile, getMous, getUniversityAnalytics , exportAnalyticsPDF, exportAnalyticsExcel,getAffiliatedTeachers} from "../../api/api";
 
 export default function UniversityDashboard() {
   const [tab, setTab] = useState("courseManager");
@@ -30,6 +31,7 @@ export default function UniversityDashboard() {
         <TabButton icon={<Award size={18} />} label="Certificate Officer" id="certificateOfficer" tab={tab} setTab={setTab} />
         <TabButton icon={<FileText size={18} />} label="Document Manager" id="documentManager" tab={tab} setTab={setTab} />
         <TabButton icon={<BarChart size={18} />} label="Analyst" id="analyst" tab={tab} setTab={setTab} />
+      <TabButton icon={<Users size={18} />} label="Affiliated Teachers" id="affiliatedTeachers" tab={tab} setTab={setTab} />
       </div>
 
       {/* --------- Tab Content --------- */}
@@ -39,6 +41,7 @@ export default function UniversityDashboard() {
         {tab === "certificateOfficer" && <CertificateOfficerPanel />}
         {tab === "documentManager" && <DocumentManagerPanel />}
         {tab === "analyst" && <AnalystPanel />}
+        {tab === "affiliatedTeachers" && <AffiliatedTeachersPanel />}
       </div>
     </div>
   );
@@ -121,7 +124,7 @@ function CertificateOfficerPanel() {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">🎓 Certificate Management</h2>
-      <CertificateManagerPage />
+      <TeacherCertificates />
     </div>
   );
 }
@@ -385,6 +388,66 @@ function AnalystPanel() {
           {exporting ? "Exporting..." : "Export"}
         </button>
       </div>
+    </div>
+  );
+}
+
+
+
+
+function AffiliatedTeachersPanel() {
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const res = await getAffiliatedTeachers();
+        // robust handling → your API returns { teachers }
+        setTeachers(res.teachers || []);
+      } catch (error) {
+        console.error("Error fetching teachers:", error);
+        toast.error(error.message || "Failed to load teachers");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeachers();
+  }, []);
+
+  if (loading) return <p>Loading affiliated teachers...</p>;
+
+  return (
+    <div>
+      <h2 className="text-xl font-semibold mb-4">👩‍🏫 Affiliated Teachers</h2>
+      {teachers.length === 0 ? (
+        <p className="text-gray-600">No affiliated teachers found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full border rounded">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Email</th>
+                <th className="p-2 border">Status</th>
+                <th className="p-2 border">Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teachers.map((t) => (
+                <tr key={t._id}>
+                  <td className="p-2 border">{t.name}</td>
+                  <td className="p-2 border">{t.email}</td>
+                  <td className="p-2 border">{t.status || "Active"}</td>
+                  <td className="p-2 border">
+                    {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

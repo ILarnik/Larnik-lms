@@ -27,6 +27,7 @@ import careerCellRoutes from "./src/Routes/careerCell.js";
  import reportRoutes from "./src/Routes/reports.js";
 import univerityRoutes from "./src/Routes/university.js";
 import  referralPartnerRoutes  from "./src/Routes/referralpartner.js";
+import contactRoutes from "./src/routes/contactRoutes.js"; // new
 
 
 
@@ -113,6 +114,7 @@ app.use("/api/careercell", careerCellRoutes);
  app.use("/api", reportRoutes);
 app.use("/api/university", univerityRoutes);
 app.use("/api/referralpartner", referralPartnerRoutes);
+app.use("/api/contacts", contactRoutes); // new
 // -------------------
 // Fallback
 // -------------------

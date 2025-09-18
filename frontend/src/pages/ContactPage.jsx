@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
+import { createContactApi } from "../api/api.jsx"; // 👈 import API helper
 
 export default function ContactPage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
     subscribe: false,
   });
@@ -16,35 +18,38 @@ export default function ContactPage() {
     const e = {};
     if (!form.name.trim()) e.name = "Name is required.";
     if (!form.email.trim()) e.email = "Email is required.";
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) e.email = "Enter a valid email.";
-    if (!form.message.trim() || form.message.trim().length < 10) e.message = "Message should be at least 10 characters.";
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email))
+      e.email = "Enter a valid email.";
+    if (!form.message.trim() || form.message.trim().length < 10)
+      e.message = "Message should be at least 10 characters.";
     return e;
   }
 
   async function handleSubmit(ev) {
     ev.preventDefault();
     setStatus(null);
+
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length) return;
 
     setLoading(true);
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      const { data } = await createContactApi(form); // 👈 call backend
+      setStatus({
+        type: "success",
+        message: data.message || "Message sent — we will get back to you soon.",
       });
-
-      if (!res.ok) throw new Error("Network response was not ok");
-      const data = await res.json().catch(() => ({}));
-
-      setStatus({ type: "success", message: data.message || "Message sent — we will get back to you soon." });
-      setForm({ name: "", email: "", message: "", subscribe: false });
+      setForm({ name: "", email: "", phone: "", message: "", subscribe: false });
       setErrors({});
     } catch (err) {
       console.error(err);
-      setStatus({ type: "error", message: "There was a problem sending your message. Try again later." });
+      setStatus({
+        type: "error",
+        message:
+          err.response?.data?.message ||
+          "There was a problem sending your message. Try again later.",
+      });
     } finally {
       setLoading(false);
     }
@@ -57,10 +62,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-3xl bg-white/60 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 md:p-10" >
-        
-        
-
+      <div className="w-full max-w-3xl bg-white/60 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 md:p-10">
         {status && (
           <div
             role="alert"
@@ -76,18 +78,24 @@ export default function ContactPage() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Name */}
             <label className="flex flex-col">
               <span className="text-sm font-medium text-gray-700">Name</span>
               <input
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                className={`mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${errors.name ? "border-red-300" : "border-gray-200"}`}
+                className={`mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${
+                  errors.name ? "border-red-300" : "border-gray-200"
+                }`}
                 placeholder="Your full name"
               />
-              {errors.name && <span className="text-xs text-red-600 mt-1">{errors.name}</span>}
+              {errors.name && (
+                <span className="text-xs text-red-600 mt-1">{errors.name}</span>
+              )}
             </label>
 
+            {/* Email */}
             <label className="flex flex-col">
               <span className="text-sm font-medium text-gray-700">Email</span>
               <input
@@ -95,26 +103,31 @@ export default function ContactPage() {
                 type="email"
                 value={form.email}
                 onChange={handleChange}
-                className={`mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${errors.email ? "border-red-300" : "border-gray-200"}`}
+                className={`mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${
+                  errors.email ? "border-red-300" : "border-gray-200"
+                }`}
                 placeholder="aman@gmail.com"
               />
-              {errors.email && <span className="text-xs text-red-600 mt-1">{errors.email}</span>}
+              {errors.email && (
+                <span className="text-xs text-red-600 mt-1">{errors.email}</span>
+              )}
             </label>
-            {/* need to fix */}
+
+            {/* Phone */}
             <label className="flex flex-col">
               <span className="text-sm font-medium text-gray-700">Phone</span>
               <input
                 name="phone"
                 type="tel"
-                value={form.email}
+                value={form.phone}
                 onChange={handleChange}
-                className={`mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${errors.email ? "border-red-300" : "border-gray-200"}`}
+                className="mt-2 p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 border-gray-200"
                 placeholder="+91 12345 67890"
               />
-              {errors.email && <span className="text-xs text-red-600 mt-1">{errors.email}</span>}
             </label>
           </div>
 
+          {/* Message */}
           <label className="flex flex-col mt-4">
             <span className="text-sm font-medium text-gray-700">Message</span>
             <textarea
@@ -122,15 +135,19 @@ export default function ContactPage() {
               value={form.message}
               onChange={handleChange}
               rows={6}
-              className={`mt-2 p-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${errors.message ? "border-red-300" : "border-gray-200"}`}
+              className={`mt-2 p-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${
+                errors.message ? "border-red-300" : "border-gray-200"
+              }`}
               placeholder="Tell us what's on your mind"
             />
-            {errors.message && <span className="text-xs text-red-600 mt-1">{errors.message}</span>}
+            {errors.message && (
+              <span className="text-xs text-red-600 mt-1">
+                {errors.message}
+              </span>
+            )}
           </label>
 
-
-           
-
+          {/* Buttons */}
           <div className="mt-6 flex items-center gap-3">
             <button
               type="submit"
@@ -163,19 +180,26 @@ export default function ContactPage() {
             </button>
 
             <button
-              type="Reset"
+              type="reset"
               onClick={() => {
-                setForm({ name: "", email: "", message: "", subscribe: false });
+                setForm({
+                  name: "",
+                  email: "",
+                  phone: "",
+                  message: "",
+                  subscribe: false,
+                });
                 setErrors({});
                 setStatus(null);
               }}
-              className="px-5 py-3 rounded-xl    bg-indigo-600  text-sm text-white"
+              className="px-5 py-3 rounded-xl bg-indigo-600 text-sm text-white"
             >
               Reset
             </button>
           </div>
         </form>
 
+        {/* Contact Info */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
             <div className="font-semibold">Support</div>
@@ -192,7 +216,9 @@ export default function ContactPage() {
           <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
             <div className="font-semibold">Head Office</div>
             <div className="text-gray-600 mt-1">Jaipur, Rajasthan, India</div>
-            <div className="text-gray-500 mt-2">Mon–Fri, 9:00 — 18:00 (IST)</div>
+            <div className="text-gray-500 mt-2">
+              Mon–Fri, 9:00 — 18:00 (IST)
+            </div>
           </div>
         </div>
       </div>

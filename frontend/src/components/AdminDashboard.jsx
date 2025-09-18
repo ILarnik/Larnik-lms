@@ -26,8 +26,9 @@ import ManageSubAdmins from "./dashboard_components/ManageSubAdmins";
 import UserManagement from "./UserManagement";
 import CourseDashboard from "./dashboard_components/CourseManagement";
 import BlogManagerDashboard from "./dashboard_components/BlogManagerDashboard";
-//import CertificateManagerDashboard from "./dashboard components/CertificateManagerDashboard.jsx";
 import ReportsDashboard from "./dashboard_components/ReportsDashboard.jsx";
+import CertificateManagerPage from "../pages/certificatepage";
+import GovernanceDashboard from "./dashboard_components/GovernanceDashboard";
 
 // Sidebar menu structure
 const menuItems = [
@@ -186,7 +187,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="w-full bg-white rounded-xl shadow p-4">
-                <CertificateManagerDashboard />
+                <CertificateManagerPage />
               </div>
             </div>
           )}
@@ -199,6 +200,19 @@ export default function AdminDashboard() {
 
           {/* Blog */}
           {activeItem === "Blog" && <BlogManagerDashboard />}
+
+          {/* Governance */}
+          {activeItem === "Governance" && (
+            <div className="w-full flex flex-col gap-4 p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Governance Management</h2>
+              </div>
+
+              <div className="w-full bg-white rounded-xl shadow p-4">
+                <GovernanceDashboard />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

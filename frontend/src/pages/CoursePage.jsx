@@ -320,43 +320,64 @@
 
 
 
-
-
-import React, { useEffect, useState } from "react";
-import { getApproveCourses } from "../api/api";
+ import React, { useEffect, useState } from "react";
+import { getApproveCourses, getCoupons } from "../api/api";
 import CourseCard from "../components/CourseCard";
 import DiscountBar from "../components/DiscountBar";
 
 export default function CoursePage() {
   const [courses, setCourses] = useState([]);
+  const [coupons, setCoupons] = useState([]);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await getApproveCourses();
-        setCourses(data);
+        // Fetch approved courses
+        const coursesRes = await getApproveCourses();
+        setCourses(coursesRes.data);
+
+        // Fetch coupons
+        const couponsRes = await getCoupons();
+        setCoupons(couponsRes.data);
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.error("Error fetching data:", error);
       }
     };
-    fetchCourses();
+
+    fetchData();
   }, []);
 
   return (
     <>
       <h1 className="text-2xl font-bold m-6">Available Courses</h1>
+
+      {/* Coupons Section */}
+      {coupons.length > 0 && (
+        <div className="p-6 bg-green-50 mb-6 rounded-lg">
+          <h2 className="text-2xl font-semibold text-center mb-4">Available Coupons</h2>
+          <div className="flex gap-4 flex-wrap justify-center">
+            {coupons.map((coupon) => (
+              <div key={coupon._id} className="p-4 bg-white shadow-md rounded-lg w-48 text-center">
+                <h3 className="font-bold text-lg">{coupon.code}</h3>
+                <p className="text-gray-600 mt-1">{coupon.discount}% Off</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <DiscountBar />
+
+      {/* Courses */}
       <div className="flex gap-6 flex-wrap">
         {courses.length > 0 ? (
-          courses.map((course) => (
-            <CourseCard key={course._id} course={course} />
-          ))
+          courses.map((course) => <CourseCard key={course._id} course={course} />)
         ) : (
           <p className="text-gray-600">No courses available right now.</p>
         )}
       </div>
+
       <DiscountBar />
     </>
   );
 }
-
