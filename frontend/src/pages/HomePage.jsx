@@ -7,6 +7,7 @@ import TrustedPatners from '../components/TrustedPatner';
 import SubscriptionPlans from '../components/SubscriptionPlans';
 import DownloadApp from '../components/DownloadApp';
 import { getApproveCourses, getStudents, getTeachers, getCoupons } from '../api/api'; // add coupons
+import CoursePage from "./CoursePage";
 
 export default function HomePage() {
   const [stats, setStats] = useState({
@@ -32,6 +33,8 @@ export default function HomePage() {
         });
 
         setCoupons(couponsRes.data); // store coupon list
+        console.log(couponsRes.data);
+        
 
       } catch (error) {
         console.log("Error fetching data:", error);
@@ -127,10 +130,10 @@ export default function HomePage() {
               <div className="bg-green-600 w-10 h-10 flex items-center justify-center rounded-3xl">
                 <BookOpen color="white" size={22} />
               </div>
-              <div>
+              {/* <div>
                 <p className="text-black font-semibold text-xl">15,847</p>
                 <p className="text-black text-xs opacity-80">Courses Completed Today</p>
-              </div>
+              </div> */}
             </div>
 
             {/* Bottom rectangle glass block */}
@@ -159,24 +162,26 @@ export default function HomePage() {
       </div>
 
       {/* Coupons Section */}
-      {coupons.length > 0 && (
-        <div className="p-10 bg-green-50">
-          <h2 className="text-3xl font-bold text-center mb-6">Available Coupons</h2>
+      {coupons.length > 0 && (        
+        <div className="p-2 bg-green-200">
+          <h2 className="text-5xl font-bold text-center">Available Coupons</h2>
           <div className="flex gap-5 flex-wrap justify-center">
             {coupons.map((coupon) => (
-              <div key={coupon._id} className="p-4 bg-white shadow-md rounded-lg w-60 text-center">
-                <h3 className="font-bold text-lg">{coupon.code}</h3>
-                <p className="text-gray-600 mt-2">{coupon.discount}% Off</p>
+              <div key={coupon._id} className="mt-4 bg-white shadow-md rounded-lg w-full text-center">
+                {/* <h3 className="font-bold text-lg">{coupon.code}</h3> */}
+                {/* <p className="text-gray-600 mt-2">{coupon.discount}% Off</p> */}
+                <h2 className="bg-red-300 text-3xl">Use code <section className="bg-green-400 inline-block text-5xl">{coupon.couponName}</section> to avail <section className="bg-green-400 inline-block text-5xl">{coupon.discountValue}</section>% discount</h2>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <DiscountBar />
+      {/* <DiscountBar /> */}
       <TimelineCard />
       <TrustedPatners />
-      <SubscriptionPlans />
+      {/* <SubscriptionPlans /> */}
+      <CoursePage />
       <DownloadApp />
     </>
   );

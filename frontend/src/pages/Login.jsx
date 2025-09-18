@@ -289,6 +289,7 @@
 
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import CustomButton from "../components/ui/CustomButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -329,32 +330,32 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-green-100">
+      <div className="w-full max-w-md p-6 rounded-xl shadow-md bg-white">
         <h2 className="text-2xl font-bold mb-2">Login</h2>
         <p className="text-gray-500 mb-6">Sign in with Email & Password</p>
 
         {/* Email */}
-        <div className="mb-4">
+        <div className="mb-4 ">
           <label className="block mb-1 text-sm">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
-            className="w-full border rounded-lg p-2"
+            className="w-full border rounded-lg p-2 bg-white"
           />
         </div>
 
         {/* Password */}
-        <div className="mb-6 relative">
+        <div className="mb-6 relative ">
           <label className="block mb-1 text-sm">Password</label>
           <input
             type={passwordVisible ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
-            className="w-full border rounded-lg p-2 pr-10"
+            className="w-full border rounded-lg p-2 pr-10 bg-white"
           />
           <button
             type="button"
@@ -365,13 +366,14 @@ export default function Login() {
           </button>
         </div>
 
-        <button
+        {/* <button
           onClick={handleLogin}
           disabled={loading}
           className="w-full bg-green-600 text-white rounded-lg p-2 font-medium"
         >
           {loading ? "Logging in..." : "Login"}
-        </button>
+        </button> */}
+        <CustomButton label={loading ? "Logging in..."  : "Login"} onClick={handleLogin} className={"bg-black"} />
 
         {/* Footer */}
         <p className="text-center text-sm mt-4">

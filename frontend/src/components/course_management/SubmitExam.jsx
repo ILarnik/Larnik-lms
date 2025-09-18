@@ -44,6 +44,7 @@ import React, { useState } from "react";
 import { submitExam } from "../../api/api";
 import ElevatedCard from "../ui/ElevatedCard";
 import { Input } from "../ui/Field";
+import CustomButton from "../ui/CustomButton";
 
 export default function SubmitExam({ courseId }) {
   const [answers, setAnswers] = useState([]);
@@ -65,12 +66,13 @@ export default function SubmitExam({ courseId }) {
         value={templateId}
         onChange={(e) => setTemplateId(e.target.value)}
       />
-      <button
+      {/* <button
         onClick={handleSubmit}
         className="mt-3 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition"
       >
         Submit
-      </button>
+      </button> */}
+      <CustomButton label={"Submit"} onClick={handleSubmit} className={"bg-black"} />
 
       {result && (
         <div className="mt-4 border rounded-xl p-3 bg-green-50 dark:bg-green-900/20">

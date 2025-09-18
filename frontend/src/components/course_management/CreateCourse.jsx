@@ -248,8 +248,8 @@ export default function CreateCourse({ onCreated }) {
             type="submit"
             disabled={loading}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
-                       bg-blue-600 text-white font-medium shadow-lg shadow-blue-600/20
-                       hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed
+                       bg-black text-white font-medium shadow-lg shadow-blue-600/20
+                       hover:bg-white hover:text-black active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed
                        transition"
           >
             {loading ? (

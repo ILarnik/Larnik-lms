@@ -52,6 +52,7 @@
 import React, { useState, useEffect } from "react";
 import { getCourses, approveCourses } from "../../api/api";
 import ElevatedCard from "../ui/ElevatedCard";
+import CustomButton from "../ui/CustomButton";
 
 export default function ApproveCourse() {
   const [courses, setCourses] = useState([]);
@@ -87,18 +88,20 @@ export default function ApproveCourse() {
             <h3 className="font-semibold text-lg">{c.title}</h3>
             <p className="text-sm text-gray-600 mb-2">{c.description}</p>
             <div className="flex gap-3">
-              <button
+              {/* <button
                 onClick={() => handleApprove(c._id, "approved")}
                 className="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
               >
                 Approve
-              </button>
-              <button
+              </button> */}
+              <CustomButton onClick={()=>handleApprove(c._id,"approved")} label={"Approve"} className={"bg-black"} />
+              {/* <button
                 onClick={() => handleApprove(c._id, "rejected")}
                 className="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
               >
                 Reject
-              </button>
+              </button> */}
+              <CustomButton onClick={() => handleApprove(c._id, "rejected")} label={"Reject"} className={"bg-red-700"} />
             </div>
           </div>
         ))}

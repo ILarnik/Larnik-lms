@@ -33,7 +33,7 @@ export default function TrustedPatners() {
     <section className="py-16 px-6">
       <div className="max-w-6xl mx-auto text-center">
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-4xl font-bold text-gray-900">
           Trusted by Top Universities Worldwide
         </h2>
 

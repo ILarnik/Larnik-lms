@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SignupForm from "./SignupForm";
+import CustomButton from "../ui/CustomButton";
 
 export default function JoinAs() {
   const [selectedRole, setSelectedRole] = useState("student");
@@ -20,6 +21,7 @@ export default function JoinAs() {
           >
             Student
           </button>
+          {/* <CustomButton label={"Student"} onClick={()=>selectedRole("student")} className="background:white" /> */}
 
           <button
             onClick={() => setSelectedRole("teacher")}

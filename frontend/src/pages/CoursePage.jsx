@@ -348,11 +348,13 @@ export default function CoursePage() {
   }, []);
 
   return (
-    <>
-      <h1 className="text-2xl font-bold m-6">Available Courses</h1>
+    <> <div className="bg-green-200 p-4">
+
+    
+      <h1 className="text-5xl font-bold text-center">Available Courses</h1>
 
       {/* Coupons Section */}
-      {coupons.length > 0 && (
+      {/* {coupons.length > 0 && (
         <div className="p-6 bg-green-50 mb-6 rounded-lg">
           <h2 className="text-2xl font-semibold text-center mb-4">Available Coupons</h2>
           <div className="flex gap-4 flex-wrap justify-center">
@@ -364,12 +366,12 @@ export default function CoursePage() {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
-      <DiscountBar />
+      {/* <DiscountBar /> */}
 
       {/* Courses */}
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex gap-6 flex-wrap ">
         {courses.length > 0 ? (
           courses.map((course) => <CourseCard key={course._id} course={course} />)
         ) : (
@@ -377,7 +379,8 @@ export default function CoursePage() {
         )}
       </div>
 
-      <DiscountBar />
+      {/* <DiscountBar /> */}
+      </div>
     </>
   );
 }

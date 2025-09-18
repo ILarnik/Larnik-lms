@@ -135,7 +135,7 @@ export default function ContactPage() {
               value={form.message}
               onChange={handleChange}
               rows={6}
-              className={`mt-2 p-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-indigo-200 ${
+              className={`mt-2 p-3 rounded-2xl border bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 ${
                 errors.message ? "border-red-300" : "border-gray-200"
               }`}
               placeholder="Tell us what's on your mind"

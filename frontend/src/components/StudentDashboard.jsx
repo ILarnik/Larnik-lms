@@ -10,6 +10,7 @@ import {
   downloadCertificate
 } from "../api/api"; // ✅ corrected path
 import StudentCertificate from "../pages/StudentCertificate";
+import CustomButton from "./ui/CustomButton";
  
 
 export default function StudentDashboard() {
@@ -167,8 +168,9 @@ export default function StudentDashboard() {
         <div className="space-y-4">
           <h2 className="font-semibold text-lg">My Courses</h2>
           {myCourses.map((c) => (
-            <div key={c._id} className="border p-4 rounded-lg">
-              <h3 className="font-bold">{c.title}</h3>
+            <div key={c._id} className="border p-4 rounded-lg bg-white">
+              <h3 className="font-extrabold text-2xl">{c.title}</h3>
+              <hr />
               <p>{c.description}</p>
             </div>
           ))}
@@ -182,7 +184,7 @@ export default function StudentDashboard() {
           <select
             value={reviewCourse}
             onChange={(e) => setReviewCourse(e.target.value)}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded bg-white"
           >
             <option value="">Select a course</option>
             {myCourses.map((c) => (
@@ -195,7 +197,7 @@ export default function StudentDashboard() {
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
             placeholder="Write your review here..."
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded bg-white"
             rows="4"
           />
           <button
@@ -214,15 +216,16 @@ export default function StudentDashboard() {
           {certificates.map((cert) => (
             <div
               key={cert._id}
-              className="border p-4 rounded-lg flex justify-between items-center"
+              className="border p-4 rounded-lg flex justify-between items-center bg-white"
             >
               <p>{cert.courseTitle}</p>
-              <button
+              {/* <button
                 onClick={() => handleDownloadCertificate(cert._id)}
                 className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
               >
                 Download
-              </button>
+              </button> */}
+              <CustomButton label={"Download"} onClick={()=>handleDownloadCertificate(cert._id)} className={"bg-black"} />
             </div>
           ))}
         </div>
