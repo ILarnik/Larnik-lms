@@ -760,3 +760,64 @@ export async function rejectCertificate(req, res) {
     });
   }
 }
+
+
+/**
+ * ==========================
+ * GET PENDING CERTIFICATES
+ * GET /api/certificates/pending
+ * ==========================
+ */
+export async function getPendingCertificates(req, res) {
+  try {
+    const role = req.user.role;
+
+    if (role !== "superadmin" && role !== "university") {
+      return res.status(403).json({
+        success: false,
+        message: "Only superadmin or university can access pending certificates",
+      });
+    }
+
+    // Certificates that are pending and next approver matches current role
+    const pendingCerts = await IssuedCertificate.find({
+      status: "pending",
+      $expr: {
+        $eq: [
+          { $arrayElemAt: ["$approvalFlow", { $size: "$approvedBy" }] },
+          role,
+        ],
+      },
+    }).sort({ issuedAt: -1 });
+
+    return res.json({
+      success: true,
+      count: pendingCerts.length,
+      certificates: pendingCerts,
+    });
+  } catch (err) {
+    console.error("getPendingCertificates error:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error while fetching pending certificates" });
+  }
+}
+
+
+// controllers/certificateTemplateController.js
+ 
+
+const templateid = "68ba779d850684c843e1ba52"; // your fixed template
+
+export const getDefaultTemplate = async (req, res) => {
+  try {
+    const template = await CertificateTemplate.findById(templateid);
+    if (!template) {
+      return res.status(404).json({ success: false, message: "Default template not found" });
+    }
+    res.status(200).json({ success: true, template });
+  } catch (err) {
+    console.error("getDefaultTemplate error:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch default template" });
+  }
+};

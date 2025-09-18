@@ -1,59 +1,24 @@
- // src/models/user.js
-import mongoose from "mongoose";
+ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const emailOtpSchema = new mongoose.Schema({
-  code: { type: String },
-  expiresAt: { type: Date },
-  attempts: { type: Number, default: 0 },
-});
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String },
+  role: { type: String, enum: ["student", "teacher", "university", "referral", "superadmin", "sub-admin"], default: "student" },
+  subAdminRole: { type: String, enum: ["blog_manager","finance_manager","governance","role_manager","career_cell"], default: null },
+  referralCode: { type: String, unique: true, sparse: true },
+  universityCode: { type: String, unique: true, sparse: true },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  affiliatedUniversity: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  dynamicSubRole: { type: String, enum: ["writer","reviewer"], default: null },
+  status: { type: String, enum: ["pending","approved","rejected"], default: "pending" },
+  walletBalance: { type: Number, default: 0 },
+}, { timestamps: true });
 
-const userSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String },
+// pre-save hooks, password hashing, referral/university code generation, etc. (same as before)
 
-    role: {
-      type: String,
-      enum: ["student", "teacher", "university", "referral", "superadmin", "sub-admin"],
-      default: "student",
-    },
-
-    subAdminRole: {
-      type: String,
-      enum: ["blog_manager", "finance_manager", "governance", "role_manager", "career_cell"],
-      default: null,
-    },
-
-    referralCode: { type: String, unique: true, sparse: true }, // auto-generated for referral partners
-    universityCode: { type: String, unique: true, sparse: true }, // ✅ auto-generated for universities
-
-    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-
-    affiliatedUniversity: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "User", // or "University" if you made a separate University model
-  default: null,
-},
-
-    dynamicSubRole: {
-      type: String,
-      enum: ["writer", "reviewer"],
-      default: null,
-    },
-
-    status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-
-    emailOtp: emailOtpSchema,
-    walletBalance: { type: Number, default: 0 },
-  },
-  { timestamps: true }
-);
+ 
 
 // =======================
 // Pre-validate hook for sub-admin rules
@@ -134,4 +99,9 @@ if (this.role === "university" && !this.universityCode) {
 userSchema.index({ role: 1, subAdminRole: 1, dynamicSubRole: 1 });
 userSchema.index({ status: 1 });
 
-export default mongoose.model("User", userSchema);
+
+ 
+
+
+export default mongoose.model("User" ,userSchema);
+ 

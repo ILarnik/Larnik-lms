@@ -170,80 +170,7 @@ console.log("Student ObjectId:", studentObjectId);
 //     res.status(500).json({ error: "Failed to enroll in course", details: err.message });
 //   }
 // };
- export const enrollCourse = async (req, res) => {
-  try {
-    const { courseId } = req.body;
-    if (!courseId) return res.status(400).json({ error: "courseId is required" });
-
-    const studentId = req.user?.id;
-    if (!studentId) return res.status(401).json({ error: "Unauthorized" });
-
-    // Fetch course with creator info
-    const course = await Course.findById(courseId.trim()).populate("createdBy");
-    if (!course) return res.status(404).json({ error: "Course not found" });
-
-    const studentObjectId = new mongoose.Types.ObjectId(studentId);
-
-    // Enroll student if not already enrolled
-    if (!course.enrolledStudents.some(id => id.equals(studentObjectId))) {
-      course.enrolledStudents.push(studentObjectId);
-      await course.save();
-
-      const teacherId = course.createdBy._id;
-      const coursePrice = course.price;
-
-      // ===== Teacher Wallet =====
-      let teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
-      if (!teacherWallet) {
-        teacherWallet = new Wallet({ ownerId: teacherId, ownerType: "teacher", balance: 0, transactions: [] });
-      }
-
-      teacherWallet.balance += coursePrice;
-      teacherWallet.transactions.push({
-        studentId,
-        courseId,
-        amount: coursePrice,
-        type: "credit",
-        note: "Course enrollment",
-        date: new Date(),
-      });
-
-      await teacherWallet.save();
-      console.log("Wallet created/updated successfully for teacher:", teacherId);
-
-      // ===== Referral Partner Wallet =====
-      const student = await User.findById(studentId); // <-- fetch student document
-      if (student.referredBy) {
-        const referralPartnerId = student.referredBy;
-        const referralAmount = (2 / 100) * coursePrice; // Example formula
-
-        let referralWallet = await Wallet.findOne({ ownerId: referralPartnerId, ownerType: "referral" });
-        if (!referralWallet) {
-          referralWallet = new Wallet({ ownerId: referralPartnerId, ownerType: "referral", balance: 0, transactions: [] });
-        }
-
-        referralWallet.balance += referralAmount;
-        referralWallet.transactions.push({
-          studentId,
-          courseId,
-          amount: referralAmount,
-          type: "credit",
-          note: "Referral commission",
-          date: new Date(),
-        });
-
-        await referralWallet.save();
-        console.log("Wallet created/updated successfully for referral partner:", referralPartnerId);
-      }
-    }
-
-    res.json({ message: "Student enrolled successfully & wallets updated", courseId });
-  } catch (err) {
-    console.error("EnrollCourse Error:", err);
-    res.status(500).json({ error: "Failed to enroll in course", details: err.message });
-  }
-};
-// export const enrollCourse = async (req, res) => {
+//  export const enrollCourse = async (req, res) => {
 //   try {
 //     const { courseId } = req.body;
 //     if (!courseId) return res.status(400).json({ error: "courseId is required" });
@@ -257,60 +184,57 @@ console.log("Student ObjectId:", studentObjectId);
 
 //     const studentObjectId = new mongoose.Types.ObjectId(studentId);
 
-//     // 🚨 Prevent multiple enrollments
-//     if (course.enrolledStudents.some(id => id.equals(studentObjectId))) {
-//       return res.status(400).json({ error: "Student is already enrolled in this course" });
-//     }
+//     // Enroll student if not already enrolled
+//     if (!course.enrolledStudents.some(id => id.equals(studentObjectId))) {
+//       course.enrolledStudents.push(studentObjectId);
+//       await course.save();
 
-//     // ✅ Enroll student (only first time)
-//     course.enrolledStudents.push(studentObjectId);
-//     await course.save();
+//       const teacherId = course.createdBy._id;
+//       const coursePrice = course.price;
 
-//     const teacherId = course.createdBy._id;
-//     const coursePrice = course.price;
-
-//     // ===== Teacher Wallet =====
-//     let teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
-//     if (!teacherWallet) {
-//       teacherWallet = new Wallet({ ownerId: teacherId, ownerType: "teacher", balance: 0, transactions: [] });
-//     }
-
-//     teacherWallet.balance += coursePrice;
-//     teacherWallet.transactions.push({
-//       studentId,
-//       courseId,
-//       amount: coursePrice,
-//       type: "credit",
-//       note: "Course enrollment",
-//       date: new Date(),
-//     });
-
-//     await teacherWallet.save();
-//     console.log("Wallet created/updated successfully for teacher:", teacherId);
-
-//     // ===== Referral Partner Wallet =====
-//     const student = await User.findById(studentId); // fetch student document
-//     if (student.referredBy) {
-//       const referralPartnerId = student.referredBy;
-//       const referralAmount = (2 / 100) * coursePrice; // Example: 2% commission
-
-//       let referralWallet = await Wallet.findOne({ ownerId: referralPartnerId, ownerType: "referral" });
-//       if (!referralWallet) {
-//         referralWallet = new Wallet({ ownerId: referralPartnerId, ownerType: "referral", balance: 0, transactions: [] });
+//       // ===== Teacher Wallet =====
+//       let teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
+//       if (!teacherWallet) {
+//         teacherWallet = new Wallet({ ownerId: teacherId, ownerType: "teacher", balance: 0, transactions: [] });
 //       }
 
-//       referralWallet.balance += referralAmount;
-//       referralWallet.transactions.push({
+//       teacherWallet.balance += coursePrice;
+//       teacherWallet.transactions.push({
 //         studentId,
 //         courseId,
-//         amount: referralAmount,
+//         amount: coursePrice,
 //         type: "credit",
-//         note: "Referral commission",
+//         note: "Course enrollment",
 //         date: new Date(),
 //       });
 
-//       await referralWallet.save();
-//       console.log("Wallet created/updated successfully for referral partner:", referralPartnerId);
+//       await teacherWallet.save();
+//       console.log("Wallet created/updated successfully for teacher:", teacherId);
+
+//       // ===== Referral Partner Wallet =====
+//       const student = await User.findById(studentId); // <-- fetch student document
+//       if (student.referredBy) {
+//         const referralPartnerId = student.referredBy;
+//         const referralAmount = (2 / 100) * coursePrice; // Example formula
+
+//         let referralWallet = await Wallet.findOne({ ownerId: referralPartnerId, ownerType: "referral" });
+//         if (!referralWallet) {
+//           referralWallet = new Wallet({ ownerId: referralPartnerId, ownerType: "referral", balance: 0, transactions: [] });
+//         }
+
+//         referralWallet.balance += referralAmount;
+//         referralWallet.transactions.push({
+//           studentId,
+//           courseId,
+//           amount: referralAmount,
+//           type: "credit",
+//           note: "Referral commission",
+//           date: new Date(),
+//         });
+
+//         await referralWallet.save();
+//         console.log("Wallet created/updated successfully for referral partner:", referralPartnerId);
+//       }
 //     }
 
 //     res.json({ message: "Student enrolled successfully & wallets updated", courseId });
@@ -319,6 +243,96 @@ console.log("Student ObjectId:", studentObjectId);
 //     res.status(500).json({ error: "Failed to enroll in course", details: err.message });
 //   }
 // };
+
+
+
+
+//jjtryjy
+
+
+
+
+
+
+     
+
+
+export const enrollCourse = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    if (!courseId) return res.status(400).json({ error: "courseId is required" });
+
+    const studentId = req.user?.id;
+    if (!studentId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Fetch course with creator info
+    const course = await Course.findById(courseId.trim()).populate("createdBy");
+    if (!course) return res.status(404).json({ error: "Course not found" });
+
+    const studentObjectId = new mongoose.Types.ObjectId(studentId);
+
+    // 🚨 Prevent multiple enrollments
+    if (course.enrolledStudents.some(id => id.equals(studentObjectId))) {
+      return res.status(400).json({ error: "Student is already enrolled in this course" });
+    }
+
+    // ✅ Enroll student (only first time)
+    course.enrolledStudents.push(studentObjectId);
+    await course.save();
+
+    const teacherId = course.createdBy._id;
+    const coursePrice = course.price;
+
+    // ===== Teacher Wallet =====
+    let teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
+    if (!teacherWallet) {
+      teacherWallet = new Wallet({ ownerId: teacherId, ownerType: "teacher", balance: 0, transactions: [] });
+    }
+
+    teacherWallet.balance += coursePrice;
+    teacherWallet.transactions.push({
+      studentId,
+      courseId,
+      amount: coursePrice,
+      type: "credit",
+      note: "Course enrollment",
+      date: new Date(),
+    });
+
+    await teacherWallet.save();
+    console.log("Wallet created/updated successfully for teacher:", teacherId);
+
+    // ===== Referral Partner Wallet =====
+    const student = await User.findById(studentId); // fetch student document
+    if (student.referredBy) {
+      const referralPartnerId = student.referredBy;
+      const referralAmount = (2 / 100) * coursePrice; // Example: 2% commission
+
+      let referralWallet = await Wallet.findOne({ ownerId: referralPartnerId, ownerType: "referral" });
+      if (!referralWallet) {
+        referralWallet = new Wallet({ ownerId: referralPartnerId, ownerType: "referral", balance: 0, transactions: [] });
+      }
+
+      referralWallet.balance += referralAmount;
+      referralWallet.transactions.push({
+        studentId,
+        courseId,
+        amount: referralAmount,
+        type: "credit",
+        note: "Referral commission",
+        date: new Date(),
+      });
+
+      await referralWallet.save();
+      console.log("Wallet created/updated successfully for referral partner:", referralPartnerId);
+    }
+
+    res.json({ message: "Student enrolled successfully & wallets updated", courseId });
+  } catch (err) {
+    console.error("EnrollCourse Error:", err);
+    res.status(500).json({ error: "Failed to enroll in course", details: err.message });
+  }
+};
 
 
 export const myCourses = async (req, res) => {

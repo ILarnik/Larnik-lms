@@ -1,12 +1,15 @@
- // src/controllers/authController.js
- 
-import bcrypt from "bcrypt";
+ import User from "../models/user.js";
+import Otp from "../models/Otp.js";
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
-// ---------------- SIGNUP ----------------
- 
+import { transporter } from "../utils/email.js";
+import crypto from "crypto";
 
 // ---------------- SIGNUP ----------------
+  
+
+ 
+
+
 // export const signup = async (req, res) => {
 //   try {
 //     const { name, email, phone, password, roles, universityCode, referralCode } = req.body;
@@ -28,11 +31,25 @@ import User from "../models/user.js";
 //       phone,
 //       password, // hashed automatically
 //       role: roles[0], // primary role
-//       universityCode: universityCode || undefined,
-//       status: "approved" // or "pending" if you want an approval flow
+//       status: "approved", // or "pending" if you want approval flow
 //     });
 
-//     // 🟢 If referralCode was provided → map referredBy
+//     // 🟢 If this is a university signup → universityCode will auto-generate in pre-save hook
+//     if (roles[0] === "university") {
+//       // nothing to set manually; code generated automatically
+//     }
+
+//  // 🟢 If this is a teacher signup with universityCode → link teacher to university
+// if (roles[0] === "teacher" && universityCode) {
+//   const university = await User.findOne({ universityCode, role: "university" });
+//   if (!university) {
+//     return res.status(400).json({ message: "Invalid university code" });
+//   }
+//   newUser.affiliatedUniversity = university._id; // ✅ consistent field
+// }
+
+
+//     // 🟢 If referralCode provided → map referredBy
 //     if (referralCode) {
 //       const partner = await User.findOne({ referralCode, role: "referral" });
 //       if (partner) {
@@ -43,71 +60,98 @@ import User from "../models/user.js";
 //     }
 
 //     await newUser.save();
-//     res.status(201).json({ message: "User registered successfully" });
+//     res.status(201).json({ message: "User registered successfully", user: newUser });
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).json({ message: error.message });
 //   }
 // };
 
+ 
+
 export const signup = async (req, res) => {
   try {
-    const { name, email, phone, password, roles, universityCode, referralCode } = req.body;
+    const { name, email, phone, password, roles, universityCode, referralCode, otp } = req.body;
 
-    if (!name || !email || !phone || !password || !roles) {
-      return res.status(400).json({ message: "Missing required fields or invalid roles" });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
     }
 
-    // 🔍 Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // 🎯 Default new user object
-    const newUser = new User({
-      name,
+    // ========================
+    // Step 1: OTP verification
+    // ========================
+    if (otp) {
+      const record = await Otp.findOne({ email, otp });
+      if (!record) return res.status(400).json({ message: "Invalid OTP" });
+      if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+
+      const { tempUserData } = record;
+
+      // Delete OTP after verification
+      await Otp.deleteOne({ _id: record._id });
+
+      const newUser = new User({
+        name: tempUserData.name,
+        email: record.email,
+        phone: tempUserData.phone,
+        password: tempUserData.password,
+        role: tempUserData.roles[0],
+        status: "approved",
+      });
+
+      // Teacher affiliation
+      if (tempUserData.roles[0] === "teacher" && tempUserData.universityCode) {
+        const university = await User.findOne({ universityCode: tempUserData.universityCode, role: "university" });
+        if (!university) return res.status(400).json({ message: "Invalid university code" });
+        newUser.affiliatedUniversity = university._id;
+      }
+
+      // Referral mapping
+      if (tempUserData.referralCode) {
+        const partner = await User.findOne({ referralCode: tempUserData.referralCode, role: "referral" });
+        if (partner) newUser.referredBy = partner._id;
+      }
+
+      await newUser.save();
+      return res.status(201).json({ message: "User registered successfully", user: newUser });
+    }
+
+    // ========================
+    // Step 2: Generate & send OTP
+    // ========================
+    if (!name || !phone || !password || !roles) {
+      return res.status(400).json({ message: "Missing required fields or invalid roles" });
+    }
+
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    await Otp.create({
       email,
-      phone,
-      password, // hashed automatically
-      role: roles[0], // primary role
-      status: "approved", // or "pending" if you want approval flow
+      otp: generatedOtp,
+      expiresAt,
+      tempUserData: { name, phone, password, roles, universityCode, referralCode }
     });
 
-    // 🟢 If this is a university signup → universityCode will auto-generate in pre-save hook
-    if (roles[0] === "university") {
-      // nothing to set manually; code generated automatically
-    }
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Your Signup OTP",
+      html: `<p>Your OTP for signup is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
+    });
 
- // 🟢 If this is a teacher signup with universityCode → link teacher to university
-if (roles[0] === "teacher" && universityCode) {
-  const university = await User.findOne({ universityCode, role: "university" });
-  if (!university) {
-    return res.status(400).json({ message: "Invalid university code" });
-  }
-  newUser.affiliatedUniversity = university._id; // ✅ consistent field
-}
+    return res.status(200).json({ message: "OTP sent to your email" });
 
-
-    // 🟢 If referralCode provided → map referredBy
-    if (referralCode) {
-      const partner = await User.findOne({ referralCode, role: "referral" });
-      if (partner) {
-        newUser.referredBy = partner._id;
-      } else {
-        console.warn(`Invalid referral code provided: ${referralCode}`);
-      }
-    }
-
-    await newUser.save();
-    res.status(201).json({ message: "User registered successfully", user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 
 

@@ -112,6 +112,8 @@ import {
   getCertificatesByStudent,
   validateCertificate,
   downloadCertificate,
+  getPendingCertificates,
+  getDefaultTemplate,
 } from "../controllers/certificateController.js";
 
 import { authMiddleware } from "../middleware/auth.js";
@@ -168,5 +170,6 @@ router.get("/my", authMiddleware,allowRoles("student"),getCertificatesByStudent)
 router.get("/validate/:uniqueId", validateCertificate);      // anyone can validate
 router.get("/download/:id", authMiddleware,allowRoles("student") , downloadCertificate);
 // router.get("/:id", authMiddleware, getCertificate);
-
+router.get("/pending", authMiddleware, getPendingCertificates);
+router.get("/default", authMiddleware, getDefaultTemplate);
 export default router;

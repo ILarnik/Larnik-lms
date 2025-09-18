@@ -266,6 +266,8 @@ export const validateCertificate = (uniqueId) =>
 // Optional: Get Certificate Template by ID (for teacher/university/superadmin)
 export const getCertificateTemplateById = (templateId) =>
   API.get(`/certificates/templates/${templateId}`);
+export const getPendingCertificates = () => API.get("/certificates/pending");
+export const getDefaultTemplate = () => API.get("/certificates/templates/default");
 
 
 

@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 
+// load environment variables
+dotenv.config();
 
 import { connectDB } from "./src/config/db.js";
 
@@ -24,15 +26,14 @@ import teacherRoutes from "./src/Routes/teacher.js";
 import studentRoutes from "./src/Routes/student.js";
 import walletRoutes from "./src/Routes/wallet.js";
 import careerCellRoutes from "./src/Routes/careerCell.js";
- import reportRoutes from "./src/Routes/reports.js";
+  import reportRoutes from "./src/Routes/reports.js";
 import univerityRoutes from "./src/Routes/university.js";
 import  referralPartnerRoutes  from "./src/Routes/referralpartner.js";
 import contactRoutes from "./src/routes/contactRoutes.js"; // new
 
 
 
-// load environment variables
-dotenv.config();
+
 
 // ES Modules __filename & __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -49,6 +50,7 @@ app.use(
   })
 );
 
+
 // Handle preflight requests explicitly
 // app.options("*", cors());
 
@@ -58,7 +60,8 @@ app.use(
  // JSON parser first
 
 app.use("/api/mou", mouRoutes);
-//app.use("/api/courses", courseRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/teacher", teacherRoutes);
 
 app.use(express.json({ limit: "2mb" }));
 
@@ -90,10 +93,9 @@ app.get("/healthz", (req, res) => res.json({ ok: true }));
 // -------------------
 app.use("/api/auth", authRoutes); //done
 app.use("/api/superadmin", superAdminRoutes); //DONE
-app.use("/api/courses", courseRoutes);
-// console.log("✅ superAdminRoutes loaded");
-// app.use("/api/courses", courseRoutes);
-app.use("/api/teacher", teacherRoutes);
+//app.use("/api/courses", courseRoutes);
+ 
+// app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/finance", financeRoutes);
  app.use("/api/mou", mouRoutes);
@@ -108,7 +110,7 @@ app.use("/api/coupons", couponRoutes); // done
 app.use("/api/rolemanager", roleManagerRoutes);
 app.use("/api/users", userRoutes); // done
 app.use("/api/student", studentRoutes); // done
-// app.get("/api/superadmin/reports", getReports);
+ 
 app.use("/api/wallet", walletRoutes);
 app.use("/api/careercell", careerCellRoutes);
  app.use("/api", reportRoutes);
