@@ -6,7 +6,10 @@ import {
   getWebinars,
   addGuide,
   getGuides,
-  getJobsByMode
+  getJobsByMode,
+  deletejobbyId,
+  deleteguidebyId,
+  deletewebinarbyId
 } from "../controllers/careerCellController.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { requireSubAdminRole } from "../middleware/rbac.js";
@@ -27,6 +30,10 @@ router.get("/guides", authMiddleware, getGuides);
 
 // ✅ Public route: get jobs by mode
 router.get("/jobs/mode/:mode", getJobsByMode);
+//delete job
+router.delete("/job/:id", authMiddleware, requireSubAdminRole("career_cell"), deletejobbyId);
+router.delete("/guide/:id", authMiddleware, requireSubAdminRole("career_cell"), deleteguidebyId);
+router.delete("/webinar/:id", authMiddleware, requireSubAdminRole("career_cell"), deletewebinarbyId);
 
 
 export default router;

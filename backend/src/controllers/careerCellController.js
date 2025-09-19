@@ -175,3 +175,47 @@ export const getJobsByMode = async (req, res) => {
     });
   }
 };
+
+
+export const deletejobbyId = async (req, res) => {
+  try{
+    const{id}= req.params;
+    const job = await job.findbyIdAndDelete(id);
+    if(!job){
+      return res.status(404).json({success:false, message:"Job not found"});
+    }
+    res.status(200).json({success:true, message:"Job deleted successfully"});
+  }
+catch(err){
+  res.status(500).json({success:false, message:err.message});
+}
+
+}
+
+export const deletewebinarbyId = async (req, res) => {
+  try{
+    const{id}= req.params;
+    const webinar = await Webinar.findByIdAndDelete(id);
+    if(!webinar){
+      return res.status(404).json({success:false, message:"Webinar not found"});
+    }
+    res.status(200).json({success:true, message:"Webinar deleted successfully"});
+  }
+catch(err){
+  res.status(500).json({success:false, message:err.message});
+}
+}
+
+export const deleteguidebyId = async (req, res) => {
+  try{
+    const{id}= req.params;
+    const guide = await Guide.findByIdAndDelete(id);
+    if(!guide){
+      return res.status(404).json({success:false, message:"Guide not found"});
+    }
+    res.status(200).json({success:true, message:"Guide deleted successfully"});
+  }
+catch(err){
+  res.status(500).json({success:false, message:err.message}); 
+}
+}

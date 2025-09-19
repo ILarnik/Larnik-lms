@@ -68,6 +68,7 @@ import { createCourse } from "../../api/api";
 import ElevatedCard from "../ui/ElevatedCard";
 import { Label, Input, Textarea, HelpText, ErrorText } from "../ui/Field";
 
+ 
 export default function CreateCourse({ onCreated }) {
   const [form, setForm] = useState({
     category: "",
@@ -79,11 +80,15 @@ export default function CreateCourse({ onCreated }) {
     prerequisites: "",
     tags: "",
   });
+  const [file, setFile] = useState(null); // 👈 new for thumbnail/file
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [okMsg, setOkMsg] = useState("");
 
-  const handle = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handle = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleFile = (e) => setFile(e.target.files[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +105,7 @@ export default function CreateCourse({ onCreated }) {
           .filter(Boolean),
       };
 
-      await createCourse(payload);
+      await createCourse(payload, file); // 👈 send payload + file
 
       setOkMsg("Course created successfully. Pending approval.");
       setForm({
@@ -113,6 +118,7 @@ export default function CreateCourse({ onCreated }) {
         prerequisites: "",
         tags: "",
       });
+      setFile(null);
       onCreated?.();
     } catch (e) {
       setErr(e?.response?.data?.message || "Failed to create course");
@@ -131,7 +137,6 @@ export default function CreateCourse({ onCreated }) {
         </span>
       }
     >
-      <form onSubmit={handle} className="hidden" />
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Grid: Core Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -234,6 +239,13 @@ export default function CreateCourse({ onCreated }) {
           </div>
         </div>
 
+        {/* File Upload */}
+        <div>
+          <Label htmlFor="file">Thumbnail (optional)</Label>
+          <Input id="file" name="file" type="file" onChange={handleFile} />
+          <HelpText>Upload an image to represent your course.</HelpText>
+        </div>
+
         {/* Messages */}
         <ErrorText>{err}</ErrorText>
         {okMsg && (
@@ -254,9 +266,24 @@ export default function CreateCourse({ onCreated }) {
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 004 12z" />
+                <svg
+                  className="animate-spin h-4 w-4"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4A4 4 0 004 12z"
+                  />
                 </svg>
                 Creating…
               </>
@@ -267,7 +294,7 @@ export default function CreateCourse({ onCreated }) {
 
           <button
             type="button"
-            onClick={() =>
+            onClick={() => {
               setForm({
                 category: "",
                 subCategory: "",
@@ -278,8 +305,9 @@ export default function CreateCourse({ onCreated }) {
                 prerequisites: "",
                 tags: "",
                 
-              })
-            }
+              });
+              setFile(null);
+            }}
             className="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700
                        text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800
                        transition"

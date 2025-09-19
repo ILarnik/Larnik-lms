@@ -1,59 +1,36 @@
  import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema({
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   amount: { type: Number, required: true },
-  type: {
+  type: { type: String, enum: ["credit", "debit"], required: true }, // only credit/debit for balance operations
+  status: {
     type: String,
-    enum: ["credit", "debit", "settlement_request"],
-    default: "credit",
+    enum: [
+      "pending_university",
+      "approved_by_university",
+      "pending_finance",
+      "approved",
+      "rejected",
+    ],
+    default: "pending_finance",
   },
-   status: {
-  type: String,
-  enum: [
-    "pending",
-    "approved",
-    "rejected",
-    "pending_university",
-    "approved_by_university",
-    "approved_by_finance" // <-- ADD THIS
-  ],
-    default: "pending",
-  },
-  split: {
-    teacher: { type: Number, default: 100 },
-    university: { type: Number, default: 0 },
-    platform: { type: Number, default: 0 },
-  },
-  date: { type: Date, default: Date.now },
-  note: { type: String },
-  referralPartnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  universityId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  originalTeacherTransactionId: { type: mongoose.Schema.Types.ObjectId },
+  description: String,
+  createdAt: { type: Date, default: Date.now },
+  metadata: {}, // extra info: courseId, targetUniversityId, etc.
 });
 
-const walletSchema = new mongoose.Schema(
-  {
-    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
-    ownerType: {
-      type: String,
-      enum: ["teacher", "university", "referral"],
-      required: true,
-    },
-    teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "User", unique: true, sparse: true },
-    balance: { type: Number, default: 0 },
-    transactions: [transactionSchema],
+const walletSchema = new mongoose.Schema({
+  ownerType: {
+    type: String,
+    enum: ["teacher", "university", "referral", "platform"],
+    required: true,
   },
-  { timestamps: true }
-);
-
-// Middleware to sync teacherId for backward compatibility
-walletSchema.pre("save", function (next) {
-  if (this.ownerType === "teacher" && !this.teacherId) {
-    this.teacherId = this.ownerId;
-  }
-  next();
+  ownerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  balance: { type: Number, default: 0 },
+  onHold: { type: Number, default: 0 },
+  transactions: [transactionSchema],
 });
+
+walletSchema.index({ ownerType: 1, ownerId: 1 }, { unique: true });
 
 export default mongoose.model("Wallet", walletSchema);

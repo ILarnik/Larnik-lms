@@ -1,5 +1,4 @@
- // src/pages/StudentDashboard.jsx
-import React, { useEffect, useState } from "react";
+ import React, { useEffect, useState } from "react";
 import { User, ClipboardList, Star } from "lucide-react";
 import {
   getStudentProfile,
@@ -18,7 +17,8 @@ export default function StudentDashboard() {
   const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
   const [myCourses, setMyCourses] = useState([]);
   const [reviewCourse, setReviewCourse] = useState("");
-  const [reviewText, setReviewText] = useState([]);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0); // ⭐ new rating state
   const [certificates, setCertificates] = useState([]);
 
   // ---------------- Profile ----------------
@@ -57,11 +57,12 @@ export default function StudentDashboard() {
 
   // ---------------- Reviews ----------------
   const handleReviewSubmit = async () => {
-    if (!reviewCourse || !reviewText) return;
+    if (!reviewCourse || !reviewText || !rating) return;
     try {
-      await submitReview({ courseId: reviewCourse, review: reviewText });
+      await submitReview({ courseId: reviewCourse, review: reviewText, rating }); // send rating too
       setReviewCourse("");
       setReviewText("");
+      setRating(0);
     } catch (err) {
       console.error("Review submit failed", err);
     }
@@ -193,6 +194,24 @@ export default function StudentDashboard() {
               </option>
             ))}
           </select>
+
+          {/* ⭐ Rating Field */}
+          <div>
+            <label className="block mb-1 font-medium">Rating</label>
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="w-full border p-2 rounded"
+            >
+              <option value={0}>Select rating</option>
+              {[1, 2, 3, 4, 5].map((r) => (
+                <option key={r} value={r}>
+                  {r} Star{r > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <textarea
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
