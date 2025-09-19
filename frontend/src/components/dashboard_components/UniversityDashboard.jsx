@@ -16,6 +16,7 @@ import TeacherCertificates from "../../pages/TeacherCertificatepage"
 
 // APIs
 import { uploadMouFile, getMous, getUniversityAnalytics , exportAnalyticsPDF, exportAnalyticsExcel,getAffiliatedTeachers} from "../../api/api";
+import CustomButton from "../ui/CustomButton";
 
 export default function UniversityDashboard() {
   const [tab, setTab] = useState("courseManager");
@@ -26,7 +27,7 @@ export default function UniversityDashboard() {
 
       {/* --------- Tab Navigation --------- */}
       <div className="flex flex-wrap gap-3 mb-6">
-        <TabButton icon={<Users size={18} />} label="Assign Staff" id="superAdmin" tab={tab} setTab={setTab} />
+        <TabButton icon={<Users size={18} />} label="Assign Staff" id="assignStaff" tab={tab} setTab={setTab} />
         <TabButton icon={<BookOpen size={18} />} label="Course Manager" id="courseManager" tab={tab} setTab={setTab} />
         <TabButton icon={<Award size={18} />} label="Certificate Officer" id="certificateOfficer" tab={tab} setTab={setTab} />
         <TabButton icon={<FileText size={18} />} label="Document Manager" id="documentManager" tab={tab} setTab={setTab} />
@@ -36,7 +37,7 @@ export default function UniversityDashboard() {
 
       {/* --------- Tab Content --------- */}
       <div className="bg-white rounded-xl shadow p-4">
-        {tab === "superAdmin" && <SuperAdminPanel />}
+        {tab === "assignStaff" && <AssignStaff />}
         {tab === "courseManager" && <CourseManagerPanel />}
         {tab === "certificateOfficer" && <CertificateOfficerPanel />}
         {tab === "documentManager" && <DocumentManagerPanel />}
@@ -62,7 +63,7 @@ function TabButton({ icon, label, id, tab, setTab }) {
 
 /* ------------ Role Panels ------------ */
 
-function SuperAdminPanel() {
+function AssignStaff() {
   const [staff, setStaff] = useState([
     { id: 1, name: "Ravi Kumar", role: "Course Manager" },
     { id: 2, name: "Pooja Sharma", role: "Finance Officer" },
@@ -78,7 +79,7 @@ function SuperAdminPanel() {
             <th className="p-2 border">Role</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {staff.map((s) => (
             <tr key={s.id}>
               <td className="p-2 border">{s.name}</td>
@@ -90,7 +91,7 @@ function SuperAdminPanel() {
                       prev.map((p) => (p.id === s.id ? { ...p, role: e.target.value } : p))
                     )
                   }
-                  className="border p-1 rounded"
+                  className="border p-1 rounded bg-white"
                 >
                   <option>Course Manager</option>
                   <option>Finance Officer</option>
@@ -195,19 +196,21 @@ function DocumentManagerPanel() {
         />
         {file && <p className="text-sm text-gray-500 mb-2">Selected: {file.name}</p>}
         <div className="flex gap-3">
-          <button
+          {/* <button
             onClick={handleUpload}
             disabled={uploading}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {uploading ? "Uploading..." : "Upload MoU"}
-          </button>
-          <button
+          </button> */}
+          <CustomButton onClick={handleUpload} className={"bg-black"}> {uploading ? "Uploading..." : "Upload MoU"}</CustomButton>
+          {/* <button
             onClick={fetchMous}
             className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300"
           >
             Refresh List
-          </button>
+          </button> */}
+          <CustomButton onClick={fetchMous} className={"bg-red-700"} label={"Refresh List"}/>
         </div>
       </div>
 
@@ -374,19 +377,20 @@ function AnalystPanel() {
         <select
           value={exportFormat}
           onChange={(e) => setExportFormat(e.target.value)}
-          className="border rounded-lg px-3 py-2"
+          className="border rounded-lg px-3 py-2 bg-white"
         >
           <option value="pdf">Export as PDF</option>
           <option value="excel">Export as Excel</option>
         </select>
 
-        <button
+        {/* <button
           onClick={handleExport}
           disabled={exporting}
           className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
         >
           {exporting ? "Exporting..." : "Export"}
-        </button>
+        </button> */}
+        <CustomButton  onClick={handleExport} className={"bg-black"} >{exporting ? "Exporting..." : "Export"}</CustomButton>
       </div>
     </div>
   );
@@ -419,12 +423,12 @@ function AffiliatedTeachersPanel() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">👩‍🏫 Affiliated Teachers</h2>
+      <h2 className="text-3xl font-semibold mb-4 ">👩‍🏫 Affiliated Teachers</h2>
       {teachers.length === 0 ? (
         <p className="text-gray-600">No affiliated teachers found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border rounded">
+          <table className="w-full border rounded text-center">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-2 border">Name</th>

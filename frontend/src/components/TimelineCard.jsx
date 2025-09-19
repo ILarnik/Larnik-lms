@@ -9,24 +9,17 @@ export default function TimelineCard() {
       title: "Founded",
       description: "Larnik was born from a vision to revolutionize online education",
     },
-    {
-      icon: Users,
-      year: "2020",
-      title: "Founded",
-      description: "Larnik was born from a vision to revolutionize online education",
-    },
-    {
-      icon: Users,
-      year: "2020",
-      title: "Founded",
-      description: "Larnik was born from a vision to revolutionize online education",
-    },
+    
     
   ];
 
 
   return (
     <section>
+      <h2 className="mx-auto text-center text-5xl pt-6 font-bold">Time line </h2>
+      <hr className="m-4" />
+      <h3 className="text-3xl text-center">From Soil to Market: Your Agricultural Learning Journey</h3>
+      <p className="text-center p-4">Our interactive timeline guides learners step-by-step through the full agricultural curriculum — from foundational soil science and seed selection to advanced crop management, sustainable practices, post-harvest processing and market access. Each milestone shows the module goals, estimated effort, hands-on field tasks, assessments and certifications, plus real-world projects and expert webinars. Progress is tracked with badges and checkpoints so students and instructors can see skill growth at a glance, pick up where they left off, and follow clear pathways toward practical outcomes like farm management, extension work, or agribusiness opportunities.</p>
       {ArrayData.map((item, index) => {
         const Icon = item.icon; // dynamic icon
         return (

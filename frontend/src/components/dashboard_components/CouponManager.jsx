@@ -6,6 +6,7 @@ import {
   updateCoupon,
   deleteCoupon,
 } from "../../api/api"; // ✅ axios api.js
+import CustomButton from "../ui/CustomButton";
 
 export default function CouponManager() {
   const [coupons, setCoupons] = useState([]);
@@ -78,11 +79,11 @@ export default function CouponManager() {
 
   return (
     <div className="p-6 w-full mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Coupon Management</h2>
+      <h2 className="text-4xl font-bold mb-6">Coupon Management</h2>
 
       {/* Create Coupon Form */}
       <div className="bg-white p-5 rounded-2xl shadow-lg border mb-6">
-        <h3 className="font-semibold mb-3">Create New Coupon</h3>
+        <h3 className="font-semibold mb-3 text-2xl">Create New Coupon</h3>
         <div className="flex gap-3 mb-3">
           <input
             type="text"
@@ -99,21 +100,22 @@ export default function CouponManager() {
             className="border p-2 rounded-lg w-1/2 focus:ring-2 focus:ring-green-400"
           />
         </div>
-        <button
+        {/* <button
           onClick={addCoupon}
           className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 shadow-md"
         >
           <Plus size={18} /> Add Coupon
-        </button>
+        </button> */}
+        <CustomButton label={"Add Coupon"} className={"bg-green-700"}><Plus className="inline-block" size={18} onClick={addCoupon} />Add Coupon</CustomButton>
       </div>
 
       {/* Coupon List */}
       <div>
-        <h3 className="font-semibold mb-3">Available Coupons</h3>
+        <h3 className="font-semibold mb-3 text-2xl pl-4">Available Coupons</h3>
         {coupons.length === 0 ? (
           <p className="text-gray-500">No coupons available.</p>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-4 pl-2">
             {coupons.map((coupon) => (
               <div
                 key={coupon._id}
@@ -121,14 +123,14 @@ export default function CouponManager() {
               >
                 {/* Coupon Info */}
                 <div>
-                  <p className="font-bold text-lg">{coupon.couponName}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-bold text-2xl">{coupon.couponName}</p>
+                  <p className="text-gray-500 text-xl">
                     {coupon.discountType === "percentage"
                       ? `Discount: ${coupon.discountValue}%`
                       : `Discount: ₹${coupon.discountValue}`}
                   </p>
                   <span
-                    className={`mt-1 inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                    className={`mt-1 inline-block px-2 py-1 text-base font-medium rounded-full ${
                       coupon.status === "active"
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-700"
@@ -142,7 +144,7 @@ export default function CouponManager() {
                 <div className="flex gap-3 items-center">
                   <button
                     onClick={() => toggleCoupon(coupon._id, coupon.status)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 hover:text-blue-700 shadow-2xl"
                   >
                     {coupon.status === "active" ? (
                       <ToggleRight size={36} />
@@ -152,9 +154,9 @@ export default function CouponManager() {
                   </button>
                   <button
                     onClick={() => confirmDelete(coupon._id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 shadow-2xl"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={36} />
                   </button>
                 </div>
               </div>
