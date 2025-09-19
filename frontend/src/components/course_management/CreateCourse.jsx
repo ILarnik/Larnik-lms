@@ -277,6 +277,7 @@ export default function CreateCourse({ onCreated }) {
                 targetAudience: "",
                 prerequisites: "",
                 tags: "",
+                
               })
             }
             className="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700
