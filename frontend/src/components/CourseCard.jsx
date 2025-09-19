@@ -40,7 +40,7 @@ export default function CourseCard({ course }) {
   };
 
   return (
-    <div className="w-80 h-auto mx-auto m-10 bg-white rounded-2xl shadow-2xl">
+    <div className="w-72 h-auto mx-auto m-10 bg-green-300 shadow-green-500/90 rounded-2xl shadow-2xl">
       <CardDesign
         height="h-[420px]"
         img={

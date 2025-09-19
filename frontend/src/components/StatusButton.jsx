@@ -9,7 +9,7 @@ export default function StatusButton(
 
   return (
     <div>
-        <span className="px-2 py-1 rounded-full text-sm font-bold" style={{backgroundColor: colour}}>
+        <span className="px-2 py-3 rounded-xl capitalize text-sm font-bold" style={{backgroundColor: colour}}>
             {title}
         </span>
     </div>

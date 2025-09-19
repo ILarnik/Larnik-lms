@@ -1,5 +1,6 @@
  import { Target } from "lucide-react";
 import React from "react";
+import CustomButton from "./ui/CustomButton";
 
 export default function CardDesign({
   // for all
@@ -21,9 +22,9 @@ export default function CardDesign({
 }) {
   const Iconcomponent = icon;
   return (
-    <div>
+    // <div className="">
       <div
-        className={`${bgColor} ${width} ${height} ${corner} ${shadow} mx-auto flex flex-col items-start`}
+        className={`${bgColor} ${width} ${height} ${corner} ${shadow} mx-auto flex flex-col items-start shadow-2xl`}
       >
         {variant === "course" ? (
           <>
@@ -40,12 +41,13 @@ export default function CardDesign({
                 {price}
               </span>
               {btnName && (
-                <button
-                  className="px-4 py-2 rounded-lg bg-green-700 text-white hover:bg-green-600 transition"
-                  onClick={onClick} // ✅ wired up
-                >
-                  {btnName}
-                </button>
+                // <button
+                //   className="px-4 py-2 rounded-lg bg-green-700 text-white hover:bg-green-600 transition"
+                //   onClick={onClick} // ✅ wired up
+                // >
+                //   {btnName}
+                // </button>
+                <CustomButton onClick={onClick} className={"bg-green-700"}>{btnName}</CustomButton>
               )}
             </div>
           </>
@@ -105,6 +107,6 @@ export default function CardDesign({
           ""
         )}
       </div>
-    </div>
+    // </div>
   );
 }
