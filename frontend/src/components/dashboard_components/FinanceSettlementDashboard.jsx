@@ -1,183 +1,270 @@
- import React, { useState } from "react";
+//  import React, { useState, useEffect } from "react";
+// import {jwtDecode} from "jwt-decode"; // ✅ correct import
+// import UniversitySettlement from "../../pages/UniversitySettlement.jsx";
+// import FinanceManager from "../../pages/FinanceManager.jsx";
+
+// export default function FinanceSettlementDashboard() {
+//   const [activeTab, setActiveTab] = useState("university");
+//   const [userRole, setUserRole] = useState(null);
+//   const [userId, setUserId] = useState(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       try {
+//         const decoded = jwtDecode(token);
+//         console.log("🔍 Full decoded token:", decoded);
+
+//         // Normalize roles
+//         let roleFromToken =
+//           decoded.role || decoded.roles?.[0] || decoded.userRole;
+
+//         // Special handling for finance managers
+//         if (decoded.role === "sub-admin" && decoded.subAdminRole === "finance_manager") {
+//           roleFromToken = "finance";
+//         }
+
+//         const idFromToken = decoded.id || decoded.userId || decoded._id;
+
+//         setUserRole(roleFromToken);
+//         setUserId(idFromToken);
+
+//         localStorage.setItem("role", roleFromToken);
+//         localStorage.setItem("userId", idFromToken);
+
+//         console.log("✅ Normalized Role/UserId:", roleFromToken, idFromToken);
+//       } catch (err) {
+//         console.error("❌ Failed to decode token:", err);
+//       }
+//     } else {
+//       console.warn("⚠️ No token found in localStorage");
+//     }
+//     setLoading(false);
+//   }, []);
+
+//   const renderTabContent = () => {
+//     switch (activeTab) {
+//       case "university":
+//         if (userRole !== "university") {
+//           return <p className="text-red-600">⚠️ Only university users can access this section</p>;
+//         }
+//         return <UniversitySettlement universityId={userId} />;
+
+//       case "finance":
+//         if (userRole !== "finance") {
+//           return <p className="text-red-600">⚠️ Only finance managers can access this section</p>;
+//         }
+//         // Pass ownerType as "teacher" to fetch teacher wallets by default
+//         return <FinanceManager walletOwnerId={userId} ownerType="teacher" />;
+
+//       default:
+//         return null;
+//     }
+//   };
+
+//   if (loading) return <div className="p-4 text-center">Loading dashboard...</div>;
+
+//   return (
+//     <div className="p-4 max-w-5xl mx-auto bg-gray-50">
+//       <h1 className="text-2xl font-bold mb-4 text-center">
+//         Finance & Settlement Dashboard
+//       </h1>
+
+//       {/* Tabs */}
+//       <div className="flex gap-4 mb-6 justify-center">
+//         <button
+//           className={`px-4 py-2 rounded ${
+//             activeTab === "university" ? "bg-green-600 text-white" : "bg-gray-200"
+//           }`}
+//           onClick={() => setActiveTab("university")}
+//         >
+//           University
+//         </button>
+//         <button
+//           className={`px-4 py-2 rounded ${
+//             activeTab === "finance" ? "bg-purple-600 text-white" : "bg-gray-200"
+//           }`}
+//           onClick={() => setActiveTab("finance")}
+//         >
+//           Finance Manager
+//         </button>
+//       </div>
+
+//       <div>{renderTabContent()}</div>
+//     </div>
+//   );
+// }
+
+
+
+
+// src/components/dashboard_components/FinanceSettlementDashboard.jsx
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { CheckCircle2, Clock, Wallet } from "lucide-react";
+
 import {
-  teacherRequestSettlement,
-  universityRequestSettlement,
-  universityApproveSettlement,
-  referralRequestSettlement,
-  financeApproveSettlement,
-  financeRejectSettlement,
+  getFinanceOverview,
+  getSettlements,
+  requestWithdrawal,
 } from "../../api/api";
-import { getPendingSettlements } from "../../api/api";
 
-export default function SettlementDashboard() {
-  const [activeTab, setActiveTab] = useState("teacher");
-  const [amount, setAmount] = useState("");
-  const [requestId, setRequestId] = useState("");
-  const [message, setMessage] = useState("");
+export default function FinanceSettlementDashboard() {
+  const [overview, setOverview] = useState(null);
+  const [settlements, setSettlements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
-  const handleApiCall = async (apiFn, payload) => {
+  // Fetch overview and settlements on load
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [overviewRes, settlementsRes] = await Promise.all([
+          getFinanceOverview(),
+          getSettlements(),
+        ]);
+        setOverview(overviewRes.data);
+        setSettlements(settlementsRes.data.settlements || []);
+      } catch (err) {
+        console.error("Error fetching finance data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleWithdrawal = async () => {
+    if (!overview || overview.balance <= 0) {
+      alert("No balance available for withdrawal.");
+      return;
+    }
+
     try {
-      const res = await apiFn(payload);
-      setMessage(JSON.stringify(res.data, null, 2));
+      setWithdrawLoading(true);
+      await requestWithdrawal();
+      alert("Withdrawal request submitted successfully!");
+      // Refresh data
+      const [overviewRes, settlementsRes] = await Promise.all([
+        getFinanceOverview(),
+        getSettlements(),
+      ]);
+      setOverview(overviewRes.data);
+      setSettlements(settlementsRes.data.settlements || []);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Error calling API");
+      console.error("Withdrawal failed:", err);
+      alert("Withdrawal failed, please try again.");
+    } finally {
+      setWithdrawLoading(false);
     }
   };
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">💰 Settlement Dashboard</h1>
+  if (loading) {
+    return <p className="text-center py-6 text-gray-500">Loading finance data...</p>;
+  }
 
-      {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
-        {["teacher", "university", "referral", "finance"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setActiveTab(tab);
-              setMessage("");
-              setAmount("");
-              setRequestId("");
-            }}
-            className={`px-4 py-2 rounded-lg ${
-              activeTab === tab
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-green-800">Finance & Settlements</h1>
+
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="shadow-md border border-green-200">
+          <CardContent className="flex items-center justify-between p-6">
+            <div>
+              <p className="text-sm text-gray-500">Total Earnings</p>
+              <h2 className="text-xl font-bold text-green-700">
+                ₹{overview?.totalEarnings || 0}
+              </h2>
+            </div>
+            <Wallet className="h-10 w-10 text-green-600" />
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md border border-green-200">
+          <CardContent className="flex items-center justify-between p-6">
+            <div>
+              <p className="text-sm text-gray-500">Pending Settlements</p>
+              <h2 className="text-xl font-bold text-yellow-600">
+                ₹{overview?.pendingSettlements || 0}
+              </h2>
+            </div>
+            <Clock className="h-10 w-10 text-yellow-500" />
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md border border-green-200">
+          <CardContent className="flex items-center justify-between p-6">
+            <div>
+              <p className="text-sm text-gray-500">Available Balance</p>
+              <h2 className="text-xl font-bold text-green-700">
+                ₹{overview?.balance || 0}
+              </h2>
+            </div>
+            <CheckCircle2 className="h-10 w-10 text-green-500" />
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Teacher Settlement */}
-      {activeTab === "teacher" && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Teacher Settlement</h2>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            className="border p-2 rounded w-64"
-          />
-          <button
-            onClick={() =>
-              handleApiCall(teacherRequestSettlement, { amount: Number(amount) })
-            }
-            className="ml-2 px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Request Settlement
-          </button>
-        </div>
-      )}
+      {/* Withdrawal Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleWithdrawal}
+          disabled={withdrawLoading || !overview || overview.balance <= 0}
+          className="bg-green-600 hover:bg-green-700 text-white"
+        >
+          {withdrawLoading ? "Processing..." : "Request Withdrawal"}
+        </Button>
+      </div>
 
-      {/* University Settlement */}
-      {activeTab === "university" && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">University Settlement</h2>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            className="border p-2 rounded w-64"
-          />
-          <div className="space-x-2">
-            <button
-              onClick={() =>
-                handleApiCall(universityRequestSettlement, {
-                  amount: Number(amount),
-                })
-              }
-              className="px-4 py-2 bg-green-600 text-white rounded"
-            >
-              Request Settlement
-            </button>
-            <button
-              onClick={() =>
-                handleApiCall(universityApproveSettlement, { requestId })
-              }
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-              Approve Settlement
-            </button>
-            <input
-              type="text"
-              value={requestId}
-              onChange={(e) => setRequestId(e.target.value)}
-              placeholder="Enter Request ID"
-              className="border p-2 rounded w-64 mt-2 block"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Referral Settlement */}
-      {activeTab === "referral" && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Referral Partner Settlement</h2>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            className="border p-2 rounded w-64"
-          />
-          <button
-            onClick={() =>
-              handleApiCall(referralRequestSettlement, {
-                amount: Number(amount),
-              })
-            }
-            className="ml-2 px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Request Settlement
-          </button>
-        </div>
-      )}
-
-      {/* Finance Settlement */}
-      {activeTab === "finance" && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Finance Manager Settlement</h2>
-          <input
-            type="text"
-            value={requestId}
-            onChange={(e) => setRequestId(e.target.value)}
-            placeholder="Enter Request ID"
-            className="border p-2 rounded w-64"
-          />
-          <div className="space-x-2">
-            <button
-              onClick={() =>
-                handleApiCall(financeApproveSettlement, { requestId })
-              }
-              className="px-4 py-2 bg-green-600 text-white rounded"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() =>
-                handleApiCall(financeRejectSettlement, { requestId })
-              }
-              className="px-4 py-2 bg-red-600 text-white rounded"
-            >
-              Reject
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Response box */}
-      {message && (
-        <div className="mt-6">
-          <h3 className="font-semibold">API Response:</h3>
-          <pre className="bg-gray-100 p-4 rounded text-sm overflow-x-auto">
-            {message}
-          </pre>
-        </div>
-      )}
+      {/* Settlement History */}
+      <Card className="shadow-md border border-green-200">
+        <CardContent className="p-6">
+          <h2 className="text-lg font-semibold text-green-800 mb-4">
+            Settlement History
+          </h2>
+          {settlements.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left border">
+                <thead className="bg-green-50 text-green-900">
+                  <tr>
+                    <th className="px-4 py-2 border">Date</th>
+                    <th className="px-4 py-2 border">Amount</th>
+                    <th className="px-4 py-2 border">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {settlements.map((s, idx) => (
+                    <tr key={idx} className="hover:bg-green-50">
+                      <td className="px-4 py-2 border">
+                        {new Date(s.date).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-2 border">₹{s.amount}</td>
+                      <td className="px-4 py-2 border">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            s.status === "completed"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No settlements found.</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
