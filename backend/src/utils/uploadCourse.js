@@ -50,10 +50,12 @@ export const uploadNotes = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
 });
 
-
-export const uploadOther = (folder = "general", types = []) =>
+export const uploadAny = (folder = "general", allowedTypes = []) =>
   multer({
     storage: storage(folder),
-    fileFilter: fileFilter(types),
+    fileFilter:
+      allowedTypes.length > 0
+        ? fileFilter(allowedTypes)
+        : (req, file, cb) => cb(null, true), // ✅ allow all
     limits: { fileSize: 100 * 1024 * 1024 },
   });
