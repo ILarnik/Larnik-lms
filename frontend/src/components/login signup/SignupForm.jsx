@@ -330,7 +330,7 @@ export default function Signup({ role }) {
           <button
             type="button"
             onClick={() => setPasswordVisible(!passwordVisible)}
-            className="absolute right-3 top-2"
+            className="absolute right-3 top-0 border-spacing-1"
           >
             {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>

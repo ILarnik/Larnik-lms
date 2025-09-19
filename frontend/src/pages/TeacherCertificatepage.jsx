@@ -1,6 +1,7 @@
  import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { issueCertificate } from "../api/api"; // make sure this points to your API helper
+import CustomButton from "../components/ui/CustomButton";
 
 export default function TeacherCertificates() {
   const [formData, setFormData] = useState({
@@ -95,13 +96,14 @@ export default function TeacherCertificates() {
         className="w-full border p-2 rounded"
       />
 
-      <button
+      {/* <button
         type="submit"
         disabled={loading}
         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         {loading ? "Submitting..." : "Issue Certificate"}
-      </button>
+      </button> */}
+      <CustomButton className={"bg-black"}>{loading ? "Submitting..." : "Issue Certificate"}</CustomButton>
     </form>
   );
 }

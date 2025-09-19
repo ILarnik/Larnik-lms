@@ -19,7 +19,7 @@ export default function StudentDashboardCards({ role, refreshKey }) {
         let res;
         const normalizedRole = role?.toLowerCase(); // ✅ normalize
 
-        if (normalizedRole === "student") {
+        if (normalizedRole === "students") {
           res = await getStudents();
         } else if (normalizedRole === "teacher" || normalizedRole === "teachers") {
           res = await getTeachers();
@@ -34,7 +34,7 @@ export default function StudentDashboardCards({ role, refreshKey }) {
         }
 
         const users = res?.data || [];
-        console.log(`Fetched ${role}s:`, users);
+        // console.log(`Fetched ${role}s:`, users);
 
         // ✅ Total count
         const total = users.length;
@@ -55,19 +55,19 @@ export default function StudentDashboardCards({ role, refreshKey }) {
 
         setCards([
           {
-            title: `Total ${role}s`,
+            title: `Total ${role}`,
             value: total,
-            subTitle: `All registered ${normalizedRole}s`,
+            subTitle: `All registered ${normalizedRole}`,
             icon: Users,
           },
           {
-            title: `Active ${role}s`,
+            title: `Active ${role}`,
             value: activeCount,
             subTitle: "Currently active",
             icon: UserCheck,
           },
           {
-            title: `Pending ${role}s`,
+            title: `Pending ${role}`,
             value: pendingCount,
             subTitle: "Awaiting approval",
             icon: UserX,
@@ -80,7 +80,7 @@ export default function StudentDashboardCards({ role, refreshKey }) {
           },
         ]);
       } catch (err) {
-        console.error(`Failed to fetch ${role}s:`, err);
+        console.error(`Failed to fetch ${role}:`, err);
       }
     };
 

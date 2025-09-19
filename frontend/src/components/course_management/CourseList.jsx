@@ -60,6 +60,7 @@
 import React, { useEffect, useState } from "react";
 import { getApproveCourses, deleteCourse } from "../../api/api";
 import ElevatedCard from "../ui/ElevatedCard";
+import CustomButton from "../ui/CustomButton";
 
 export default function CourseList() {
   const [courses, setCourses] = useState([]);
@@ -94,21 +95,22 @@ export default function CourseList() {
             className="flex justify-between items-start border rounded-xl p-4 bg-neutral-50 dark:bg-neutral-800"
           >
             <div>
-              <h3 className="font-semibold">{c.title}</h3>
-              <p className="text-sm text-gray-600">{c.description}</p>
-              <span className="text-xs text-gray-500 block">
+              <h3 className="font-bold text-3xl uppercase">{c.title}</h3>
+              <p className=" text-gray-600 text-2xl capitalize">{c.description}</p>
+              <span className=" text-gray-500 block text-xl capitalize">
                 By: {c.createdBy?.name || "Unknown"}
               </span>
               <span className="text-xs text-gray-500">
                 Course ID: {c.courseuniqueId}
               </span>
             </div>
-            <button
+            {/* <button
               onClick={() => handleDelete(c._id)}
               className="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
             >
               Delete
-            </button>
+            </button> */}
+            <CustomButton label={"Delete"} onClick={()=>handleDelete(c._id)} className={"bg-black"} />
           </div>
         ))}
       </div>

@@ -12,6 +12,8 @@ import UserManagementListDesign from "./UserManagementListDesign";
 import StudentDashboardCards from "./cards/StudentDashboardCards";
 
 export default function UserManagement(props) {
+  // console.log(props, "props");
+  
   const [userLists, setUserLists] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,10 +25,11 @@ export default function UserManagement(props) {
       // ✅ normalize role (lowercase to avoid case mismatches)
       const role = props.role?.toLowerCase();
 
-      if (role === "student") {
+      if (role === "students") {
         const response = await getStudents();
         data = response.data;
-      } else if (role === "teacher") {
+        // console.log(data,"students");
+      } else if (role === "teachers") {
         const response = await getTeachers();
         data = response.data;
       } else if (role === "university") {
@@ -34,16 +37,15 @@ export default function UserManagement(props) {
         data = response.data;
       } else if (role === "referral") {
         const response = await getReferral();
-        data = response.data;
-      } else if (role === "partner" || role === "partners") {
+        data = response.data;        
+      } else if (role === "partners") {
         const response = await getPartners();
         data = response.data;
+        // console.log(data,"partners");
       } else if (role === "subadmin" || role === "sub-admin") {
         const response = await getSubAdmins(); // ✅ corrected function name
         data = response.data;
       }
-
-      console.log(`${props.role}s from API:`, data);
       setUserLists(data);
     } catch (err) {
       console.error(`Failed to fetch ${props.role}s:`, err);
@@ -58,7 +60,7 @@ export default function UserManagement(props) {
   }, [props.role]); // refetch if role changes
 
   if (loading) return <div className="p-4">Loading {props.role}s...</div>;
-  if (!userLists.length) return <div className="p-4">No {props.role}s found</div>;
+  if (!userLists.length) return <div className="p-4">No {props.role} found</div>;
 
   return (
     <div>
@@ -69,18 +71,18 @@ export default function UserManagement(props) {
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col items-start m-6">
-            <span className="font-bold">{props.role} List</span>
+            <span className="font-bold uppercase text-3xl">{props.role} List</span>
             <span>View and manage all {props.role} on your platform</span>
           </div>
         </div>
       </div>
 
       {/* Table header */}
-      <div className="bg-gray-200 flex justify-between items-center text-start p-2 font-bold">
-        <span className="w-1/4">Name</span>
-        <span className="w-1/6">Phone</span>
-        <span className="w-1/12">Status</span>
-        <span className="w-1/12">Actions</span>
+      <div className="bg-gray-200 flex justify-between items-center p-2 font-bold text-xl">
+        <span className="w-[40%]">Name</span>
+        <span className="w-[15%]">Phone</span>
+        <span className="w-[15%]">Status</span>
+        <span className="w-[30%]">Actions</span>
       </div>
 
       {/* Users list */}

@@ -6,6 +6,7 @@ import {
   deleteUser,
   updateSubRole,
 } from "../../api/api";
+import CustomButton from "../ui/CustomButton";
 
 export default function ManageSubAdmins() {
   const [subAdmins, setSubAdmins] = useState([]);
@@ -92,7 +93,7 @@ export default function ManageSubAdmins() {
 
   return (
     <div className="p-6 w-full">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+      <h2 className="text-4xl font-bold mb-6 text-gray-800">
         Manage Sub-Admins
       </h2>
 
@@ -144,12 +145,13 @@ export default function ManageSubAdmins() {
             </option>
           ))}
         </select>
-        <button
+        {/* <button
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-md shadow-md"
         >
           Create Manager
-        </button>
+        </button> */}
+        <CustomButton label={"Create Manager"} className={"bg-black"} />
       </form>
 
       {/* Full-width Sub-Admins List */}
@@ -164,19 +166,19 @@ export default function ManageSubAdmins() {
             >
               {/* Avatar + Details */}
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full text-lg font-bold text-blue-600">
+                <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full text-lg font-bold text-orange-600">
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="text-md font-semibold text-gray-800">
+                  <h4 className="text-xl font-bold text-gray-800 uppercase">
                     {user.name}
                   </h4>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-base text-gray-500 ">{user.email}</p>
                 </div>
               </div>
 
               {/* Role Section */}
-              <div className="flex-1 flex justify-center">
+              <div className="flex-1 flex justify-end mr-10">
                 {editingUserId === user._id ? (
                   <div className="flex gap-2">
                     <select
@@ -190,25 +192,27 @@ export default function ManageSubAdmins() {
                         </option>
                       ))}
                     </select>
-                    <button
+                    {/* <button
                       className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md shadow-md"
                       onClick={() => handleSaveRole(user._id)}
                     >
                       Save
-                    </button>
-                    <button
+                    </button> */}
+                    <CustomButton onClick={() => handleSaveRole(user._id)} label={"Save"} className={"bg-green-700"} />
+                    {/* <button
                       className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-md shadow-md"
                       onClick={() => setEditingUserId(null)}
                     >
                       Cancel
-                    </button>
+                    </button> */}
+                    <CustomButton onClick={() => setEditingUserId(null)} label={"Cancel"} className={"bg-yellow-600"} />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-md">
+                  <div className="flex items-center gap-3 bg-green-400/10 px-4 py-2 rounded-full">
                     <span className="font-medium text-gray-700">
                       {user.subAdminRole}
                     </span>
-                    <button
+                    {/* <button
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md shadow-md"
                       onClick={() => {
                         setEditingUserId(user._id);
@@ -216,19 +220,24 @@ export default function ManageSubAdmins() {
                       }}
                     >
                       Change
-                    </button>
+                    </button> */}
+                    <CustomButton onClick={() => {
+                        setEditingUserId(user._id);
+                        setTempRole(user.subAdminRole);
+                      }} label={"Change"} className={"bg-blue-700"} />
                   </div>
                 )}
               </div>
 
               {/* Delete Button */}
               <div>
-                <button
+                {/* <button
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-md"
                   onClick={() => handleDelete(user._id)}
                 >
                   Delete
-                </button>
+                </button> */}
+                <CustomButton onClick={() => handleDelete(user._id)} label={"Delete"} className={"bg-red-600"} />
               </div>
             </div>
           ))}

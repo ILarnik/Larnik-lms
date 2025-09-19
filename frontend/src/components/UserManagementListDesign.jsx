@@ -191,6 +191,7 @@
 import React, { useState } from "react";
 import StatusButton from "./StatusButton";
 import { approveUserStatus, deleteUsers } from "../api/api"; // ✅ fixed import
+import CustomButton from "./ui/CustomButton";
 
 export default function UserManagementListDesign({
   userId,
@@ -227,17 +228,17 @@ export default function UserManagementListDesign({
   return (
     <>
       <div className="flex bg-white justify-between p-2 items-center border-t-2 border-black">
-        <div className="flex flex-col items-start w-1/4 truncate">
-          <span className="font-bold">{name}</span>
-          <span>{mail}</span>
+        <div className="flex flex-col w-[40%] truncate">
+          <span className="font-bold text-xl capitalize">{name}</span>
+          <span className="text-base">{mail}</span>
         </div>
-        <span className="w-1/6">{phone}</span>
-        <div className="w-1/12">
+        <span className="w-[15%] ">+91-{phone}</span>
+        <div className="w-[15%]">
           <StatusButton title={status_title} colour={status_colour} />
         </div>
 
-        <div className="w-1/6 flex gap-2">
-          <button
+        <div className="w-[30%] flex gap-2">
+          {/* <button
             onClick={handleToggleStatus}
             className={`px-2 py-1 rounded text-white ${
               status_title === "Active"
@@ -246,14 +247,17 @@ export default function UserManagementListDesign({
             }`}
           >
             {status_title === "Active" ? "Set Pending" : "Approve"}
-          </button>
+          </button> */}
+          <CustomButton onClick={handleToggleStatus} className={`px-2 py-1 rounded text-white ${status_title === "Active"? "bg-yellow-500 hover:bg-yellow-600": "bg-green-500 hover:bg-green-600"
+            }`}  />
 
-          <button
+          {/* <button
             onClick={() => setShowConfirm(true)}
             className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
           >
             Delete
-          </button>
+          </button> */}
+          <CustomButton label={"Delete"} className={"bg-red-600"} onClick={() => setShowConfirm(true)} />
         </div>
       </div>
 
@@ -267,18 +271,20 @@ export default function UserManagementListDesign({
               undone.
             </p>
             <div className="flex justify-center gap-4">
-              <button
+              {/* <button
                 onClick={() => setShowConfirm(false)}
                 className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
               >
                 Cancel
-              </button>
-              <button
+              </button> */}
+              <CustomButton label={"Cancel"} className={"bg-gray-600"} onClick={() => setShowConfirm(false)} />
+              {/* <button
                 onClick={confirmDelete}
                 className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Confirm Delete
-              </button>
+              </button> */}
+              <CustomButton label={"Confirm Delete"} className={"bg-blue-600"} onClick={confirmDelete} />
             </div>
           </div>
         </div>
