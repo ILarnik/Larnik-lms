@@ -184,24 +184,24 @@ export default function SettlementDashboard() {
  // 👈 import new API
 
 // Add in your tab list:
-{["teacher", "university", "referral", "finance", "pending"].map((tab) => ( ... ))}
+// {["teacher", "university", "referral", "finance", "pending"].map((tab) => ( ... ))}
 
 // Add new section:
-{activeTab === "pending" && (
-  <div className="space-y-4">
-    <h2 className="text-lg font-semibold">Pending Settlements</h2>
-    <button
-      onClick={async () => {
-        try {
-          const res = await getPendingSettlements();
-          setMessage(JSON.stringify(res.data, null, 2));
-        } catch (err) {
-          setMessage(err.response?.data?.message || "Error fetching pending requests");
-        }
-      }}
-      className="px-4 py-2 bg-purple-600 text-white rounded"
-    >
-      Fetch Pending Requests
-    </button>
-  </div>
-)}
+// {activeTab === "pending" && (
+//   <div className="space-y-4">
+//     <h2 className="text-lg font-semibold">Pending Settlements</h2>
+//     <button
+//       onClick={async () => {
+//         try {
+//           const res = await getPendingSettlements();
+//           setMessage(JSON.stringify(res.data, null, 2));
+//         } catch (err) {
+//           setMessage(err.response?.data?.message || "Error fetching pending requests");
+//         }
+//       }}
+//       className="px-4 py-2 bg-purple-600 text-white rounded"
+//     >
+//       Fetch Pending Requests
+//     </button>
+//   </div>
+// )}
