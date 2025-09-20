@@ -30,6 +30,7 @@ import ReportsDashboard from "./dashboard_components/ReportsDashboard.jsx";
 import CertificateManagerPage from "../pages/certificatepage";
 import GovernanceDashboard from "./dashboard_components/GovernanceDashboard";
 
+
 // ✅ Import APIs
 import {
   getStudents,
@@ -39,6 +40,7 @@ import {
    getPartners,
   getSubAdmins,
 } from "../api/api"; // adjust path if needed
+import NotificationDashboard from "./dashboard_components/NotificationDashboard";
 
 // Sidebar menu structure
 const menuItems = [
@@ -63,7 +65,7 @@ const menuItems = [
   { title: "Report", icon: <Notebook size={18} /> },
   { title: "Blog", icon: <Rss size={18} /> },
   { title: "Governance", icon: <Landmark size={18} /> },
-  { title: "doc uni", icon: <Landmark size={18} /> },
+  // { title: "doc uni", icon: <Landmark size={18} /> },
 ];
 
 export default function AdminDashboard() {
@@ -234,6 +236,8 @@ export default function AdminDashboard() {
 
           {/* Reports */}
           {activeItem === "Report" && <ReportsDashboard />}
+
+          {activeItem === "Notifications" && <NotificationDashboard />}
 
           {/* Add User */}
           {activeItem === "Add User" && <ManageSubAdmins />}

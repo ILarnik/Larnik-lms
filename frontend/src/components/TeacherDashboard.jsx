@@ -35,7 +35,6 @@ export default function TeacherDashboard() {
   const [settlementAmount, setSettlementAmount] = useState("");
   const [affiliatedUniversity, setAffiliatedUniversity] = useState("");
 
-  // ---------------- Profile Handlers ----------------
   const handleProfileChange = (e) => {
     const { name, value, files } = e.target;
     setProfile((prev) => ({ ...prev, [name]: files ? files[0] : value }));
@@ -64,7 +63,6 @@ export default function TeacherDashboard() {
     }
   };
 
-  // ---------------- Courses ----------------
   const fetchCourses = async () => {
     try {
       const res = await getTeacherCourses();
@@ -74,18 +72,15 @@ export default function TeacherDashboard() {
     }
   };
 
-  // ---------------- Reviews ----------------
   const fetchReviews = async () => {
     try {
       const res = await getTeacherReviews();
       setReviews(res.data);
     } catch (err) {
-      console.error(err);
       toast.error("Failed to fetch reviews");
     }
   };
 
-  // ---------------- Wallet ----------------
   const fetchWallet = async () => {
     try {
       if (!profile._id) return; // wait until profile is loaded
@@ -140,7 +135,6 @@ export default function TeacherDashboard() {
         });
       }
     } catch (err) {
-      console.error("Error fetching earnings:", err);
       toast.error("Failed to fetch earnings");
     }
   };
@@ -157,10 +151,9 @@ export default function TeacherDashboard() {
     if (activeTab === "earnings") fetchEarnings();
   }, [activeTab, profile._id]);
 
-  // ---------------- UI ----------------
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Teacher Dashboard</h1>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-green-700">Teacher Dashboard</h1>
       <ToastContainer position="top-right" autoClose={2000} />
 
       {/* Tabs */}
@@ -287,14 +280,14 @@ export default function TeacherDashboard() {
 
       {/* Feedback Tab */}
       {activeTab === "feedback" && (
-        <div className="bg-white shadow rounded-xl p-6">
-          <h2 className="font-semibold mb-4">Student Reviews</h2>
+        <div className="bg-white shadow-lg rounded-2xl p-6 border border-green-200">
+          <h2 className="text-xl font-semibold mb-4 text-green-700">Student Reviews</h2>
           {reviews.length === 0 ? (
             <p className="text-gray-500">No reviews available yet.</p>
           ) : (
             reviews.map((course) => (
               <div key={course.courseId} className="mb-4">
-                <h3 className="font-semibold mb-2">{course.courseTitle}</h3>
+                <h3 className="font-semibold mb-2 text-green-600">{course.courseTitle}</h3>
                 {course.reviews.length === 0 ? (
                   <p className="text-gray-500">No reviews for this course.</p>
                 ) : (
@@ -346,8 +339,8 @@ export default function TeacherDashboard() {
 
       {/* Certificates Tab */}
       {activeTab === "certificates" && (
-        <div className="bg-white shadow rounded-xl p-6">
-          <h2 className="font-semibold mb-4">Issue Certificates</h2>
+        <div className="bg-white shadow-lg rounded-2xl p-6 border border-green-200">
+          <h2 className="text-xl font-semibold mb-4 text-green-700">Issue Certificates</h2>
           <TeacherCertificates />
         </div>
       )}

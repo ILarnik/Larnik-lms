@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CreateCertificateTemplate from "../Certificatemanagement/CreateCertificateTemplate";
+// import CreateCertificateTemplate from "";
 import CertificateTemplates from "../Certificatemanagement/CertificateTemplates";
 import { deleteCertificateTemplate } from "../../api/api";
 
@@ -14,8 +14,8 @@ export default function CertificateManagement() {
 
   return (
     <div className="grid gap-6 p-6">
-      <CreateCertificateTemplate onCreated={handleCreated} />
-      <CertificateTemplates refreshKey={refreshKey} onDelete={handleDelete} />
+      {/* <CreateCertificateTemplate onCreated={handleCreated} /> */}
+      {/* <CertificateTemplates refreshKey={refreshKey} onDelete={handleDelete} /> */}
     </div>
   );
 }
