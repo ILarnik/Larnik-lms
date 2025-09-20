@@ -25,9 +25,11 @@ const canDeleteCourse = (course, user) => {
   );
 };
 
- //--- CREATE COURSE ---
- export const createCourse = async (req, res) => {
+export const createCourse = async (req, res) => {
   try {
+      console.log("DEBUG req.body:", req.body);
+    console.log("DEBUG req.file:", req.file);
+    // --- JSON/text fields from form ---
     const {
       category,
       subCategory,
@@ -39,25 +41,34 @@ const canDeleteCourse = (course, user) => {
       tags,
     } = req.body;
 
-    const teacher = await User.findById(req.user.id);
+    // --- Optional uploaded file ---
+    const courseFile = req.file ? req.file.path : null;
 
+    // --- Verify teacher/university ---
+    const teacher = await User.findById(req.user.id);
     if (!teacher) {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
     let isApprovedByUniversity = false;
-
     if (teacher.role === "university") {
-      // University creating its own course
       isApprovedByUniversity = true;
-    } else if (teacher.role === "teacher" && !teacher.affiliatedUniversity) {
-      // Freelancer teacher → wait for superadmin approval later
-      isApprovedByUniversity = false;
-    } else if (teacher.role === "teacher" && teacher.affiliatedUniversity) {
-      // University-affiliated teacher → needs university approval first
-      isApprovedByUniversity = false;
+    } else if (teacher.role === "teacher") {
+      // If teacher has an affiliated university → needs approval
+      isApprovedByUniversity = !!teacher.affiliatedUniversity ? false : false;
     }
 
+    // --- Normalize tags ---
+    let normalizedTags = [];
+    if (tags) {
+      // handle "mern, react, node" → ["mern","react","node"]
+      normalizedTags = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
+
+    // --- Create course ---
     const course = await Course.create({
       category,
       subCategory,
@@ -66,25 +77,24 @@ const canDeleteCourse = (course, user) => {
       duration,
       targetAudience,
       prerequisites,
-      tags,
+      tags: normalizedTags,
+      courseFile, // uploaded file path
       createdBy: req.user.id,
-
-      // ✅ Auto-generated unique course ID
       courseuniqueId: crypto.randomBytes(5).toString("hex"),
-
       isApprovedByUniversity,
       isApprovedBySuperAdmin: false,
     });
 
-    res
-      .status(201)
-      .json({ message: "Course created, pending approval", course });
+    res.status(201).json({
+      success: true,
+      message: "Course created, pending approval",
+      course,
+    });
   } catch (e) {
     console.error("Error creating course:", e);
     res.status(500).json({ message: e.message });
   }
 };
-
  
  export const approveCourse = async (req, res) => {
   try {

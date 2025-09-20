@@ -267,7 +267,8 @@ export const validateCertificate = (uniqueId) =>
 export const getCertificateTemplateById = (templateId) =>
   API.get(`/certificates/templates/${templateId}`);
 export const getPendingCertificates = () => API.get("/certificates/pending");
-export const getDefaultTemplate = () => API.get("/certificates/templates/default");
+export const getDefaultTemplate = () => API.get("/certificates/default");
+
 
 
 
@@ -295,45 +296,130 @@ export const submitReview = (data) => API.post("/student/review", data);
 /* ====================== WALLET & FINANCE APIs ====================== */
 
  
-// Wallet (Teacher) APIs //
-//////////////////////////
+// // Wallet (Teacher) APIs //
+// //////////////////////////
 
-// // Get teacher wallet details
-//  export const getWallet = (ownerId, ownerType = "teacher") => {
-//   return API.get(`/wallet/${ownerId}`, {
-//     params: { ownerType },
+// // // Get teacher wallet details
+// //  export const getWallet = (ownerId, ownerType = "teacher") => {
+// //   return API.get(`/wallet/${ownerId}`, {
+// //     params: { ownerType },
+// //   });
+// // }
+// // ======================
+// // Settlement Requests
+// // ======================
+
+// // Teacher requests a payout/settlement
+// // For freelancer teacher or affiliated teacher (will go to university first)
+// export const requestSettlement = (teacherId) =>
+//   API.post("/wallet/request", { teacherId });
+
+// // University approves teacher settlement and decides teacher share
+// // body: { teacherId, transactionId, teacherShare }
+// export const universityApproveSettlement = (data) =>
+//   API.post("/wallet/university/approve", data);
+
+// // Finance Manager approves final payout (applies platform cut)
+// // body: { walletOwnerId, transactionId, platformShare }
+//  export const approveSettlement = ({ walletOwnerId, transactionId, split }) => {
+//   return API.post("/wallet/settlement/approve", {
+//     walletOwnerId,
+//     transactionId,
+//     split, // { teacher: 70, university: 20, platform: 10 }
 //   });
-// }
-// ======================
-// Settlement Requests
-// ======================
+// };
 
-// Teacher requests a payout/settlement
-// For freelancer teacher or affiliated teacher (will go to university first)
-export const requestSettlement = (teacherId) =>
-  API.post("/wallet/request", { teacherId });
+//  export const rejectSettlement = ({ walletOwnerId, transactionId }) => {
+//   return API.post("/wallet/settlement/reject", {
+//     walletOwnerId,
+//     transactionId,
+//   });
+// };
+ 
 
-// University approves teacher settlement and decides teacher share
-// body: { teacherId, transactionId, teacherShare }
+// ======================
+// Teacher settlement
+// ======================
+export const teacherRequestSettlement = (data) =>
+  API.post("/wallet/teacher/request", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+// ======================
+// University settlement
+// ======================
+export const universityRequestSettlement = (data) =>
+  API.post("/wallet/university/request", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
 export const universityApproveSettlement = (data) =>
-  API.post("/wallet/university/approve", data);
-
-// Finance Manager approves final payout (applies platform cut)
-// body: { walletOwnerId, transactionId, platformShare }
- export const approveSettlement = ({ walletOwnerId, transactionId, split }) => {
-  return API.post("/wallet/settlement/approve", {
-    walletOwnerId,
-    transactionId,
-    split, // { teacher: 70, university: 20, platform: 10 }
+  API.post("/wallet/university/approve", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
-};
 
- export const rejectSettlement = ({ walletOwnerId, transactionId }) => {
-  return API.post("/wallet/settlement/reject", {
-    walletOwnerId,
-    transactionId,
+// ======================
+// Referral settlement
+// ======================
+export const referralRequestSettlement = (data) =>
+  API.post("/wallet/referral/request", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
-};
+
+// ======================
+// Finance Manager settlement
+// ======================
+export const financeApproveSettlement = (data) =>
+  API.post("/wallet/finance/approve", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+export const financeRejectSettlement = (data) =>
+  API.post("/wallet/finance/reject", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+// ======================
+// Common wallet route
+// ======================
+// export const getWallet = (ownerId) =>
+//   API.get(`/wallet/wallet/${ownerId}`, {
+//     headers: {
+//       Authorization: `Bearer ${localStorage.getItem("token")}`,
+//     },
+//   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ======================
 // Wallet Credit/Debit (Finance Manager only)
 // ======================
@@ -369,6 +455,9 @@ export const addWebinar = (data) => API.post("/careercell/webinar", data);
 export const getWebinars = () => API.get("/careercell/webinars");
 export const addGuide = (data) => API.post("/careercell/guide", data);
 export const getGuides = () => API.get("/careercell/guides");
+export const deletejobbyId = (id) => API.delete(`/careercell/job/${id}`);
+export const deleteguidebyId = (id) => API.delete(`/careercell/guide/${id}`);
+export const deletewebinarbyId = (id) => API.delete(`/careercell/webinar/${id}`);
 
 
 
@@ -474,7 +563,39 @@ export const getTeacherEarnings = () => API.get("/teacher/earnings");
 export const getTeacherReviews = () => API.get("/teacher/reviews");
 
 // Create Course
-export const createCourse = (data) => API.post("/teacher", data);
+// src/api/api.js or wherever createCourse is
+// api.js
+export const createCourse = (data, file) => {
+  const formData = new FormData();
+
+  // Append all fields
+  formData.append("category", data.category);
+  formData.append("subCategory", data.subCategory);
+  formData.append("title", data.title);
+  formData.append("description", data.description);
+  formData.append("duration", data.duration);
+  formData.append("targetAudience", data.targetAudience);
+  formData.append("prerequisites", data.prerequisites);
+
+  // Tags: convert array → comma string
+  if (Array.isArray(data.tags)) {
+    formData.append("tags", data.tags.join(","));
+  } else if (typeof data.tags === "string") {
+    formData.append("tags", data.tags);
+  }
+
+  // Append file if present
+  if (file) {
+    formData.append("file", file); // 👈 multer .single("file")
+  }
+
+  return API.post("/teacher", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};
 
  
 

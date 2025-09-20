@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CardDesign from "../components/CradDesign";
 import { getApproveCourses, getStudents, getTeachers } from "../api/api";
+import CustomButton from "../components/ui/CustomButton";
 
 export default function AboutPage() {
   const [stats, setStats] = useState({
@@ -94,7 +95,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="flex justify-center gap-6 mt-10">
+          {/* <div className="flex justify-center gap-6 mt-10">
             <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow-xl w-64">
               <div className="bg-orange-100 p-3 rounded-full">
                 <Globe size={32} color="orange" />
@@ -102,7 +103,7 @@ export default function AboutPage() {
               <p className="text-2xl font-bold text-black mt-3">150+</p>
               <span className="text-sm text-black">Countries Served</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -128,13 +129,15 @@ export default function AboutPage() {
 
             {/* Buttons */}
             <div className="flex gap-3 pt-14">
-              <button className="shadow-2xl rounded-lg w-36 bg-green-500 text-sm flex gap-1 items-center justify-center">
+              {/* <button className="shadow-2xl rounded-lg w-36 bg-green-500 text-sm flex gap-1 items-center justify-center">
                 <Rocket color="white" size={16} />Join Our Mission
-              </button>
+              </button> */}
+              <CustomButton className={"bg-black"}><Rocket color="white" size={16} className="inline-block" />Join Us</CustomButton>
               <Link to="/blogs">
-                <button className="pt-1 pb-1 shadow-lg rounded-xl w-32 bg-white text-black text-sm">
+                {/* <button className="pt-1 pb-1 shadow-lg rounded-xl w-32 bg-white text-black text-sm">
                   Read Our Blog
-                </button>
+                </button> */}
+                <CustomButton label={"Read Blogs"} className={"bg-black"} />
               </Link>
             </div>
           </div>

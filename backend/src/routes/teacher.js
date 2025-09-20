@@ -27,12 +27,15 @@ import {
   deleteCourse,
 } from "../controllers/coursecontroller.js";
 
-import { uploadVideo, uploadNotes } from "../utils/uploadCourse.js";
+import { uploadVideo, uploadNotes,uploadAny } from "../utils/uploadCourse.js";
 
 import{
   issueCertificate
 }from "../controllers/certificateController.js";
 
+
+// Configure Multer
+ 
 
 const router = express.Router();
 
@@ -49,10 +52,17 @@ router.get("/earnings", authMiddleware, allowRoles("teacher"), myEarnings);
 
 router.get("/reviews", authMiddleware, allowRoles("teacher"), getCourseReviews);
 //CREATE COURSE
+// router.post(
+//   "/",
+//   authMiddleware,
+//   allowRoles("teacher", "university", "superadmin"),
+//   createCourse
+// );
 router.post(
   "/",
   authMiddleware,
-  allowRoles("teacher", "university", "superadmin"),
+  allowRoles("teacher", "university"),
+  uploadAny("courses", []).single("file"), // ensure multer middleware is correct
   createCourse
 );
 

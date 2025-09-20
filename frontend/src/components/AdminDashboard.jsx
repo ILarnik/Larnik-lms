@@ -37,7 +37,7 @@ import {
   getTeachers,
   getUniversity,
   getReferral,
-   
+   getPartners,
   getSubAdmins,
 } from "../api/api"; // adjust path if needed
 
@@ -52,8 +52,9 @@ const menuItems = [
       { title: "Students", icon: <GraduationCap size={16} /> },
       { title: "Teachers", icon: <User size={16} /> },
       { title: "University", icon: <Building2 size={16} /> },
-      { title: "Referral Partners", icon: <UserPlus size={16} /> },
-      { title: "Sub-Admins", icon: <Shield size={16} /> },
+      { title: "Referral", icon: <UserPlus size={16} /> },
+      { title: "Partners", icon: <UserPlus size={16} /> },
+      { title: "Sub-Admin", icon: <Shield size={16} /> },
     ],
   },
   { title: "Course Management", icon: <BookOpen size={18} /> },
@@ -75,22 +76,22 @@ export default function AdminDashboard() {
     students: 0,
     teachers: 0,
     universities: 0,
-    referrals: 0,
-     
-    subadmins: 0,
+    referral: 0,
+     partners:0,
+    subadmin: 0,
   });
 
   // ✅ Fetch counts from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [studentsRes, teachersRes, uniRes, referralRes,   subadminRes] =
+        const [studentsRes, teachersRes, uniRes, referralRes, partnersRes,   subadminRes] =
           await Promise.all([
             getStudents(),
             getTeachers(),
             getUniversity(),
             getReferral(),
-            
+            getPartners(),
             getSubAdmins(),
           ]);
 
@@ -98,9 +99,9 @@ export default function AdminDashboard() {
           students: studentsRes?.data?.length || 0,
           teachers: teachersRes?.data?.length || 0,
           universities: uniRes?.data?.length || 0,
-          referrals: referralRes?.data?.length || 0,
-          
-          subadmins: subadminRes?.data?.length || 0,
+          referral: referralRes?.data?.length || 0,
+          partners : partnersRes?.data?.length || 0,
+          subadmin: subadminRes?.data?.length || 0,
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -116,7 +117,7 @@ export default function AdminDashboard() {
   const handleItemClick = (item) => setActiveItem(item.title);
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-screen w-screen ">      
       {/* Sidebar */}
       <div className="w-64 bg-white border-r p-4 overflow-y-auto">
         <div className="text-2xl font-bold border-b-2 p-1 border-gray-600 mb-8">Larnik</div>
@@ -195,9 +196,9 @@ export default function AdminDashboard() {
                 <DashboardCard title={counts.students} subtitle="Students" icon={GraduationCap} colour="blue" />
                 <DashboardCard title={counts.teachers} subtitle="Teachers" icon={Users} colour="purple" />
                 <DashboardCard title={counts.universities} subtitle="Universities" icon={Building2} colour="orange" />
-                <DashboardCard title={counts.referrals} subtitle="Referral Partners" icon={UserPlus} colour="green" />
-          
-                <DashboardCard title={counts.subadmins} subtitle="Sub Admins" icon={Shield} colour="red" />
+                <DashboardCard title={counts.referral} subtitle="Referral" icon={UserPlus} colour="green" />
+                <DashboardCard title={counts.partners} subtitle="Partners" icon={UserPlus} colour="green" />
+                <DashboardCard title={counts.subadmin} subtitle="Sub Admins" icon={Shield} colour="red" />
               </div>
 
               <div className="w-full">
@@ -206,12 +207,13 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* User Management */}
-          {["Students", "Teachers", "University", "Referral Partners", "Sub-Admins"].includes(
+          {/* User Management */}          
+          {["Students", "Teachers", "University", "Referral","Partners", "Sub-Admin"].includes(
             activeItem
           ) && (
             <div className="w-full p-2">
-              <UserManagement role={activeItem.toLowerCase()} />
+               
+              <UserManagement role={activeItem} />
             </div>
           )}
 
