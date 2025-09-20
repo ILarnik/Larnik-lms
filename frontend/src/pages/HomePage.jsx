@@ -33,11 +33,11 @@ export default function HomePage() {
         });
 
         setCoupons(couponsRes.data); // store coupon list
-        console.log(couponsRes.data);
+        // console.log(couponsRes.data);
         
 
       } catch (error) {
-        console.log("Error fetching data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 

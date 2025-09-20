@@ -1,46 +1,18 @@
-// src/models/Payment.js
-import mongoose from "mongoose";
+ import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-const paymentSchema = new mongoose.Schema(
+const purchaseSchema = new Schema(
   {
-    student: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-      required: true,
-    },
-
+    course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
+    student: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    paymentId: { type: String, required: true },
+    orderId: { type: String, required: true },
+    signature: { type: String, required: true },
     amount: { type: Number, required: true },
-
-    status: {
-      type: String,
-      enum: ["pending", "success", "failed", "refunded"],
-      default: "pending",
-    },
-
-    method: {
-      type: String,
-      enum: ["razorpay", "manual"], // for flexibility
-      default: "razorpay",
-    },
-
-    // Razorpay fields (keep commented until client details provided)
-    /*
-    razorpayOrderId: { type: String },
-    razorpayPaymentId: { type: String },
-    razorpaySignature: { type: String },
-    */
-
-    // createdAt: { type: Date, default: Date.now },
-    // updatedAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ["SUCCESS", "FAILED"], default: "SUCCESS" },
+    purchasedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-const Payment = mongoose.model("Payment", paymentSchema);
-export default Payment;
+export default mongoose.model("Purchase", purchaseSchema);
