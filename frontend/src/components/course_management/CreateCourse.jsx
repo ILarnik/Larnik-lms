@@ -63,14 +63,20 @@
 // }
 
 
+// 
+
+
+
+
+
 import React, { useState } from "react";
-import { createCourse } from "../../api/api";
+import { createCourse, addModule } from "../../api/api";
 import ElevatedCard from "../ui/ElevatedCard";
 import { Label, Input, Textarea, HelpText, ErrorText } from "../ui/Field";
 
- 
-export default function CreateCourse({ onCreated }) {
-  const [form, setForm] = useState({
+export default function CourseBuilderPage() {
+  // Course state
+  const [courseForm, setCourseForm] = useState({
     category: "",
     subCategory: "",
     title: "",
@@ -80,35 +86,36 @@ export default function CreateCourse({ onCreated }) {
     prerequisites: "",
     tags: "",
   });
-  const [file, setFile] = useState(null); // 👈 new for thumbnail/file
+
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [okMsg, setOkMsg] = useState("");
+  const [createdCourseId, setCreatedCourseId] = useState(null);
 
-  const handle = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  // Module state
+  const [moduleTitle, setModuleTitle] = useState("");
+  const [modulesList, setModulesList] = useState([]);
 
-  const handleFile = (e) => setFile(e.target.files[0]);
+  // Handle course input
+  const handleCourseChange = (e) =>
+    setCourseForm({ ...courseForm, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  // Create course
+  const handleCreateCourse = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErr("");
     setOkMsg("");
-
     try {
       const payload = {
-        ...form,
-        tags: form.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
+        ...courseForm,
+        tags: courseForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
       };
-
-      await createCourse(payload, file); // 👈 send payload + file
-
-      setOkMsg("Course created successfully. Pending approval.");
-      setForm({
+      const res = await createCourse(payload);
+      const newCourse = res.data; // make sure API returns course object with _id
+      setCreatedCourseId(newCourse._id);
+      setOkMsg("Course created successfully! You can now add modules.");
+      setCourseForm({
         category: "",
         subCategory: "",
         title: "",
@@ -118,204 +125,149 @@ export default function CreateCourse({ onCreated }) {
         prerequisites: "",
         tags: "",
       });
-      setFile(null);
-      onCreated?.();
-    } catch (e) {
-      setErr(e?.response?.data?.message || "Failed to create course");
+    } catch (error) {
+      setErr(error?.response?.data?.message || "Failed to create course");
     } finally {
       setLoading(false);
     }
   };
 
+  // Add module
+  const handleAddModule = async () => {
+    if (!moduleTitle) return alert("Module title is required");
+    try {
+      const res = await addModule(createdCourseId, { title: moduleTitle });
+      const newModule = res.data; // adjust based on API
+      setModulesList([...modulesList, newModule]);
+      setModuleTitle("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add module");
+    }
+  };
+
   return (
-    <ElevatedCard
-      title="Create a new course"
-      subtitle="Fill the details below. University & SuperAdmin approval flow is applied automatically."
-      rightSlot={
-        <span className="text-xs px-2.5 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-200 dark:border-blue-800">
-          Draft ➜ Approval ➜ Live
-        </span>
-      }
-    >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Grid: Core Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="category">Category *</Label>
-            <Input
-              id="category"
-              name="category"
-              value={form.category}
-              onChange={handle}
-              placeholder="e.g., Programming"
-              required
-            />
-          </div>
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      {/* Create Course */}
+      {!createdCourseId && (
+        <ElevatedCard
+          title="Create a New Course"
+          subtitle="Fill the details to create a course. Approval flow applies automatically."
+        >
+          <form onSubmit={handleCreateCourse} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Category *</Label>
+                <Input
+                  name="category"
+                  value={courseForm.category}
+                  onChange={handleCourseChange}
+                  placeholder="e.g., Programming"
+                  required
+                />
+              </div>
+              <div>
+                <Label>Sub Category *</Label>
+                <Input
+                  name="subCategory"
+                  value={courseForm.subCategory}
+                  onChange={handleCourseChange}
+                  placeholder="e.g., Web Development"
+                  required
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label>Course Title *</Label>
+                <Input
+                  name="title"
+                  value={courseForm.title}
+                  onChange={handleCourseChange}
+                  placeholder="Fullstack MERN from Zero to Pro"
+                  required
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label>Description *</Label>
+                <Textarea
+                  name="description"
+                  value={courseForm.description}
+                  onChange={handleCourseChange}
+                  placeholder="What will learners achieve? Who is this for?"
+                  required
+                />
+                <HelpText>Keep it concise and outcome-focused.</HelpText>
+              </div>
+              <div>
+                <Label>Duration *</Label>
+                <Input
+                  name="duration"
+                  value={courseForm.duration}
+                  onChange={handleCourseChange}
+                  placeholder="e.g., 8 weeks"
+                  required
+                />
+              </div>
+              <div>
+                <Label>Tags</Label>
+                <Input
+                  name="tags"
+                  value={courseForm.tags}
+                  onChange={handleCourseChange}
+                  placeholder="mern, react, node"
+                />
+                <HelpText>Used for search & discovery.</HelpText>
+              </div>
+            </div>
 
-          <div>
-            <Label htmlFor="subCategory">Sub Category *</Label>
-            <Input
-              id="subCategory"
-              name="subCategory"
-              value={form.subCategory}
-              onChange={handle}
-              placeholder="e.g., Web Development"
-              required
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <Label htmlFor="title">Course Title *</Label>
-            <Input
-              id="title"
-              name="title"
-              value={form.title}
-              onChange={handle}
-              placeholder="e.g., Fullstack MERN from Zero to Pro"
-              required
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={form.description}
-              onChange={handle}
-              placeholder="What will learners achieve? Who is this for? Outline the curriculum."
-              required
-            />
-            <HelpText>Keep it concise and outcome-focused.</HelpText>
-          </div>
-
-          <div>
-            <Label htmlFor="duration">Duration *</Label>
-            <Input
-              id="duration"
-              name="duration"
-              value={form.duration}
-              onChange={handle}
-              placeholder="e.g., 8 weeks"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              id="tags"
-              name="tags"
-              value={form.tags}
-              onChange={handle}
-              placeholder="mern, react, node (comma separated)"
-            />
-            <HelpText>Used for search & discovery.</HelpText>
-          </div>
-        </div>
-
-        {/* Grid: Optional */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="targetAudience">Target Audience</Label>
-            <Input
-              id="targetAudience"
-              name="targetAudience"
-              value={form.targetAudience}
-              onChange={handle}
-              placeholder="e.g., Beginners, working professionals"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="prerequisites">Prerequisites</Label>
-            <Input
-              id="prerequisites"
-              name="prerequisites"
-              value={form.prerequisites}
-              onChange={handle}
-              placeholder="e.g., Basic JavaScript"
-            />
-          </div>
-        </div>
-
-        {/* File Upload */}
-        <div>
-          <Label htmlFor="file">Thumbnail (optional)</Label>
-          <Input id="file" name="file" type="file" onChange={handleFile} />
-          <HelpText>Upload an image to represent your course.</HelpText>
-        </div>
-
-        {/* Messages */}
-        <ErrorText>{err}</ErrorText>
-        {okMsg && (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
-            {okMsg}
-          </p>
-        )}
-
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-1">
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
-                       bg-black text-white font-medium shadow-lg shadow-blue-600/20
-                       hover:bg-white hover:text-black active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed
-                       transition"
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="animate-spin h-4 w-4"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4A4 4 0 004 12z"
-                  />
-                </svg>
-                Creating…
-              </>
-            ) : (
-              "Create Course"
+            <ErrorText>{err}</ErrorText>
+            {okMsg && (
+              <p className="text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                {okMsg}
+              </p>
             )}
-          </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setForm({
-                category: "",
-                subCategory: "",
-                title: "",
-                description: "",
-                duration: "",
-                targetAudience: "",
-                prerequisites: "",
-                tags: "",
-                
-              });
-              setFile(null);
-            }}
-            className="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700
-                       text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800
-                       transition"
-          >
-            Reset
-          </button>
-        </div>
-      </form>
-    </ElevatedCard>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-60"
+              >
+                {loading ? "Creating…" : "Create Course"}
+              </button>
+            </div>
+          </form>
+        </ElevatedCard>
+      )}
+
+      {/* Add Modules */}
+      {createdCourseId && (
+        <ElevatedCard title="Add Modules" subtitle="Add multiple modules to your course">
+          <div className="flex gap-2 mb-4">
+            <Input
+              placeholder="Module Title"
+              value={moduleTitle}
+              onChange={(e) => setModuleTitle(e.target.value)}
+            />
+            <button
+              onClick={handleAddModule}
+              className="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition"
+            >
+              Add Module
+            </button>
+          </div>
+
+          {modulesList.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-2">Modules Added:</h3>
+              <ul className="list-disc list-inside">
+                {modulesList.map((mod, idx) => (
+                  <li key={idx}>{mod.title}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </ElevatedCard>
+      )}
+    </div>
   );
 }
