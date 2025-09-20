@@ -105,11 +105,11 @@ import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { CheckCircle2, Clock, Wallet } from "lucide-react";
 
-import {
-  getFinanceOverview,
-  getSettlements,
-  requestWithdrawal,
-} from "../../api/api";
+// import {
+//   getFinanceOverview,
+//   getSettlements,
+//   requestWithdrawal,
+// } from "../../api/api";
 
 export default function FinanceSettlementDashboard() {
   const [overview, setOverview] = useState(null);
@@ -172,7 +172,7 @@ export default function FinanceSettlementDashboard() {
       <h1 className="text-2xl font-bold text-green-800">Finance & Settlements</h1>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="shadow-md border border-green-200">
           <CardContent className="flex items-center justify-between p-6">
             <div>
@@ -208,10 +208,10 @@ export default function FinanceSettlementDashboard() {
             <CheckCircle2 className="h-10 w-10 text-green-500" />
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* Withdrawal Button */}
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <Button
           onClick={handleWithdrawal}
           disabled={withdrawLoading || !overview || overview.balance <= 0}
@@ -219,10 +219,10 @@ export default function FinanceSettlementDashboard() {
         >
           {withdrawLoading ? "Processing..." : "Request Withdrawal"}
         </Button>
-      </div>
+      </div> */}
 
       {/* Settlement History */}
-      <Card className="shadow-md border border-green-200">
+      {/* <Card className="shadow-md border border-green-200">
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold text-green-800 mb-4">
             Settlement History
@@ -264,7 +264,7 @@ export default function FinanceSettlementDashboard() {
             <p className="text-gray-500 text-sm">No settlements found.</p>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
