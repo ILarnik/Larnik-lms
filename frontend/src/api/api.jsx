@@ -393,15 +393,25 @@ export const financeRejectSettlement = (data) =>
 
 // ======================
 // Common wallet route
-// ======================
-// export const getWallet = (ownerId) =>
-//   API.get(`/wallet/wallet/${ownerId}`, {
-//     headers: {
-//       Authorization: `Bearer ${localStorage.getItem("token")}`,
-//     },
-//   });
+export const getWallet = (ownerType, ownerId) =>
+  API.get(`/wallet/${ownerType}/${ownerId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 
 
+
+  
+
+
+// ✅ Reject a settlement request as university
+export const universityRejectSettlement = (data) =>
+  API.post("/wallet/university/reject", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 
 
 
@@ -440,9 +450,9 @@ export const getPendingSettlements = () => {
 };
 
 // api.jsx
-export const getWallet = (ownerId, ownerType = "teacher") => {
-  return API.get(`/wallet/${ownerId}?ownerType=${ownerType}`);
-};
+// export const getWallet = (ownerId, ownerType = "teacher") => {
+//   return API.get(`/wallet/${ownerId}?ownerType=${ownerType}`);
+// };
 
 
 
@@ -522,6 +532,25 @@ export const exportAnalyticsExcel = () =>
     console.error("Error fetching affiliated teachers:", error);
     throw error.response?.data || { message: "Server error" };
   }
+};
+
+
+// ✅ Get live university earnings
+export const getUniversityEarnings = (universityId) =>
+  API.get(`/university/earnings/${universityId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+
+  export const getTeacherSettlementRequests = async () => {
+  const token = localStorage.getItem("token");
+  return API.get("/university/teacher-requests", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 

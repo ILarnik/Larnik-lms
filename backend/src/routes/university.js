@@ -7,18 +7,22 @@ import {
   updateProfile,
   getMyCourses,
   reviewTeacherCourse,
-  myRevenue,
+  
   enrolledStudents,
   myCertificates,
   getUniversityAnalytics,
    
   exportAnalyticsExcel,
   exportAnalyticsPDF,
-  getAffiliatedTeachers
+  getAffiliatedTeachers,
+  getEarnings,
+  getTeacherSettlementRequests
 
 } from "../controllers/universitycontroller.js";
 
 import { approveCourse ,deleteCourse} from "../controllers/coursecontroller.js";
+import wallet from "../models/wallet.js";
+import SettlementRequest from "../models/SettlementRequest.js";
 const router = express.Router();
 
 // --- University Profile ---
@@ -31,8 +35,7 @@ router.get("/my-courses", authMiddleware, allowRoles("university"), getMyCourses
 // --- Review Teacher Courses ---
 router.put("/review-course/:courseId", authMiddleware, allowRoles("university"), reviewTeacherCourse);
 
-// --- Revenue ---
-router.get("/revenue", authMiddleware, allowRoles("university"), myRevenue);
+ 
 
 router.get("/AffiliatedTeachers", authMiddleware, allowRoles("university"), getAffiliatedTeachers);
 
@@ -59,6 +62,16 @@ router.delete(
   allowRoles("teacher", "university", "superadmin"),
   deleteCourse
 );
+
+router.get(
+  "/earnings/:universityId",
+  authMiddleware,
+  allowRoles("university"),
+  getEarnings
+);
+
+
+router.get("/teacher-requests", authMiddleware, getTeacherSettlementRequests);
 
 
 export default router;

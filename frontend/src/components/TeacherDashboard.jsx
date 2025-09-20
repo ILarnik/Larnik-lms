@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Upload, BookOpen, User, Wallet, Star, PlusCircle } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,29 +15,41 @@ import {
   getTeacherEarnings,
   getTeacherReviews,
   getWallet,
+  teacherRequestSettlement,
 } from "../api/api"; // Ensure these match your API.js
 
 export default function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [profile, setProfile] = useState({ name: "", email: "", bank: "", upi: "", photo: null, _id: "" });
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    bank: "",
+    upi: "",
+    photo: null,
+    _id: "",
+  });
   const [courses, setCourses] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [wallet, setWallet] = useState({ balance: 0 });
   const [earnings, setEarnings] = useState({ total: 0, payments: [] });
+  const [settlementAmount, setSettlementAmount] = useState("");
+  const [affiliatedUniversity, setAffiliatedUniversity] = useState("");
 
   // ---------------- Profile Handlers ----------------
   const handleProfileChange = (e) => {
     const { name, value, files } = e.target;
-    setProfile(prev => ({ ...prev, [name]: files ? files[0] : value }));
+    setProfile((prev) => ({ ...prev, [name]: files ? files[0] : value }));
   };
 
   const handleProfileSubmit = async () => {
     try {
       const formData = new FormData();
-      Object.entries(profile).forEach(([k, v]) => { if (v) formData.append(k, v); });
+      Object.entries(profile).forEach(([k, v]) => {
+        if (v) formData.append(k, v);
+      });
       const res = await updateTeacherProfile(formData);
       if (res.status === 200) toast.success("Profile updated successfully!");
-      fetchProfile(); // Refresh profile after update
+      fetchProfile();
     } catch (err) {
       toast.error(err.response?.data?.message || "Server error updating profile");
     }
@@ -65,7 +77,7 @@ export default function TeacherDashboard() {
   // ---------------- Reviews ----------------
   const fetchReviews = async () => {
     try {
-      const res = await getTeacherReviews(); // use the api helper
+      const res = await getTeacherReviews();
       setReviews(res.data);
     } catch (err) {
       console.error(err);
@@ -75,15 +87,48 @@ export default function TeacherDashboard() {
 
   // ---------------- Wallet ----------------
   const fetchWallet = async () => {
-    if (!profile._id) return;
     try {
-      const res = await getWallet(profile._id, "teacher");
-      if (res.status === 200) setWallet(res.data);
+      if (!profile._id) return; // wait until profile is loaded
+      const res = await getWallet("teacher", profile._id); // ownerType "teacher"
+      if (res.status === 200) {
+        setWallet(res.data);
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to fetch wallet");
+      console.error("Error fetching wallet:", err);
+      toast.error("Failed to fetch wallet");
     }
   };
-  
+
+  const handleSettlementRequest = async () => {
+    if (!settlementAmount || settlementAmount <= 0) {
+      toast.error("Enter a valid settlement amount");
+      return;
+    }
+
+    try {
+      const payload = {
+        amount: Number(settlementAmount),
+        teacherId: profile._id,
+        affiliatedUniversity: affiliatedUniversity || undefined,
+      };
+
+      const res = await teacherRequestSettlement(payload);
+      if (res.data.success) {
+        toast.success("Settlement request submitted successfully!");
+        setSettlementAmount("");
+        setAffiliatedUniversity("");
+        fetchWallet();
+      } else {
+        toast.error(res.data.message || "Settlement request failed");
+      }
+    } catch (err) {
+      console.error("Settlement request error:", err);
+      toast.error(
+        err.response?.data?.message || "Server error during settlement request"
+      );
+    }
+  };
+
   // ---------------- Earnings ----------------
   const fetchEarnings = async () => {
     try {
@@ -101,7 +146,9 @@ export default function TeacherDashboard() {
   };
 
   // ---------------- Effects ----------------
-  useEffect(() => { fetchProfile(); }, []);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   useEffect(() => {
     if (activeTab === "courses") fetchCourses();
@@ -118,33 +165,77 @@ export default function TeacherDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-4 border-b mb-6">
-        {["profile", "courses", "wallet", "feedback", "earnings","certificates"].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-2 px-4 py-2 ${activeTab === tab ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`}
-          >
-            {tab === "profile" && <User size={18} />}
-            {tab === "courses" && <BookOpen size={18} />}
-            {tab === "wallet" && <Wallet size={18} />}
-            {tab === "feedback" && <Star size={18} />}
-            {tab === "earnings" && <Wallet size={18} />} {/* you can change icon */}
-            {tab === "certificates" && <PlusCircle size={18} />}
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+        {["profile", "courses", "wallet", "feedback", "earnings", "certificates"].map(
+          (tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex items-center gap-2 px-4 py-2 ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-600"
+              }`}
+            >
+              {tab === "profile" && <User size={18} />}
+              {tab === "courses" && <BookOpen size={18} />}
+              {tab === "wallet" && <Wallet size={18} />}
+              {tab === "feedback" && <Star size={18} />}
+              {tab === "earnings" && <Wallet size={18} />}
+              {tab === "certificates" && <PlusCircle size={18} />}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          )
+        )}
       </div>
 
       {/* Profile Tab */}
       {activeTab === "profile" && (
         <div className="bg-white shadow rounded-xl p-6">
           <h2 className="font-semibold mb-4">Profile Setup</h2>
-          <input type="text" name="name" placeholder="Full Name" value={profile.name} onChange={handleProfileChange} className="w-full border p-2 rounded mb-3" />
-          <input type="email" name="email" placeholder="Email" value={profile.email} onChange={handleProfileChange} className="w-full border p-2 rounded mb-3" />
-          <input type="text" name="bank" placeholder="Bank Account" value={profile.bank} onChange={handleProfileChange} className="w-full border p-2 rounded mb-3" />
-          <input type="text" name="upi" placeholder="UPI ID" value={profile.upi} onChange={handleProfileChange} className="w-full border p-2 rounded mb-3" />
-          <input type="file" name="photo" onChange={handleProfileChange} className="w-full border p-2 rounded mb-4" />
-          <button onClick={handleProfileSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Profile</button>
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={profile.name || ""}
+            onChange={handleProfileChange}
+            className="w-full border p-2 rounded mb-3"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={profile.email || ""}
+            onChange={handleProfileChange}
+            className="w-full border p-2 rounded mb-3"
+          />
+          <input
+            type="text"
+            name="bank"
+            placeholder="Bank Account"
+            value={profile.bank || ""}
+            onChange={handleProfileChange}
+            className="w-full border p-2 rounded mb-3"
+          />
+          <input
+            type="text"
+            name="upi"
+            placeholder="UPI ID"
+            value={profile.upi || ""}
+            onChange={handleProfileChange}
+            className="w-full border p-2 rounded mb-3"
+          />
+          <input
+            type="file"
+            name="photo"
+            onChange={handleProfileChange}
+            className="w-full border p-2 rounded mb-4"
+          />
+          <button
+            onClick={handleProfileSubmit}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Save Profile
+          </button>
         </div>
       )}
 
@@ -163,8 +254,34 @@ export default function TeacherDashboard() {
       {activeTab === "wallet" && (
         <div className="bg-white shadow rounded-xl p-6">
           <h2 className="font-semibold mb-4">Earnings & Settlements</h2>
-          <p className="text-gray-700">Current Balance: ₹{wallet.balance.toFixed(2)}</p>
-          <button className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Request Settlement</button>
+          <p className="text-gray-700">
+            Current Balance: ₹{wallet.balance?.toFixed(2) || "0.00"}
+          </p>
+
+          {/* Settlement Request Form */}
+          <div className="mt-6">
+            <h3 className="font-medium mb-2">Request Settlement</h3>
+            <input
+              type="number"
+              placeholder="Enter amount"
+              value={settlementAmount}
+              onChange={(e) => setSettlementAmount(e.target.value)}
+              className="w-full border p-2 rounded mb-3"
+            />
+            <input
+              type="text"
+              placeholder="Affiliated University ID (optional)"
+              value={affiliatedUniversity}
+              onChange={(e) => setAffiliatedUniversity(e.target.value)}
+              className="w-full border p-2 rounded mb-3"
+            />
+            <button
+              onClick={handleSettlementRequest}
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            >
+              Submit Settlement Request
+            </button>
+          </div>
         </div>
       )}
 
@@ -184,7 +301,8 @@ export default function TeacherDashboard() {
                   course.reviews.map((r, idx) => (
                     <div key={idx} className="border p-3 rounded mb-2">
                       <p className="font-semibold">
-                        {r.student?.name || "Student"} ({r.student?.email || "N/A"})
+                        {r.student?.name || "Student"} (
+                        {r.student?.email || "N/A"})
                       </p>
                       <p>Rating: {r.rating}/5</p>
                       <p>{r.review}</p>
@@ -201,13 +319,18 @@ export default function TeacherDashboard() {
       {activeTab === "earnings" && (
         <div className="bg-white shadow rounded-xl p-6">
           <h2 className="font-semibold mb-4">Earnings</h2>
-          <p className="text-gray-700 mb-2">Total Earnings: ₹{earnings.total.toFixed(2)}</p>
+          <p className="text-gray-700 mb-2">
+            Total Earnings: ₹{earnings.total?.toFixed(2) || "0.00"}
+          </p>
 
           <h3 className="font-semibold mt-4 mb-2">Payment History</h3>
           {earnings.payments.length > 0 ? (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {earnings.payments.map((p, idx) => (
-                <div key={idx} className="border p-3 rounded flex justify-between">
+                <div
+                  key={idx}
+                  className="border p-3 rounded flex justify-between"
+                >
                   <p>Course ID: {p.course}</p>
                   <p>Amount: ₹{p.amount}</p>
                   <p>Status: {p.status}</p>
