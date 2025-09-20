@@ -509,5 +509,55 @@ export const getWallet = async (req, res) => {
   }
 };
 
+export const universityRejectSettlement = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
+  try {
+    const { requestId } = req.body;
+    const universityId = req.user.id;
 
+    if (!requestId) throw new Error("requestId is required");
+
+    // Find the settlement request
+    const request = await SettlementRequest.findById(requestId).session(session);
+    if (!request) throw new Error("Settlement request not found");
+
+    if (request.status !== "pending_university")
+      throw new Error("Request already processed");
+
+    // Find university wallet
+    const universityWallet = await Wallet.findOne({
+      ownerType: "university",
+      ownerId: universityId,
+    }).session(session);
+
+    if (!universityWallet) throw new Error("University wallet not found");
+
+    // Reverse the onHold amount
+    universityWallet.onHold -= request.amount;
+
+    // Update transaction status
+    const tx = universityWallet.transactions.find(
+      (t) => t.metadata?.requestId?.toString() === requestId.toString()
+    );
+    if (tx) tx.status = "rejected";
+
+    await universityWallet.save({ session });
+
+    // Update request status
+    request.status = "rejected";
+    request.approvedBy = universityId;
+    request.approvedAt = new Date();
+    await request.save({ session });
+
+    await session.commitTransaction();
+    res.json({ success: true, message: "Settlement request rejected", wallet: universityWallet });
+  } catch (err) {
+    await session.abortTransaction();
+    console.error("UniversityRejectSettlement Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  } finally {
+    session.endSession();
+  }
+};

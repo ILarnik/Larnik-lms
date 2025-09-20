@@ -18,7 +18,7 @@ import Studentpage from "./pages/StudentPage";
 // import CertificatePreview from "./components/Certificatemanagement/CertificatePreview";
 // import CertificateTemplateForm from "./components/Certificatemanagement/CertificateTemplateForm";
 import CertificateManagerPage from "./pages/certificatepage";
-import Financemanagerpage from "./pages/Financemanagerpage";
+// import Financemanagerpage from "./pages/Financemanagerpage";
 import GovernancePage from "./pages/GovernancePage";
 // import Finance_Settlement from "./pages/FinanceManager";
 import UnivesityPage from "./pages/Universitypage";
@@ -59,7 +59,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/courses" element={<CoursePage />} />
           <Route path="/certificate" element={<CertificateManagerPage />} />
-          <Route path="/financemanager" element={<Financemanagerpage />} />
+          {/* <Route path="/financemanager" element={<Financemanagerpage />} /> */}
           <Route path="/governance" element={<GovernancePage />} /> 
           <Route path="/University" element={<UnivesityPage />} />
           <Route path="/CareerCell" element={<Careercellpage />} />
