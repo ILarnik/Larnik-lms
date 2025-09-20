@@ -1,9 +1,10 @@
  import Course from "../models/course.js";
  import mongoose from "mongoose";
 import User from "../models/user.js";
-import Payment from "../models/payment.js"; // uncomment to use
+import Payment from "../models/Payment.js"; // uncomment to use
 // import {CertificateTemplate } from "../models/certificate.js";
 import Wallet from "../models/wallet.js";
+import crypto from "crypto";
 
 // ✅ Get student profile
 export const getStudentProfile = async (req, res) => {
@@ -341,10 +342,10 @@ export const enrollCourse = async (req, res) => {
     const { studentId, courseId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     // 1️⃣ Verify Razorpay payment signature
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
+      .update(sign)
       .digest("hex");
 
     if (razorpay_signature !== expectedSign) {
@@ -358,8 +359,10 @@ export const enrollCourse = async (req, res) => {
     const student = await User.findById(studentId);
     if (!student) return res.status(404).json({ success: false, message: "Student not found" });
 
-    // 3️⃣ Credit the Finance Manager directly
+    // 3️⃣ Credit the Finance Manager
     const finance = await FinanceManager.findOne(); // assuming single finance manager
+    if (!finance) return res.status(500).json({ success: false, message: "Finance manager not found" });
+
     finance.wallet += course.price;
     await finance.save();
 
@@ -369,13 +372,20 @@ export const enrollCourse = async (req, res) => {
       await student.save();
     }
 
+    // 5️⃣ Save enrollment record
+    const enrollment = new Enrollment({
+      userId: student._id,
+      courseId: course._id,
+      amount: course.price,
+    });
+    await enrollment.save();
+
     res.json({ success: true, message: "Payment verified & course enrolled successfully" });
   } catch (error) {
     console.error("Enroll course error:", error);
     res.status(500).json({ success: false, message: "Enrollment failed" });
   }
 };
-
 export const myCourses = async (req, res) => {
   try {
     const studentId = new mongoose.Types.ObjectId(String(req.user.id));
