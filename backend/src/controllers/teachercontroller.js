@@ -2,6 +2,7 @@
 import User from "../models/user.js";
 import Course from "../models/course.js";
 import wallet from "../models/wallet.js";
+import mongoose from "mongoose";
 //import Payment from "../models/payment.js";
 
 // ✅ Get my teacher profile
@@ -53,26 +54,7 @@ export const getMyCourses = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// ✅ Get earnings summary
- export const myEarnings = async (req, res) => {
-  try {
-    // 1️⃣ Get courses created by this teacher
-    const myCourses = await Course.find({ createdBy: req.user.id }).select("_id");
-    const courseIds = myCourses.map(c => c._id);
-
-    // 2️⃣ Get all successful payments for these courses
-    const payments = await wallet.find({ course: { $in: courseIds }, status: "success" });
-
-    // 3️⃣ Calculate total earnings
-    const totalEarnings = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
-
-    res.status(200).json({ success: true, totalEarnings, payments });
-  } catch (err) {
-    console.error("Error fetching earnings:", err);
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+ 
 
 //  export const getCourseReviews = async (req, res) => {
 //   try {
@@ -120,4 +102,38 @@ export const getCourseReviews = async (req, res) => {
     console.error("Error fetching reviews:", err);
     res.status(500).json({ error: "Failed to fetch reviews", details: err.message });
   }
+};
+
+
+ 
+export const myEarnings = async (teacherId) => {
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new Error("Invalid teacher ID");
+  }
+
+  // Find teacher's wallet
+  const wallet = await Wallet.findOne({ ownerType: "teacher", ownerId: teacherId });
+  if (!wallet) {
+    throw new Error("Wallet not found");
+  }
+
+  // Filter transactions: only approved credits (after university & finance approval)
+  const approvedTransactions = wallet.transactions.filter(
+    (tx) => tx.type === "credit" && tx.status === "approved"
+  );
+
+  // Total approved amount (after split)
+  const totalEarnings = approvedTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+
+  return {
+    balance: wallet.balance,         // current balance in wallet
+    onHold: wallet.onHold,           // pending amounts
+    totalEarnings,                   // total approved earnings
+    transactions: approvedTransactions.map((tx) => ({
+      amount: tx.amount,
+      description: tx.description,
+      createdAt: tx.createdAt,
+      metadata: tx.metadata,
+    })),
+  };
 };

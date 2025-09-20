@@ -83,6 +83,7 @@ import {
   referralRequestSettlement,
   financeApproveSettlement,
     getWallet,
+    universityRejectSettlement
  
 } from "../controllers/walletcontroller.js";
 
@@ -164,11 +165,20 @@ router.post(
 // ======================
 // Common route to get wallet
 // ======================
+// route
 router.get(
-  "/wallet/:ownerId",
+  "/:ownerType/:ownerId",
   authMiddleware,
   allowRoles("teacher", "university", "referral", "finance_manager", "sub-admin"),
   getWallet
 );
+
+router.post(
+  "/university/reject",
+  authMiddleware,
+  allowRoles("university"),
+  universityRejectSettlement
+);
+
 
 export default router;
