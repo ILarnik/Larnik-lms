@@ -272,7 +272,8 @@
 
 
 import React, { useEffect, useState } from "react";
-import { getPendingSettlements, approveSettlement, rejectSettlement } from "../../api/api";
+// import { getPendingSettlements, financeApproveSettlement, financeRejectSettlement } from "../../api/api";
+import { getPendingSettlements, financeApproveSettlement, financeRejectSettlement } from "../../api/api";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -300,7 +301,7 @@ const FinanceSettlementDashboard = () => {
 
   const handleApprove = async (walletOwnerId, transactionId) => {
     try {
-      const res = await approveSettlement({ walletOwnerId, transactionId, split });
+      const res = await financeApproveSettlement({ walletOwnerId, transactionId, split });
       if (res.success) {
         toast.success("Settlement approved!");
         fetchSettlements();
@@ -312,7 +313,7 @@ const FinanceSettlementDashboard = () => {
 
   const handleReject = async (walletOwnerId, transactionId) => {
     try {
-      const res = await rejectSettlement({ walletOwnerId, transactionId });
+      const res = await financeRejectSettlement({ walletOwnerId, transactionId });
       if (res.success) {
         toast.info("Settlement rejected");
         fetchSettlements();
