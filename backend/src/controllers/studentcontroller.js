@@ -255,8 +255,6 @@ console.log("Student ObjectId:", studentObjectId);
 
 
      
-
-
 export const enrollCourse = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -265,8 +263,8 @@ export const enrollCourse = async (req, res) => {
     const studentId = req.user?.id;
     if (!studentId) return res.status(401).json({ error: "Unauthorized" });
 
-    // Fetch course with creator info
-    const course = await Course.findById(courseId.trim()).populate("createdBy");
+    // Fetch course
+    const course = await Course.findById(courseId.trim());
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     const studentObjectId = new mongoose.Types.ObjectId(studentId);
@@ -276,21 +274,27 @@ export const enrollCourse = async (req, res) => {
       return res.status(400).json({ error: "Student is already enrolled in this course" });
     }
 
-    // ✅ Enroll student (only first time)
+    // ✅ Enroll student
     course.enrolledStudents.push(studentObjectId);
     await course.save();
 
-    const teacherId = course.createdBy._id;
     const coursePrice = course.price;
 
-    // ===== Teacher Wallet =====
-    let teacherWallet = await Wallet.findOne({ ownerId: teacherId, ownerType: "teacher" });
-    if (!teacherWallet) {
-      teacherWallet = new Wallet({ ownerId: teacherId, ownerType: "teacher", balance: 0, transactions: [] });
+    // ===== Finance Manager (Platform) Wallet =====
+    let financeWallet = await Wallet.findOne({ ownerType: "platform" });
+
+    // If first time, create finance wallet
+    if (!financeWallet) {
+      financeWallet = new Wallet({
+        ownerType: "platform",
+        ownerId: new mongoose.Types.ObjectId(), // can be fixed admin ID if you want
+        balance: 0,
+        transactions: []
+      });
     }
 
-    teacherWallet.balance += coursePrice;
-    teacherWallet.transactions.push({
+    financeWallet.balance += coursePrice;
+    financeWallet.transactions.push({
       studentId,
       courseId,
       amount: coursePrice,
@@ -299,35 +303,13 @@ export const enrollCourse = async (req, res) => {
       date: new Date(),
     });
 
-    await teacherWallet.save();
-    console.log("Wallet created/updated successfully for teacher:", teacherId);
+    await financeWallet.save();
+    console.log("Platform wallet credited successfully");
 
-    // ===== Referral Partner Wallet =====
-    const student = await User.findById(studentId); // fetch student document
-    if (student.referredBy) {
-      const referralPartnerId = student.referredBy;
-      const referralAmount = (2 / 100) * coursePrice; // Example: 2% commission
-
-      let referralWallet = await Wallet.findOne({ ownerId: referralPartnerId, ownerType: "referral" });
-      if (!referralWallet) {
-        referralWallet = new Wallet({ ownerId: referralPartnerId, ownerType: "referral", balance: 0, transactions: [] });
-      }
-
-      referralWallet.balance += referralAmount;
-      referralWallet.transactions.push({
-        studentId,
-        courseId,
-        amount: referralAmount,
-        type: "credit",
-        note: "Referral commission",
-        date: new Date(),
-      });
-
-      await referralWallet.save();
-      console.log("Wallet created/updated successfully for referral partner:", referralPartnerId);
-    }
-
-    res.json({ message: "Student enrolled successfully & wallets updated", courseId });
+    res.json({
+      message: "Student enrolled successfully & platform wallet updated",
+      courseId,
+    });
   } catch (err) {
     console.error("EnrollCourse Error:", err);
     res.status(500).json({ error: "Failed to enroll in course", details: err.message });

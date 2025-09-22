@@ -324,21 +324,44 @@
 import { getApproveCourses, getCoupons } from "../api/api";
 import CourseCard from "../components/CourseCard";
 import DiscountBar from "../components/DiscountBar";
+import { jwtDecode } from "jwt-decode";
 
 export default function CoursePage() {
   const [courses, setCourses] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  const [userId, setUserId] = useState([]);
+
+   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("User not logged in");
+
+        const decoded = jwtDecode(token); // ✅ decode JWT
+        // console.log(decoded,"my");
+        
+        setUserId(decoded.id);
+      // console.log("Decoded JWT:", decoded.id);
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || error.message || "Failed to fetch.");
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch approved courses
         const coursesRes = await getApproveCourses();
+        // console.log("Fetched courses:", coursesRes.data);
+        
         setCourses(coursesRes.data);
 
         // Fetch coupons
-        const couponsRes = await getCoupons();
-        setCoupons(couponsRes.data);
+        // const couponsRes = await getCoupons();
+        // setCoupons(couponsRes.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -373,7 +396,7 @@ export default function CoursePage() {
       {/* Courses */}
       <div className="flex gap-6 flex-wrap ">
         {courses.length > 0 ? (
-          courses.map((course) => <CourseCard key={course._id} course={course} />)
+          courses.map((course) => <CourseCard key={course._id} course={course} userId={userId} />)
         ) : (
           <p className="text-gray-600">No courses available right now.</p>
         )}

@@ -29,13 +29,10 @@ export const createOrder = async (req, res) => {
     res.status(500).json({ message: "Unable to create order" });
   }
 };
-
-/**
- * ==========================
- * VERIFY PAYMENT + SAVE PURCHASE
- * ==========================
- */
-export const verifyPayment = async (req, res) => {
+ 
+ export const verifyPayment = async (req, res) => {
+  console.log("ok till now");
+  
   try {
     const {
       razorpay_order_id,
@@ -46,7 +43,7 @@ export const verifyPayment = async (req, res) => {
       amount,
     } = req.body;
 
-    // 🔐 Signature verification
+    // 🔐 Verify signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -69,6 +66,11 @@ export const verifyPayment = async (req, res) => {
       return res.status(404).json({ success: false, message: "Course not found" });
     }
 
+    // 🚨 Prevent duplicate enrollment
+    if (course.enrolledStudents.includes(studentId)) {
+      return res.status(400).json({ success: false, message: "Already enrolled in this course" });
+    }
+
     // ✅ Save purchase in DB
     const purchase = await Purchase.create({
       course: courseId,
@@ -82,11 +84,36 @@ export const verifyPayment = async (req, res) => {
       status: "SUCCESS",
     });
 
-    // (Optional) 👉 You can add Nodemailer email logic here
+    // ✅ Enroll student into course
+    course.enrolledStudents.push(studentId);
+    await course.save();
+
+    // ✅ Credit Finance Manager Wallet
+    let financeWallet = await Wallet.findOne({ ownerType: "platform" });
+    if (!financeWallet) {
+      financeWallet = new Wallet({
+        ownerType: "platform",
+        ownerId: new mongoose.Types.ObjectId(), // Or a fixed Admin ID
+        balance: 0,
+        transactions: [],
+      });
+    }
+
+    financeWallet.balance += amount;
+    financeWallet.transactions.push({
+      studentId,
+      courseId,
+      amount,
+      type: "credit",
+      note: "Course purchase",
+      date: new Date(),
+    });
+
+    await financeWallet.save();
 
     res.json({
       success: true,
-      message: "Payment verified & course purchased!",
+      message: "Payment verified, student enrolled, finance wallet credited!",
       purchase,
     });
   } catch (error) {

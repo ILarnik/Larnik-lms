@@ -1,9 +1,13 @@
  import { Target } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import CustomButton from "./ui/CustomButton";
+import EnrollButton from "./EnrollButton";
+import { getApproveCourses } from "../api/api";
 
 export default function CardDesign({
   // for all
+  course=null, // ✅ added
+  userId=null, // ✅ added
   variant = "subscribe",
   width = "w-[260px]",
   height = "h-[300px]",
@@ -47,7 +51,9 @@ export default function CardDesign({
                 // >
                 //   {btnName}
                 // </button>
-                <CustomButton onClick={onClick} className={"bg-green-700"}>{btnName}</CustomButton>
+                // <CustomButton onClick={onClick} className={"bg-green-700"}>{btnName}</CustomButton>
+                <EnrollButton course={course} userId={userId} />
+
               )}
             </div>
           </>

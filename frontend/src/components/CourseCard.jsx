@@ -26,7 +26,7 @@
 import CardDesign from "./CradDesign";
 import { enrollInCourse } from "../api/api";
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, userId }) {
   const handleEnroll = async () => {
     console.log("Course ID being sent:", course._id || course.id);
 
@@ -42,6 +42,8 @@ export default function CourseCard({ course }) {
   return (
     <div className="w-72 h-auto mx-auto m-10 bg-green-300 shadow-green-500/90 rounded-2xl shadow-2xl">
       <CardDesign
+      course={course}
+      userId={userId}
         height="h-[420px]"
         img={
           "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=250&fit=crop"

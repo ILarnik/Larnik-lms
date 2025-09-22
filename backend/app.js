@@ -12,7 +12,7 @@ dotenv.config();
 import { connectDB } from "./src/config/db.js";
 
 // routes
-import authRoutes from "./src/Routes/auth.js";
+import authRoutes from "./src/routes/auth.js";
 import superAdminRoutes from "./src/Routes/superAdmin.js";
 import courseRoutes from "./src/Routes/course.js";
 import blogRoutes from "./src/Routes/blog.js";

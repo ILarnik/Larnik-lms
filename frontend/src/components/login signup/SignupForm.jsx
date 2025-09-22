@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { signup, sendOtp, verifyOtp } from "../../api/api"; 
+// import { signup, sendOtp, verifyOtp } from "../../api/api"; 
 import CustomButton from "../ui/CustomButton";
 
 export default function Signup({ role }) {
