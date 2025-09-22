@@ -16,5 +16,3 @@ const paymentSchema = new Schema(
 );
 
 export default mongoose.model("Payment", paymentSchema);
-
-

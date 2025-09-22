@@ -1,3 +1,3 @@
-export default function FinanceSettlementDashboard() {
-  return <div>FinanceSettlementDashboard</div>;
+export default function FinanceSettlementDashboard(){
+    return <div>finance settlement</div>
 }

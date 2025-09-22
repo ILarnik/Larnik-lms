@@ -2,6 +2,8 @@
 import { Router } from "express";
 import {
   signup,
+  sendOtp,
+  verifyOtp,
   loginWithPassword,
   requestOtp,
   loginWithOtp
@@ -13,6 +15,8 @@ const router = Router();
 
 // ---------------- SIGNUP ----------------
 router.post("/signup", signup);
+router.post("/otp/send", sendOtp);
+router.post("/otp/verify", verifyOtp);
 
 // ---------------- LOGIN WITH PASSWORD ----------------
 router.post("/login", loginWithPassword);
