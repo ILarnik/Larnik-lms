@@ -35,6 +35,14 @@ export const login = async (credentials) => {
   return API.post("/auth/login", credentials);
 };
 
+// ==================== Otp APIs ====================
+export const sendOtp=async(userEmail)=>{
+  return API.post("/auth/otp/send", userEmail);
+}
+export const verifyOtp=async(data)=>{
+  return API.post("/auth/otp/verify", data);
+}
+
 
 // ==================== Coupon APIs ====================
 

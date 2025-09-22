@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-// import { signup, sendOtp, verifyOtp } from "../../api/api"; 
+// import { signup,sendOtp ,verifyOtp } from "../../api/api"; 
 import CustomButton from "../ui/CustomButton";
 
 export default function Signup({ role }) {
@@ -44,7 +44,14 @@ export default function Signup({ role }) {
   // Step 2: Verify OTP
   const handleVerifyOtp = async () => {
     try {
-      await verifyOtp({ email: form.email, otp: form.otp });
+      const data = {
+        email: form.email, otp: form.otp
+      }
+
+      // await verifyOtp({ email: form.email, otp: form.otp });
+      await verifyOtp(data);
+      // console.log(email,"em");
+      
       alert("Email verified ✅");
       setIsOtpVerified(true);
     } catch (err) {
@@ -113,9 +120,9 @@ export default function Signup({ role }) {
             className="w-full border rounded-lg p-2"
           />
           <CustomButton 
-            label={isOtpSent ? "Resend OTP" : "Send OTP"} 
+            label={isOtpSent ? "Resend" : "Verify"} 
             onClick={handleSendOtp} 
-            className="ml-2 bg-black text-white px-3 py-2 rounded-lg"
+            className="ml-2 bg-black text-white   rounded-lg"
           />
         </div>
 
@@ -161,7 +168,7 @@ export default function Signup({ role }) {
           <button
             type="button"
             onClick={() => setPasswordVisible(!passwordVisible)}
-            className="absolute right-3 top-2"
+            className="absolute right-3"
           >
             {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>

@@ -1,9 +1,10 @@
  import Course from "../models/course.js";
  import mongoose from "mongoose";
 import User from "../models/user.js";
-import Payment from "../models/payment.js"; // uncomment to use
+import Payment from "../models/Payment.js"; // uncomment to use
 // import {CertificateTemplate } from "../models/certificate.js";
 import Wallet from "../models/wallet.js";
+import crypto from "crypto";
 
 // ✅ Get student profile
 export const getStudentProfile = async (req, res) => {
@@ -315,8 +316,6 @@ export const enrollCourse = async (req, res) => {
     res.status(500).json({ error: "Failed to enroll in course", details: err.message });
   }
 };
-
-
 export const myCourses = async (req, res) => {
   try {
     const studentId = new mongoose.Types.ObjectId(String(req.user.id));
