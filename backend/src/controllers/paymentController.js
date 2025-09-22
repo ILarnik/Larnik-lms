@@ -3,6 +3,8 @@ import crypto from "crypto";
 import Purchase from "../models/Purchase.js";
 import User from "../models/user.js";
 import Course from "../models/course.js";
+import Wallet from "../models/wallet.js";  // ✅ add this line
+
 
 /**
  * ==========================
@@ -17,7 +19,7 @@ export const createOrder = async (req, res) => {
     });
 
     const options = {
-      amount: req.body.amount * 100, // convert INR to paise
+      amount:100, // convert INR to paise
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };
@@ -39,7 +41,7 @@ export const createOrder = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
       courseId,
-      studentId,
+      userId,
       amount,
     } = req.body;
 
@@ -55,7 +57,7 @@ export const createOrder = async (req, res) => {
     }
 
     // ✅ Find student
-    const student = await User.findById(studentId);
+    const student = await User.findById(userId);
     if (!student) {
       return res.status(404).json({ success: false, message: "Student not found" });
     }
@@ -67,14 +69,14 @@ export const createOrder = async (req, res) => {
     }
 
     // 🚨 Prevent duplicate enrollment
-    if (course.enrolledStudents.includes(studentId)) {
+    if (course.enrolledStudents.includes(userId)) {
       return res.status(400).json({ success: false, message: "Already enrolled in this course" });
     }
 
     // ✅ Save purchase in DB
     const purchase = await Purchase.create({
       course: courseId,
-      student: studentId,
+      student: userId,
       studentName: student.name,
       studentEmail: student.email,
       paymentId: razorpay_payment_id,
@@ -85,7 +87,7 @@ export const createOrder = async (req, res) => {
     });
 
     // ✅ Enroll student into course
-    course.enrolledStudents.push(studentId);
+    course.enrolledStudents.push(userId);
     await course.save();
 
     // ✅ Credit Finance Manager Wallet
@@ -101,7 +103,7 @@ export const createOrder = async (req, res) => {
 
     financeWallet.balance += amount;
     financeWallet.transactions.push({
-      studentId,
+      userId,
       courseId,
       amount,
       type: "credit",
