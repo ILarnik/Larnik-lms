@@ -6,95 +6,180 @@ import crypto from "crypto";
 
 // ---------------- SIGNUP ----------------
   
-
- 
-
- 
- 
-
-export const signup = async (req, res) => {
+export const sendOtp = async (req, res) => {
   try {
-    const { name, email, phone, password, roles, universityCode, referralCode, otp } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
+    if (existingUser) return res.status(400).json({ message: "Email already exists" });
 
-    // ========================
-    // Step 1: OTP verification
-    // ========================
-    if (otp) {
-      const record = await Otp.findOne({ email, otp });
-      if (!record) return res.status(400).json({ message: "Invalid OTP" });
-      if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
-      const { tempUserData } = record;
+    await Otp.deleteMany({ email }); // clear old OTPs
 
-      // Delete OTP after verification
-      await Otp.deleteOne({ _id: record._id });
-
-      const newUser = new User({
-        name: tempUserData.name,
-        email: record.email,
-        phone: tempUserData.phone,
-        password: tempUserData.password,
-        role: tempUserData.roles[0],
-        status: "approved",
-      });
-
-      // Teacher affiliation
-      if (tempUserData.roles[0] === "teacher" && tempUserData.universityCode) {
-        const university = await User.findOne({ universityCode: tempUserData.universityCode, role: "university" });
-        if (!university) return res.status(400).json({ message: "Invalid university code" });
-        newUser.affiliatedUniversity = university._id;
-      }
-
-      // Referral mapping
-      if (tempUserData.referralCode) {
-        const partner = await User.findOne({ referralCode: tempUserData.referralCode, role: "referral" });
-        if (partner) newUser.referredBy = partner._id;
-      }
-
-      await newUser.save();
-      return res.status(201).json({ message: "User registered successfully", user: newUser });
-    }
-
-    // ========================
-    // Step 2: Generate & send OTP
-    // ========================
-    if (!name || !phone || !password || !roles) {
-      return res.status(400).json({ message: "Missing required fields or invalid roles" });
-    }
-
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
-
-    await Otp.create({
-      email,
-      otp: generatedOtp,
-      expiresAt,
-      tempUserData: { name, phone, password, roles, universityCode, referralCode }
-    });
+    await Otp.create({ email, otp: generatedOtp, expiresAt });
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: email,
       subject: "Your Signup OTP",
-      html: `<p>Your OTP for signup is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
+      html: `<p>Your OTP is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
     });
 
-    return res.status(200).json({ message: "OTP sent to your email" });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(200).json({ message: "OTP sent to your email" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ message: "Email and OTP are required" });
+
+    const record = await Otp.findOne({ email, otp });
+    if (!record) return res.status(400).json({ message: "Invalid OTP" });
+    if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+
+    await Otp.deleteOne({ _id: record._id }); // OTP one-time use
+    res.status(200).json({ message: "OTP verified" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+ export const signup = async (req, res) => {
+  try {
+    const { name, email, phone, password, roles, universityCode, referralCode } = req.body;
+
+    if (!name || !email || !phone || !password || !roles) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "Email already registered" });
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password,
+      role: roles[0],
+      status: "approved",
+    });
+
+    // Teacher affiliation
+    if (roles[0] === "teacher" && universityCode) {
+      const university = await User.findOne({ universityCode, role: "university" });
+      if (!university) return res.status(400).json({ message: "Invalid university code" });
+      newUser.affiliatedUniversity = university._id;
+    }
+
+    // Referral mapping
+    if (referralCode) {
+      const partner = await User.findOne({ referralCode, role: "referral" });
+      if (partner) newUser.referredBy = partner._id;
+    }
+
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully", user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+ 
+ 
+
+// export const signup = async (req, res) => {
+//   try {
+//     const { name, email, phone, password, roles, universityCode, referralCode, otp } = req.body;
+
+//     if (!email) {
+//       return res.status(400).json({ message: "Email is required" });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Email already exists" });
+//     }
+
+//     // ========================
+//     // Step 1: OTP verification
+//     // ========================
+//     if (otp) {
+//       const record = await Otp.findOne({ email, otp });
+//       if (!record) return res.status(400).json({ message: "Invalid OTP" });
+//       if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+
+//       const { tempUserData } = record;
+
+//       // Delete OTP after verification
+//       await Otp.deleteOne({ _id: record._id });
+
+//       const newUser = new User({
+//         name: tempUserData.name,
+//         email: record.email,
+//         phone: tempUserData.phone,
+//         password: tempUserData.password,
+//         role: tempUserData.roles[0],
+//         status: "approved",
+//       });
+
+//       // Teacher affiliation
+//       if (tempUserData.roles[0] === "teacher" && tempUserData.universityCode) {
+//         const university = await User.findOne({ universityCode: tempUserData.universityCode, role: "university" });
+//         if (!university) return res.status(400).json({ message: "Invalid university code" });
+//         newUser.affiliatedUniversity = university._id;
+//       }
+
+//       // Referral mapping
+//       if (tempUserData.referralCode) {
+//         const partner = await User.findOne({ referralCode: tempUserData.referralCode, role: "referral" });
+//         if (partner) newUser.referredBy = partner._id;
+//       }
+
+//       await newUser.save();
+//       return res.status(201).json({ message: "User registered successfully", user: newUser });
+//     }
+
+//     // ========================
+//     // Step 2: Generate & send OTP
+//     // ========================
+//     if (!name || !phone || !password || !roles) {
+//       return res.status(400).json({ message: "Missing required fields or invalid roles" });
+//     }
+
+//     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+//     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+//     await Otp.create({
+//       email,
+//       otp: generatedOtp,
+//       expiresAt,
+//       tempUserData: { name, phone, password, roles, universityCode, referralCode }
+//     });
+
+//     await transporter.sendMail({
+//       from: process.env.SMTP_USER,
+//       to: email,
+//       subject: "Your Signup OTP",
+//       html: `<p>Your OTP for signup is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
+//     });
+
+//     return res.status(200).json({ message: "OTP sent to your email" });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 
 
