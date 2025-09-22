@@ -1,7 +1,7 @@
  import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const purchaseSchema = new Schema(
+const paymentSchema = new Schema(
   {
     course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     student: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -15,4 +15,4 @@ const purchaseSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Purchase", purchaseSchema);
+export default mongoose.model("Payment", paymentSchema);
