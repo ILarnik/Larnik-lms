@@ -1,53 +1,3 @@
-// // src/components/ApproveCourse.jsx
-// import React, { useState, useEffect } from "react";
-// import { getCourses, approveCourses } from "../../api/api";
-
-// export default function ApproveCourse() {
-//   const [courses, setCourses] = useState([]);
-
-//   const fetchCourses = async () => {
-//     const res = await getCourses();
-//     setCourses(res.data);
-//   };
-
-//   useEffect(() => {
-//     fetchCourses();
-//   }, []);
-
-//   const handleApprove = async (id, action) => {
-//     await approveCourses(id, action);
-//     fetchCourses();
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <h2 className="text-xl font-semibold mb-2">Courses List</h2>
-//       {courses.map((c) => (
-//         <div key={c._id} className="border p-3 rounded mb-2">
-//           <h3 className="font-bold">{c.title}</h3>
-//           <p>{c.description}</p>
-//           <div className="mt-2 flex gap-2">
-//             <button
-//               onClick={() => handleApprove(c._id, "approved")}
-//               className="bg-green-500 text-white px-3 py-1 rounded"
-//             >
-//               Approve
-//             </button>
-//             <button
-//               onClick={() => handleApprove(c._id, "rejected")}
-//               className="bg-red-500 text-white px-3 py-1 rounded"
-//             >
-//               Reject
-//             </button>
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
-
-
-
 // src/components/ApproveCourse.jsx
 import React, { useState, useEffect } from "react";
 import { getCourses, approveCourses } from "../../api/api";
@@ -71,41 +21,45 @@ export default function ApproveCourse() {
     fetchCourses();
   };
 
-  return (
-    <ElevatedCard
-      title="Approve Courses"
-      subtitle="Review pending courses and approve or reject"
-    >
-      {courses.length === 0 && (
-        <p className="text-gray-500 text-sm">No courses pending approval.</p>
-      )}
-      <div className="grid gap-4">
-        {courses.map((c) => (
-          <div
-            key={c._id}
-            className="border rounded-xl p-4 bg-neutral-50 dark:bg-neutral-800"
-          >
-            <h3 className="font-semibold text-lg">{c.title}</h3>
-            <p className="text-sm text-gray-600 mb-2">{c.description}</p>
-            <div className="flex gap-3">
-              {/* <button
-                onClick={() => handleApprove(c._id, "approved")}
-                className="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
-              >
-                Approve
-              </button> */}
-              <CustomButton onClick={()=>handleApprove(c._id,"approved")} label={"Approve"} className={"bg-black"} />
-              {/* <button
-                onClick={() => handleApprove(c._id, "rejected")}
-                className="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
-              >
-                Reject
-              </button> */}
-              <CustomButton onClick={() => handleApprove(c._id, "rejected")} label={"Reject"} className={"bg-red-700"} />
-            </div>
+return (
+  <ElevatedCard
+    title="Approve Courses"
+    subtitle="Review pending courses and approve or reject"
+  >
+    {courses.length === 0 && (
+      <p className="text-gray-500 text-sm text-center py-4">
+        No courses pending approval.
+      </p>
+    )}
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {courses.map((c) => (
+        <div
+          key={c._id}
+          className="border rounded-xl p-4 bg-neutral-50 dark:bg-neutral-800 shadow-sm hover:shadow-md transition"
+        >
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white break-words">
+            {c.title}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3">
+            {c.description}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <CustomButton
+              onClick={() => handleApprove(c._id, "approved")}
+              label={"Approve"}
+              className={"bg-emerald-600 hover:bg-emerald-700 text-white"}
+            />
+            <CustomButton
+              onClick={() => handleApprove(c._id, "rejected")}
+              label={"Reject"}
+              className={"bg-red-600 hover:bg-red-700 text-white"}
+            />
           </div>
-        ))}
-      </div>
-    </ElevatedCard>
-  );
+        </div>
+      ))}
+    </div>
+  </ElevatedCard>
+);
+
 }

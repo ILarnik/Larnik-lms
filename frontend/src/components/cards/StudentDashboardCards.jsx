@@ -87,19 +87,20 @@ export default function StudentDashboardCards({ role, refreshKey }) {
     fetchData();
   }, [role, refreshKey]); // 🔑 re-fetch if role changes or refreshKey increments
 
-  return (
-    <div className="flex w-full flex-col">
-      <div className="flex flex-row gap-5 w-full p-5">
-        {cards.map((card, index) => (
-          <UserManagementCardDesign
-            key={index}
-            title={card.title}
-            subTitle={card.subTitle}
-            icon={card.icon}
-            value={card.value}
-          />
-        ))}
-      </div>
+return (
+  <div className="flex w-full flex-col">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full p-4 sm:p-5">
+      {cards.map((card, index) => (
+        <UserManagementCardDesign
+          key={index}
+          title={card.title}
+          subTitle={card.subTitle}
+          icon={card.icon}
+          value={card.value}
+        />
+      ))}
     </div>
-  );
+  </div>
+);
+
 }

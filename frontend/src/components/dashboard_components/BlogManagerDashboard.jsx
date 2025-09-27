@@ -14,10 +14,11 @@ export default function BlogManagerDashboard() {
     setRefreshKey((prev) => prev + 1);
   };
 
-  return (
-    <div className="grid gap-6 p-6">
-      <CreateBlog onCreated={handleCreated} />
-      <BlogList key={refreshKey} onDelete={handleDelete} />
-    </div>
-  );
+return (
+  <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <CreateBlog onCreated={handleCreated} />
+    <BlogList key={refreshKey} onDelete={handleDelete} />
+  </div>
+);
+
 }

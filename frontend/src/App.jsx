@@ -25,6 +25,7 @@ import UnivesityPage from "./pages/Universitypage";
 import Careercellpage from "./pages/Careercellpage";
  import ReferralPage from "./pages/ReferralPartnerPage";
 import BlogPage from "./pages/BlogPage";
+import BlogManagerDashboard from "./components/dashboard_components/BlogManagerDashboard";
 //import Notificationpage from "./pages/Notificationpage";
 
 
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/University" element={<UnivesityPage />} />
           <Route path="/CareerCell" element={<Careercellpage />} />
           <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/blogManager" element={<BlogManagerDashboard />} />
           {/* <Route path="/notification" element={<Notificationpage />} /> */}
           {/* <Route path="/FinanceManager" element={<Financemanagerpage />} /> */}
           <Route path="/ReferralPartner" element={<ReferralPage />} />

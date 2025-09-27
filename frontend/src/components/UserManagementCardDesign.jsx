@@ -8,21 +8,20 @@ export default function UserManagementCardDesign({
   icon = Users,
 }) {
   const IconComp = icon
-  return (
-    <>
-    <div className="bg-white rounded-2xl shadow-2xl flex flex-col p-5 gap-6 w-[98%]">
-      
-      <div className="flex justify-between">
-        <span className="font-semibold">{title}</span>
-        <div><IconComp size={20} /></div>
-      </div>
-
-      <div className="flex flex-col items-start">
-        <span className="text-xl font-bold">{value}</span>
-        <span className="text-xs">{subTitle}</span>
-      </div>
-
+return (
+  <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200 flex flex-col p-5 gap-6 w-full max-w-sm">
+    {/* Header */}
+    <div className="flex justify-between items-center">
+      <span className="font-semibold text-gray-800">{title}</span>
+      <IconComp size={20} className="text-gray-600" />
     </div>
-    </>
-  )
+
+    {/* Content */}
+    <div className="flex flex-col items-start">
+      <span className="text-2xl font-bold text-gray-900">{value}</span>
+      <span className="text-sm text-gray-500">{subTitle}</span>
+    </div>
+  </div>
+);
+
 }

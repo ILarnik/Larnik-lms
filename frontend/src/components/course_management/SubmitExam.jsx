@@ -1,44 +1,3 @@
-// // src/components/SubmitExam.jsx
-// import React, { useState } from "react";
-// import { submitExam } from "../../api/api";
-
-// export default function SubmitExam({ courseId }) {
-//   const [answers, setAnswers] = useState([]);
-//   const [templateId, setTemplateId] = useState("");
-//   const [result, setResult] = useState(null);
-
-//   const handleSubmit = async () => {
-//     const res = await submitExam(courseId, { templateId, answers });
-//     setResult(res.data);
-//   };
-
-//   return (
-//     <div className="p-4 border rounded mt-4">
-//       <h2 className="text-lg font-semibold mb-2">Submit Exam</h2>
-//       <input
-//         placeholder="Template ID"
-//         value={templateId}
-//         onChange={(e) => setTemplateId(e.target.value)}
-//         className="border p-2 w-full mb-2"
-//       />
-//       <button
-//         onClick={handleSubmit}
-//         className="bg-indigo-500 text-white px-4 py-2 rounded"
-//       >
-//         Submit
-//       </button>
-//       {result && (
-//         <div className="mt-3">
-//           <p>Score: {result.score}%</p>
-//           <p>Status: {result.passed ? "Passed ✅" : "Failed ❌"}</p>
-//           {result.certificateId && <p>Certificate: {result.certificateId}</p>}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
 // src/components/SubmitExam.jsx
 import React, { useState } from "react";
 import { submitExam } from "../../api/api";
@@ -56,33 +15,46 @@ export default function SubmitExam({ courseId }) {
     setResult(res.data);
   };
 
-  return (
-    <ElevatedCard
-      title="Submit Exam"
-      subtitle="Enter your exam details and submit answers"
-    >
+return (
+  <ElevatedCard
+    title="Submit Exam"
+    subtitle="Enter your exam details and submit answers"
+  >
+    <div className="space-y-4">
       <Input
         placeholder="Template ID"
         value={templateId}
         onChange={(e) => setTemplateId(e.target.value)}
+        className="w-full"
       />
-      {/* <button
-        onClick={handleSubmit}
-        className="mt-3 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition"
-      >
-        Submit
-      </button> */}
-      <CustomButton label={"Submit"} onClick={handleSubmit} className={"bg-black"} />
+
+      <div>
+        <CustomButton
+          label={"Submit"}
+          onClick={handleSubmit}
+          className={"w-full sm:w-auto bg-black"}
+        />
+      </div>
 
       {result && (
-        <div className="mt-4 border rounded-xl p-3 bg-green-50 dark:bg-green-900/20">
-          <p>Score: {result.score}%</p>
-          <p>Status: {result.passed ? "✅ Passed" : "❌ Failed"}</p>
+        <div className="mt-4 border rounded-xl p-4 bg-green-50 dark:bg-green-900/20 space-y-1 text-sm sm:text-base">
+          <p>
+            <span className="font-semibold">Score:</span> {result.score}%
+          </p>
+          <p>
+            <span className="font-semibold">Status:</span>{" "}
+            {result.passed ? "✅ Passed" : "❌ Failed"}
+          </p>
           {result.certificateId && (
-            <p>Certificate: {result.certificateId}</p>
+            <p>
+              <span className="font-semibold">Certificate:</span>{" "}
+              {result.certificateId}
+            </p>
           )}
         </div>
       )}
-    </ElevatedCard>
-  );
+    </div>
+  </ElevatedCard>
+);
+
 }

@@ -39,27 +39,41 @@ export default function SubscriptionPlans() {
     
   ];
 
-  return (
-    <section className="bg-gray-200 py-16 px-6">
-      <div className="max-w-7xl mx-auto text-center">
-        {/* Heading */}
-        <h2 className="text-3xl font-bold text-gray-900">
-          Choose Your Subscription Plan
-        </h2>
-        <p className="mt-2 text-gray-600">
-          Pick the plan that's right for you and start learning today.
-        </p>
+return (
+  <section className="bg-gray-200 py-16 px-6">
+    <div className="max-w-7xl mx-auto text-center">
+      {/* Heading */}
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        Choose Your Subscription Plan
+      </h2>
+      <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+        Pick the plan that's right for you and start learning today.
+      </p>
 
-        {/* Cards */}
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan, index) => (
-            <div key={index}>
-              <CardDesign variant="subscribe" width="w-[300px]" height="h-96" title={plan.price + '/' + plan.period} subsTitle={plan.name} description={plan.features.map((feature, i) => (<li key={i}>{feature}</li>))} btnName="Subscribe"/>
-            </div>
-          ))}
-        </div>
-        
+      {/* Cards */}
+      <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
+        {plans.map((plan, index) => (
+          <div key={index} className="w-full max-w-sm">
+            <CardDesign
+              variant="subscribe"
+              width="w-full"
+              height="h-96"
+              title={`${plan.price}/${plan.period}`}
+              subsTitle={plan.name}
+              description={
+                <ul className="list-disc list-inside text-left text-gray-700 space-y-1">
+                  {plan.features.map((feature, i) => (
+                    <li key={i}>{feature}</li>
+                  ))}
+                </ul>
+              }
+              btnName="Subscribe"
+            />
+          </div>
+        ))}
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
+
 }

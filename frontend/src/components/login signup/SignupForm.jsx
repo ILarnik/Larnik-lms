@@ -93,130 +93,137 @@ export default function Signup({ role }) {
     }
   };
 
-  return (
-    <div className="flex items-center justify-center">
-      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold mb-2">Create Account</h2>
-        <p className="text-gray-500 mb-6">Continue as {role}</p>
+return (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+    <div className="w-full max-w-md bg-white p-4 sm:p-6 rounded-2xl shadow-md border">
+      <h2 className="text-2xl font-bold mb-2 text-gray-800">Create Account</h2>
+      <p className="text-gray-500 mb-6">Continue as {role}</p>
 
-        {/* Full Name */}
+      {/* Full Name */}
+      <input
+        name="fullName"
+        type="text"
+        placeholder="Full Name"
+        value={form.fullName}
+        onChange={handleChange}
+        className="w-full border rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      />
+
+      {/* Email + Verify */}
+      <div className="mb-3 flex flex-col sm:flex-row gap-3">
         <input
-          name="fullName"
-          type="text"
-          placeholder="Full Name"
-          value={form.fullName}
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={form.email}
           onChange={handleChange}
-          className="w-full border rounded-lg p-2 mb-3"
+          className="flex-1 border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
         />
-
-        {/* Email */}
-        <div className="flex mb-3">
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2"
-          />
-          <CustomButton 
-            label={isOtpSent ? "Resend" : "Verify"} 
-            onClick={handleSendOtp} 
-            className="ml-2 bg-black text-white   rounded-lg"
+        <div className="sm:w-auto w-full">
+          <CustomButton
+            label={isOtpSent ? "Resend" : "Verify"}
+            onClick={handleSendOtp}
+            className="w-full sm:w-auto bg-black"
           />
         </div>
+      </div>
 
-        {/* OTP Verification */}
-        {isOtpSent && (
-          <div className="flex mb-3">
-            <input
-              name="otp"
-              type="text"
-              placeholder="Enter OTP"
-              value={form.otp}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2"
-            />
-            <CustomButton 
-              label="Verify" 
-              onClick={handleVerifyOtp} 
-              className="ml-2 bg-green-600 text-white px-3 py-2 rounded-lg"
+      {/* OTP Verification */}
+      {isOtpSent && (
+        <div className="mb-3 flex flex-col sm:flex-row gap-3">
+          <input
+            name="otp"
+            type="text"
+            placeholder="Enter OTP"
+            value={form.otp}
+            onChange={handleChange}
+            className="flex-1 border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+          />
+          <div className="sm:w-auto w-full">
+            <CustomButton
+              label="Verify"
+              onClick={handleVerifyOtp}
+              className="w-full sm:w-auto bg-green-600"
             />
           </div>
-        )}
-
-        {/* Phone */}
-        <input
-          name="phone"
-          type="tel"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-2 mb-3"
-        />
-
-        {/* Password */}
-        <div className="relative mb-3">
-          <input
-            name="password"
-            type={passwordVisible ? "text" : "password"}
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 pr-10"
-          />
-          <button
-            type="button"
-            onClick={() => setPasswordVisible(!passwordVisible)}
-            className="absolute right-3"
-          >
-            {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
         </div>
+      )}
 
-        {/* Confirm Password */}
+      {/* Phone */}
+      <input
+        name="phone"
+        type="tel"
+        placeholder="Phone"
+        value={form.phone}
+        onChange={handleChange}
+        className="w-full border rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      />
+
+      {/* Password */}
+      <div className="relative mb-3">
         <input
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm Password"
-          value={form.confirmPassword}
+          name="password"
+          type={passwordVisible ? "text" : "password"}
+          placeholder="Password"
+          value={form.password}
           onChange={handleChange}
-          className="w-full border rounded-lg p-2 mb-3"
+          className="w-full border rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-200"
         />
-
-        {/* Role specific fields */}
-        {role.toLowerCase() === "student" && (
-          <input
-            name="referralCode"
-            placeholder="Referral Code"
-            value={form.referralCode}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mb-3"
-          />
-        )}
-        {role.toLowerCase() === "teacher" && (
-          <input
-            name="universityCode"
-            placeholder="University Code"
-            value={form.universityCode}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 mb-3"
-          />
-        )}
-
-        {/* Signup button (disabled until OTP verified) */}
         <button
-          onClick={handleSignup}
-          disabled={!isOtpVerified}
-          className={`w-full rounded-lg p-2 font-medium ${
-            isOtpVerified
-              ? "bg-green-600 text-white"
-              : "bg-gray-400 text-gray-200 cursor-not-allowed"
-          }`}
+          type="button"
+          onClick={() => setPasswordVisible(!passwordVisible)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+          aria-label={passwordVisible ? "Hide password" : "Show password"}
         >
-          Create Account
+          {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
+
+      {/* Confirm Password */}
+      <input
+        name="confirmPassword"
+        type="password"
+        placeholder="Confirm Password"
+        value={form.confirmPassword}
+        onChange={handleChange}
+        className="w-full border rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      />
+
+      {/* Role specific fields */}
+      {role?.toLowerCase() === "student" && (
+        <input
+          name="referralCode"
+          placeholder="Referral Code"
+          value={form.referralCode}
+          onChange={handleChange}
+          className="w-full border rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+        />
+      )}
+      {role?.toLowerCase() === "teacher" && (
+        <input
+          name="universityCode"
+          placeholder="University Code"
+          value={form.universityCode}
+          onChange={handleChange}
+          className="w-full border rounded-lg p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+        />
+      )}
+
+      {/* Signup button (disabled until OTP verified) */}
+      <button
+        onClick={handleSignup}
+        disabled={!isOtpVerified}
+        className={`w-full rounded-lg p-3 font-medium transition-colors ${
+          isOtpVerified
+            ? "bg-green-600 text-white hover:bg-green-700"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
+        aria-disabled={!isOtpVerified}
+      >
+        Create Account
+      </button>
     </div>
-  );
+  </div>
+);
+
 }

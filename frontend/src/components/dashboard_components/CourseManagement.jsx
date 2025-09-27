@@ -13,14 +13,14 @@ import SubmitExam from "../course_management/SubmitExam";
 // import SubmitExam from "./SubmitExam";
 
 export default function CourseDashboard() {
-  return (
-    <div className="grid gap-6 p-6">
-      <CreateCourse onCreated={() => window.location.reload()} />
-      <CourseList />
-      <ApproveCourse />
-      <ManageModules courseId="<courseId_here>" />
-      <SubmitExam courseId="<courseId_here>" />
-    
-    </div>
-  );
+return (
+  <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <CreateCourse onCreated={() => window.location.reload()} />
+    <CourseList />
+    <ApproveCourse />
+    <ManageModules courseId="<courseId_here>" />
+    <SubmitExam courseId="<courseId_here>" />
+  </div>
+);
+
 }

@@ -62,42 +62,83 @@ export default function UserManagement(props) {
   if (loading) return <div className="p-4">Loading {props.role}s...</div>;
   if (!userLists.length) return <div className="p-4">No {props.role} found</div>;
 
-  return (
-    <div>
-      {/* Dashboard Cards */}
-      <StudentDashboardCards role={props.role} />
+return (
+  <div className="px-4 md:px-8 py-6">
+    {/* Dashboard Cards */}
+    <StudentDashboardCards role={props.role} />
 
-      {/* Header */}
-      <div className="flex flex-col">
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-col items-start m-6">
-            <span className="font-bold uppercase text-3xl">{props.role} List</span>
-            <span>View and manage all {props.role} on your platform</span>
+    {/* Header */}
+    <div className="flex flex-col md:flex-row md:items-end md:justify-between my-6">
+      <div className="mb-4 md:mb-0">
+        <h2 className="text-2xl md:text-3xl font-bold uppercase">{props.role} List</h2>
+        <p className="text-sm text-gray-600">View and manage all {props.role} on your platform</p>
+      </div>
+    </div>
+
+    {/* Table header (desktop) */}
+    <div className="hidden md:flex bg-gray-200 rounded-lg px-4 py-3 font-semibold text-sm text-gray-800">
+      <div className="w-2/5">Name</div>
+      <div className="w-1/5">Phone</div>
+      <div className="w-1/5">Status</div>
+      <div className="w-1/5 text-right">Actions</div>
+    </div>
+
+    {/* Users list */}
+    <div className="mt-3 space-y-3">
+      {userLists.map((user) => (
+        <div
+          key={user._id}
+          className="bg-white rounded-xl shadow-sm border md:border-0 p-4 md:p-2 flex flex-col md:flex-row md:items-center gap-3 md:gap-0"
+        >
+          {/* Name */}
+          <div className="md:w-2/5">
+            <div className="text-base font-semibold text-gray-900 truncate">
+              {user.fullName || user.name || user.title || "Unnamed"}
+            </div>
+            <div className="text-xs text-gray-500 md:hidden mt-1">
+              {user.email}
+            </div>
+          </div>
+
+          {/* Phone */}
+          <div className="md:w-1/5 text-sm text-gray-700">
+            {user.phone || "—"}
+          </div>
+
+          {/* Status */}
+          <div className="md:w-1/5">
+            <span
+              className={[
+                "inline-block text-xs font-medium px-2 py-1 rounded-full",
+                user.status === "Active"
+                  ? "bg-green-100 text-green-800"
+                  : user.status === "Inactive"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-gray-100 text-gray-700",
+              ].join(" ")}
+            >
+              {user.status || "Unknown"}
+            </span>
+          </div>
+
+          {/* Actions */}
+          <div className="md:w-1/5 flex items-center justify-end">
+            {/* Keep your existing item component for actions/controls.
+                Wrapped so it aligns nicely on all screen sizes. */}
+            <UserManagementListDesign
+              userId={user._id}
+              name={user.fullName || user.name || user.title || "Unnamed"}
+              mail={user.email}
+              phone={user.phone}
+              status_title={user.status}
+              status_colour={user.status === "Active" ? "green" : "gray"}
+              onActionComplete={fetchUsers}
+            />
           </div>
         </div>
-      </div>
-
-      {/* Table header */}
-      <div className="bg-gray-200 flex justify-between items-center p-2 font-bold text-xl">
-        <span className="w-[40%]">Name</span>
-        <span className="w-[15%]">Phone</span>
-        <span className="w-[15%]">Status</span>
-        <span className="w-[30%]">Actions</span>
-      </div>
-
-      {/* Users list */}
-      {userLists.map((user) => (
-        <UserManagementListDesign
-          key={user._id}
-          userId={user._id}
-          name={user.fullName || user.name || user.title || "Unnamed"}
-          mail={user.email}
-          phone={user.phone}
-          status_title={user.status}
-          status_colour={user.status === "Active" ? "green" : "yellow"}
-          onActionComplete={fetchUsers} // ✅ refresh after action
-        />
       ))}
     </div>
-  );
+  </div>
+);
+
 }

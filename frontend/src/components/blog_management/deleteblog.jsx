@@ -11,12 +11,13 @@ export default function DeleteBlog({ blogId, onDeleted }) {
     }
   };
 
-  return (
-    <button
-      onClick={handleDelete}
-      className="bg-red-600 text-white px-3 py-1 rounded"
-    >
-      Delete
-    </button>
-  );
+return (
+  <button
+    onClick={handleDelete}
+    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md text-sm sm:text-base font-medium transition transform hover:scale-105"
+  >
+    🗑 Delete
+  </button>
+);
+
 }

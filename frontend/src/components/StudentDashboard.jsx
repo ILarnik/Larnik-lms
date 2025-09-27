@@ -100,12 +100,13 @@ export default function StudentDashboard() {
   }, [activeTab]);
 
   // ---------------- Render ----------------
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Student Dashboard</h1>
+return (
+  <div className="p-4 md:p-6 lg:p-8">
+    <div className="max-w-5xl mx-auto">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">Student Dashboard</h1>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b mb-6">
+      <div className="flex flex-wrap gap-2 md:gap-4 border-b mb-6">
         {[
           { key: "profile", label: "Profile", icon: <User size={18} /> },
           { key: "mycourses", label: "My Courses", icon: <ClipboardList size={18} /> },
@@ -115,140 +116,178 @@ export default function StudentDashboard() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2 ${
+            className={[
+              "flex items-center gap-2 px-3 py-2 rounded-md transition",
               activeTab === tab.key
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600"
-            }`}
+                ? "border-b-2 border-blue-600 text-blue-600 bg-blue-50"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+            ].join(" ")}
+            aria-pressed={activeTab === tab.key}
+            aria-label={tab.label}
           >
-            {tab.icon}
-            {tab.label}
+            <span className="hidden sm:inline-flex">{tab.icon}</span>
+            <span className="text-sm sm:text-base">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Profile Tab */}
-      {activeTab === "profile" && (
-        <div className="bg-white shadow rounded-xl p-6 space-y-3">
-          <h2 className="font-semibold mb-4">My Profile</h2>
-          <input
-            type="text"
-            name="name"
-            value={profile.name}
-            placeholder="Full Name"
-            onChange={handleProfileChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            type="email"
-            name="email"
-            value={profile.email}
-            placeholder="Email"
-            onChange={handleProfileChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="phone"
-            value={profile.phone}
-            placeholder="Phone"
-            onChange={handleProfileChange}
-            className="w-full border p-2 rounded"
-          />
-          <button
-            onClick={handleProfileSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save Profile
-          </button>
-        </div>
-      )}
+      {/* Content */}
+      <div className="space-y-6">
+        {/* Profile Tab */}
+        {activeTab === "profile" && (
+          <div className="bg-white shadow rounded-xl p-4 md:p-6 space-y-4">
+            <h2 className="font-semibold text-lg">My Profile</h2>
 
-      {/* My Courses Tab */}
-      {activeTab === "mycourses" && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg">My Courses</h2>
-          {myCourses.map((c) => (
-            <div key={c._id} className="border p-4 rounded-lg bg-white">
-              <h3 className="font-extrabold text-2xl">{c.title}</h3>
-              <hr />
-              <p>{c.description}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                name="name"
+                value={profile.name}
+                placeholder="Full Name"
+                onChange={handleProfileChange}
+                className="w-full border rounded-md p-2"
+              />
+              <input
+                type="email"
+                name="email"
+                value={profile.email}
+                placeholder="Email"
+                onChange={handleProfileChange}
+                className="w-full border rounded-md p-2"
+              />
+              <input
+                type="text"
+                name="phone"
+                value={profile.phone}
+                placeholder="Phone"
+                onChange={handleProfileChange}
+                className="w-full border rounded-md p-2"
+              />
             </div>
-          ))}
-        </div>
-      )}
 
-      {/* Reviews Tab */}
-      {activeTab === "reviews" && (
-        <div className="bg-white shadow rounded-xl p-6 space-y-3">
-          <h2 className="font-semibold">Leave a Review</h2>
-          <select
-            value={reviewCourse}
-            onChange={(e) => setReviewCourse(e.target.value)}
-            className="w-full border p-2 rounded bg-white"
-          >
-            <option value="">Select a course</option>
-            {myCourses.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-
-          {/* ⭐ Rating Field */}
-          <div>
-            <label className="block mb-1 font-medium">Rating</label>
-            <select
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              className="w-full border p-2 rounded"
-            >
-              <option value={0}>Select rating</option>
-              {[1, 2, 3, 4, 5].map((r) => (
-                <option key={r} value={r}>
-                  {r} Star{r > 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <textarea
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            placeholder="Write your review here..."
-            className="w-full border p-2 rounded bg-white"
-            rows="4"
-          />
-          <button
-            onClick={handleReviewSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Submit Review
-          </button>
-        </div>
-      )}
-
-      {/* Certificates Tab */}
-      {activeTab === "certificates" && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg">My Certificates</h2>
-          {certificates.map((cert) => (
-            <div
-              key={cert._id}
-              className="border p-4 rounded-lg flex justify-between items-center bg-white"
-            >
-              <p>{cert.courseTitle}</p>
-              {/* <button
-                onClick={() => handleDownloadCertificate(cert._id)}
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            <div>
+              <button
+                onClick={handleProfileSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
               >
-                Download
-              </button> */}
-              <CustomButton label={"Download"} onClick={()=>handleDownloadCertificate(cert._id)} className={"bg-black"} />
+                Save Profile
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+
+        {/* My Courses Tab */}
+        {activeTab === "mycourses" && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-lg">My Courses</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {myCourses.map((c) => (
+                <div key={c._id} className="border p-4 rounded-lg bg-white">
+                  <h3 className="font-extrabold text-xl md:text-2xl">{c.title}</h3>
+                  <hr className="my-3" />
+                  <p className="text-sm text-gray-700">{c.description}</p>
+                </div>
+              ))}
+              {myCourses.length === 0 && (
+                <div className="col-span-full p-6 text-center text-gray-500 bg-white rounded-lg">
+                  You have no enrolled courses yet.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && (
+          <div className="bg-white shadow rounded-xl p-4 md:p-6 space-y-4">
+            <h2 className="font-semibold text-lg">Leave a Review</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select
+                value={reviewCourse}
+                onChange={(e) => setReviewCourse(e.target.value)}
+                className="w-full border rounded-md p-2 bg-white"
+              >
+                <option value="">Select a course</option>
+                {myCourses.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+
+              {/* Rating */}
+              <div>
+                <label className="block mb-1 font-medium">Rating</label>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  className="w-full border p-2 rounded-md"
+                >
+                  <option value={0}>Select rating</option>
+                  {[1, 2, 3, 4, 5].map((r) => (
+                    <option key={r} value={r}>
+                      {r} Star{r > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              placeholder="Write your review here..."
+              className="w-full border p-3 rounded-md bg-white"
+              rows={4}
+            />
+
+            <div>
+              <button
+                onClick={handleReviewSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Certificates Tab */}
+        {activeTab === "certificates" && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-lg">My Certificates</h2>
+
+            <div className="grid grid-cols-1 gap-4">
+              {certificates.map((cert) => (
+                <div
+                  key={cert._id}
+                  className="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center bg-white"
+                >
+                  <div className="mb-3 md:mb-0">
+                    <p className="font-medium">{cert.courseTitle}</p>
+                    {cert.issuedAt && (
+                      <p className="text-xs text-gray-500">Issued: {new Date(cert.issuedAt).toLocaleDateString()}</p>
+                    )}
+                  </div>
+
+                  <div className="self-end md:self-center">
+                    <CustomButton label={"Download"} onClick={() => handleDownloadCertificate(cert._id)} className={"bg-black"} />
+                  </div>
+                </div>
+              ))}
+              {certificates.length === 0 && (
+                <div className="p-6 text-center text-gray-500 bg-white rounded-lg">
+                  No certificates available.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  );
+  </div>
+);
+
 }

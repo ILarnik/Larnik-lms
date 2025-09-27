@@ -43,67 +43,70 @@ export default function TeacherCertificates() {
     }
   };
 
-  return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <p className="text-gray-500 text-sm">Certificate will use the default template.</p>
+return (
+  <form
+    className="space-y-4 bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-md"
+    onSubmit={handleSubmit}
+  >
+    <p className="text-gray-500 text-sm">
+      Certificate will use the default template.
+    </p>
 
-      <input
-        type="text"
-        name="studentName"
-        placeholder="Student Name"
-        value={formData.studentName}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+    <input
+      type="text"
+      name="studentName"
+      placeholder="Student Name"
+      value={formData.studentName}
+      onChange={handleChange}
+      className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      required
+    />
 
-      <input
-        type="email"
-        name="studentEmail"
-        placeholder="Student Email"
-        value={formData.studentEmail}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+    <input
+      type="email"
+      name="studentEmail"
+      placeholder="Student Email"
+      value={formData.studentEmail}
+      onChange={handleChange}
+      className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      required
+    />
 
-      <input
-        type="text"
-        name="courseTitle"
-        placeholder="Course Title"
-        value={formData.courseTitle}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+    <input
+      type="text"
+      name="courseTitle"
+      placeholder="Course Title"
+      value={formData.courseTitle}
+      onChange={handleChange}
+      className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      required
+    />
 
-      <input
-        type="text"
-        name="courseuniqueId"
-        placeholder="Course Unique ID"
-        value={formData.courseuniqueId}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+    <input
+      type="text"
+      name="courseuniqueId"
+      placeholder="Course Unique ID"
+      value={formData.courseuniqueId}
+      onChange={handleChange}
+      className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      required
+    />
 
-      <input
-        type="number"
-        name="score"
-        placeholder="Score (optional)"
-        value={formData.score}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+    <input
+      type="number"
+      name="score"
+      placeholder="Score (optional)"
+      value={formData.score}
+      onChange={handleChange}
+      className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+    />
 
-      {/* <button
-        type="submit"
-        disabled={loading}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        {loading ? "Submitting..." : "Issue Certificate"}
-      </button> */}
-      <CustomButton className={"bg-black"}>{loading ? "Submitting..." : "Issue Certificate"}</CustomButton>
-    </form>
-  );
+    <CustomButton
+      className={"w-full bg-black text-white font-medium py-3 rounded-lg shadow hover:scale-105 transition"}
+    >
+      {loading ? "Submitting..." : "Issue Certificate"}
+    </CustomButton>
+  </form>
+);
+
 }

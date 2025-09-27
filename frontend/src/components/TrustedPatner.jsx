@@ -29,25 +29,27 @@ export default function TrustedPatners() {
       
   ];
 
-  return (
-    <section className="py-16 px-6">
-      <div className="max-w-6xl mx-auto text-center">
-        {/* Title */}
-        <h2 className="text-4xl font-bold text-gray-900">
-          Trusted by Top Universities Worldwide
-        </h2>
+return (
+  <section className="py-16 px-6 bg-gray-50">
+    <div className="max-w-6xl mx-auto text-center">
+      {/* Title */}
+      <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+        Trusted by Top Universities Worldwide
+      </h2>
 
-        {/* Patners Logos */}
-        <div className="mt-10 flex justify-center items-center gap-12">
-          {Patners.map((Patner, index) => (
-            <img
-              key={index}
-              src={Patner.logo}
-              className="max-h-16 p-1"
-            />
-          ))}
-        </div>
+      {/* Partners Logos */}
+      <div className="mt-10 flex flex-wrap justify-center items-center gap-8 sm:gap-12">
+        {Patners.map((partner, index) => (
+          <img
+            key={index}
+            src={partner.logo}
+            alt={partner.name || `Partner ${index + 1}`}
+            className="max-h-12 sm:max-h-16 object-contain grayscale hover:grayscale-0 transition"
+          />
+        ))}
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
+
 }

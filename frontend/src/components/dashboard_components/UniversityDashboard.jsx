@@ -35,24 +35,43 @@ import CustomButton from "../ui/CustomButton";
 export default function UniversityDashboard() {
   const [tab, setTab] = useState("courseManager");
 
-  return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">🏫 University Dashboard</h1>
+return (
+  <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="max-w-7xl mx-auto">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">🏫 University Dashboard</h1>
 
-      {/* --------- Tab Navigation --------- */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <TabButton icon={<Users size={18} />} label="Assign Staff" id="assignStaff" tab={tab} setTab={setTab} />
-        <TabButton icon={<BookOpen size={18} />} label="Course Manager" id="courseManager" tab={tab} setTab={setTab} />
-        <TabButton icon={<Award size={18} />} label="Certificate Officer" id="certificateOfficer" tab={tab} setTab={setTab} />
-        <TabButton icon={<FileText size={18} />} label="Document Manager" id="documentManager" tab={tab} setTab={setTab} />
-        <TabButton icon={<BarChart size={18} />} label="Analyst" id="analyst" tab={tab} setTab={setTab} />
-        <TabButton icon={<Users size={18} />} label="Affiliated Teachers" id="affiliatedTeachers" tab={tab} setTab={setTab} />
-        <TabButton icon={<DollarSign size={18} />} label="University Earnings" id="universityEarnings" tab={tab} setTab={setTab} />
-        <TabButton icon={<DollarSign size={18} />} label="Teacher Settlements" id="teacherSettlements" tab={tab} setTab={setTab} />
+      {/* --------- Tab Navigation (responsive: horizontal scroll on xs, wrap on sm+) --------- */}
+      <div className="mb-6">
+        <div className="hidden sm:flex flex-wrap gap-3">
+          <TabButton icon={<Users size={18} />} label="Assign Staff" id="assignStaff" tab={tab} setTab={setTab} />
+          <TabButton icon={<BookOpen size={18} />} label="Course Manager" id="courseManager" tab={tab} setTab={setTab} />
+          <TabButton icon={<Award size={18} />} label="Certificate Officer" id="certificateOfficer" tab={tab} setTab={setTab} />
+          <TabButton icon={<FileText size={18} />} label="Document Manager" id="documentManager" tab={tab} setTab={setTab} />
+          <TabButton icon={<BarChart size={18} />} label="Analyst" id="analyst" tab={tab} setTab={setTab} />
+          <TabButton icon={<Users size={18} />} label="Affiliated Teachers" id="affiliatedTeachers" tab={tab} setTab={setTab} />
+          <TabButton icon={<DollarSign size={18} />} label="University Earnings" id="universityEarnings" tab={tab} setTab={setTab} />
+          <TabButton icon={<DollarSign size={18} />} label="Teacher Settlements" id="teacherSettlements" tab={tab} setTab={setTab} />
+        </div>
+
+        {/* Horizontal scroll for small screens */}
+        <div className="sm:hidden -mx-4 px-4">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar py-2">
+            <div className="flex gap-3">
+              <TabButton icon={<Users size={18} />} label="Assign Staff" id="assignStaff" tab={tab} setTab={setTab} />
+              <TabButton icon={<BookOpen size={18} />} label="Course Manager" id="courseManager" tab={tab} setTab={setTab} />
+              <TabButton icon={<Award size={18} />} label="Certificate Officer" id="certificateOfficer" tab={tab} setTab={setTab} />
+              <TabButton icon={<FileText size={18} />} label="Document Manager" id="documentManager" tab={tab} setTab={setTab} />
+              <TabButton icon={<BarChart size={18} />} label="Analyst" id="analyst" tab={tab} setTab={setTab} />
+              <TabButton icon={<Users size={18} />} label="Affiliated Teachers" id="affiliatedTeachers" tab={tab} setTab={setTab} />
+              <TabButton icon={<DollarSign size={18} />} label="University Earnings" id="universityEarnings" tab={tab} setTab={setTab} />
+              <TabButton icon={<DollarSign size={18} />} label="Teacher Settlements" id="teacherSettlements" tab={tab} setTab={setTab} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* --------- Tab Content --------- */}
-      <div className="bg-white rounded-xl shadow p-4">
+      {/* --------- Tab Content (card) --------- */}
+      <div className="bg-white rounded-xl shadow p-4 sm:p-6">
         {tab === "assignStaff" && <AssignStaff />}
         {tab === "courseManager" && <CourseManagerPanel />}
         {tab === "certificateOfficer" && <CertificateOfficerPanel />}
@@ -63,20 +82,28 @@ export default function UniversityDashboard() {
         {tab === "teacherSettlements" && <TeacherSettlementRequestsPanel />}
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 /* ------------ Tab Button Helper ------------ */
 function TabButton({ icon, label, id, tab, setTab }) {
-  return (
-    <button
-      onClick={() => setTab(id)}
-      className={`flex items-center gap-2 px-4 py-2 rounded transition
-        ${tab === id ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}
-    >
-      {icon}{label}
-    </button>
-  );
+return (
+  <button
+    onClick={() => setTab(id)}
+    className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
+      ${
+        tab === id
+          ? "bg-blue-600 text-white shadow-md scale-105"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+      }`}
+  >
+    <span className="flex-shrink-0">{icon}</span>
+    <span className="whitespace-nowrap">{label}</span>
+  </button>
+);
+
 }
 
 /* ------------ Role Panels ------------ */
@@ -86,65 +113,74 @@ function AssignStaff() {
     { id: 2, name: "Pooja Sharma", role: "Finance Officer" },
   ]);
 
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">👑 Assign Staff Roles</h2>
-      <table className="w-full border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">Name</th>
-            <th className="p-2 border">Role</th>
-          </tr>
-        </thead>
-        <tbody className="text-center">
-          {staff.map((s) => (
-            <tr key={s.id}>
-              <td className="p-2 border">{s.name}</td>
-              <td className="p-2 border">
-                <select
-                  value={s.role}
-                  onChange={(e) =>
-                    setStaff((prev) =>
-                      prev.map((p) => (p.id === s.id ? { ...p, role: e.target.value } : p))
+return (
+  <div className="overflow-x-auto">
+    <h2 className="text-xl sm:text-2xl font-semibold mb-4">👑 Assign Staff Roles</h2>
+    <table className="w-full border rounded-lg overflow-hidden text-sm sm:text-base">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="p-2 sm:p-3 border text-left">Name</th>
+          <th className="p-2 sm:p-3 border text-left">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {staff.map((s) => (
+          <tr key={s.id} className="hover:bg-gray-50">
+            <td className="p-2 sm:p-3 border">{s.name}</td>
+            <td className="p-2 sm:p-3 border">
+              <select
+                value={s.role}
+                onChange={(e) =>
+                  setStaff((prev) =>
+                    prev.map((p) =>
+                      p.id === s.id ? { ...p, role: e.target.value } : p
                     )
-                  }
-                  className="border p-1 rounded bg-white"
-                >
-                  <option>Course Manager</option>
-                  <option>Finance Officer</option>
-                  <option>Certificate Officer</option>
-                  <option>Document Manager</option>
-                  <option>Analyst</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+                  )
+                }
+                className="border p-2 rounded-lg bg-white w-full sm:w-auto text-sm sm:text-base"
+              >
+                <option>Course Manager</option>
+                <option>Finance Officer</option>
+                <option>Certificate Officer</option>
+                <option>Document Manager</option>
+                <option>Analyst</option>
+              </select>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
 }
 
 function CourseManagerPanel() {
-  return (
-    <div className="grid gap-6">
-      <h2 className="text-xl font-semibold">📚 Course Management</h2>
-      <CreateCourse onCreated={() => window.location.reload()} />
-      <CourseList />
-      <ApproveCourse />
-      <ManageModules courseId="<courseId_here>" />
-      <SubmitExam courseId="<courseId_here>" />
-    </div>
-  );
+return (
+  <div className="grid gap-6 p-4 sm:p-6">
+    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
+      📚 Course Management
+    </h2>
+    <CreateCourse onCreated={() => window.location.reload()} />
+    <CourseList />
+    <ApproveCourse />
+    <ManageModules courseId="<courseId_here>" />
+    <SubmitExam courseId="<courseId_here>" />
+  </div>
+);
+
 }
 
 function CertificateOfficerPanel() {
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">🎓 Certificate Management</h2>
-      <TeacherCertificates />
-    </div>
-  );
+return (
+  <div className="p-4 sm:p-6">
+    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4">
+      🎓 Certificate Management
+    </h2>
+    <TeacherCertificates />
+  </div>
+);
+
 }
 
 /* ---------------- Document Manager (MoUs) ---------------- */
@@ -186,50 +222,99 @@ function DocumentManagerPanel() {
     } finally { setUploading(false); }
   };
 
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">📄 Document Manager (MoUs)</h2>
-      <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="mb-3" />
-        {file && <p className="text-sm text-gray-500 mb-2">Selected: {file.name}</p>}
-        <div className="flex gap-3">
-          <CustomButton onClick={handleUpload} className="bg-black">{uploading ? "Uploading..." : "Upload MoU"}</CustomButton>
-          <CustomButton onClick={fetchMous} className="bg-red-700" label="Refresh List" />
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full border">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border text-left">File / Title</th>
-              <th className="p-2 border text-left">Uploaded By</th>
-              <th className="p-2 border text-left">Status</th>
-              <th className="p-2 border text-left">Uploaded At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loadingMous ? (
-              <tr><td colSpan="4" className="p-4 text-center text-gray-600">Loading MoUs...</td></tr>
-            ) : mous.length > 0 ? (
-              mous.map((mou) => (
-                <tr key={mou._id}>
-                  <td className="p-2 border">
-                    {mou.title || mou.fileName || "Unnamed MoU"}
-                    {mou.fileUrl && <a href={mou.fileUrl} target="_blank" rel="noreferrer" className="ml-2 text-sm text-blue-600 underline">View</a>}
-                  </td>
-                  <td className="p-2 border">{mou.uploadedBy?.name || "—"}</td>
-                  <td className="p-2 border">{mou.status || "Pending"}</td>
-                  <td className="p-2 border">{mou.createdAt ? new Date(mou.createdAt).toLocaleString() : "—"}</td>
-                </tr>
-              ))
-            ) : (
-              <tr><td colSpan="4" className="p-4 text-center text-gray-500">No MoUs found.</td></tr>
-            )}
-          </tbody>
-        </table>
+return (
+  <div className="p-4 sm:p-6">
+    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4">
+      📄 Document Manager (MoUs)
+    </h2>
+
+    {/* Upload Section */}
+    <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+        className="mb-3 w-full"
+      />
+      {file && (
+        <p className="text-sm text-gray-500 mb-2 truncate">
+          Selected: {file.name}
+        </p>
+      )}
+      <div className="flex flex-wrap gap-3">
+        <CustomButton onClick={handleUpload} className="bg-black">
+          {uploading ? "Uploading..." : "Upload MoU"}
+        </CustomButton>
+        <CustomButton
+          onClick={fetchMous}
+          className="bg-red-700"
+          label="Refresh List"
+        />
       </div>
     </div>
-  );
+
+    {/* MoU Table */}
+    <div className="overflow-x-auto">
+      <table className="w-full border text-sm sm:text-base">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 border text-left">File / Title</th>
+            <th className="p-2 border text-left">Uploaded By</th>
+            <th className="p-2 border text-left">Status</th>
+            <th className="p-2 border text-left">Uploaded At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loadingMous ? (
+            <tr>
+              <td colSpan="4" className="p-4 text-center text-gray-600">
+                Loading MoUs...
+              </td>
+            </tr>
+          ) : mous.length > 0 ? (
+            mous.map((mou) => (
+              <tr key={mou._id} className="hover:bg-gray-50">
+                <td className="p-2 border">
+                  <span className="block truncate">
+                    {mou.title || mou.fileName || "Unnamed MoU"}
+                  </span>
+                  {mou.fileUrl && (
+                    <a
+                      href={mou.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="ml-1 text-sm text-blue-600 underline"
+                    >
+                      View
+                    </a>
+                  )}
+                </td>
+                <td className="p-2 border">
+                  {mou.uploadedBy?.name || "—"}
+                </td>
+                <td className="p-2 border">{mou.status || "Pending"}</td>
+                <td className="p-2 border">
+                  {mou.createdAt
+                    ? new Date(mou.createdAt).toLocaleString()
+                    : "—"}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan="4"
+                className="p-4 text-center text-gray-500"
+              >
+                No MoUs found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
 }
 
 /* ---------------- Analyst Panel ---------------- */
@@ -312,37 +397,60 @@ function AffiliatedTeachersPanel() {
 
   if (loading) return <p>Loading affiliated teachers...</p>;
 
-  return (
-    <div>
-      <h2 className="text-3xl font-semibold mb-4">👩‍🏫 Affiliated Teachers</h2>
-      {teachers.length === 0 ? (
-        <p className="text-gray-600">No affiliated teachers found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border rounded text-center">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">Email</th>
-                <th className="p-2 border">Status</th>
-                <th className="p-2 border">Joined</th>
+return (
+  <div className="p-4 sm:p-6">
+    <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-gray-800">
+      👩‍🏫 Affiliated Teachers
+    </h2>
+
+    {teachers.length === 0 ? (
+      <p className="text-gray-600 text-center bg-gray-50 py-6 rounded-lg shadow-sm">
+        No affiliated teachers found.
+      </p>
+    ) : (
+      <div className="overflow-x-auto rounded-lg shadow">
+        <table className="w-full border text-sm sm:text-base">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 border text-left">Name</th>
+              <th className="p-3 border text-left">Email</th>
+              <th className="p-3 border text-center">Status</th>
+              <th className="p-3 border text-center">Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {teachers.map((t) => (
+              <tr
+                key={t._id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                <td className="p-3 border font-medium">{t.name}</td>
+                <td className="p-3 border">{t.email}</td>
+                <td className="p-3 border text-center">
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full font-medium ${
+                      (t.status || "Active") === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {t.status || "Active"}
+                  </span>
+                </td>
+                <td className="p-3 border text-center">
+                  {t.createdAt
+                    ? new Date(t.createdAt).toLocaleDateString()
+                    : "—"}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {teachers.map((t) => (
-                <tr key={t._id}>
-                  <td className="p-2 border">{t.name}</td>
-                  <td className="p-2 border">{t.email}</td>
-                  <td className="p-2 border">{t.status || "Active"}</td>
-                  <td className="p-2 border">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+);
+
 }
 
 /* ---------------- University Earnings Panel ---------------- */
@@ -397,50 +505,82 @@ function UniversityEarningsPanel() {
     } finally { setRequesting(false); }
   };
 
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">💰 University Earnings & Settlements</h2>
-      <p className="mb-4">Total Approved Credits: <strong>${totalCredits}</strong></p>
+return (
+  <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-gray-800">
+          💰 University Earnings & Settlements
+        </h2>
+        <p className="text-sm sm:text-base text-gray-600">
+          Total Approved Credits: <strong className="text-gray-900">₹{totalCredits}</strong>
+        </p>
+      </div>
 
-      <div className="mb-6 flex gap-3 items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <input
           type="number"
           value={requestAmount}
           onChange={(e) => setRequestAmount(e.target.value)}
           placeholder="Enter settlement amount"
-          className="border p-2 rounded w-64"
+          className="border p-2 rounded w-full sm:w-64 focus:ring-2 focus:ring-emerald-300 outline-none"
+          aria-label="Settlement amount"
         />
-        <CustomButton onClick={handleRequestSettlement} className="bg-black">
-          {requesting ? "Requesting..." : "Request Settlement"}
-        </CustomButton>
+        <div className="w-full sm:w-auto">
+          <CustomButton onClick={handleRequestSettlement} className="w-full sm:w-auto bg-black">
+            {requesting ? "Requesting..." : "Request Settlement"}
+          </CustomButton>
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border rounded text-center">
+      <div className="overflow-x-auto rounded-lg shadow-sm bg-white">
+        <table className="w-full min-w-[720px] text-sm sm:text-base border-collapse">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-2 border">Type</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Description</th>
-              <th className="p-2 border">Created At</th>
+              <th className="p-3 border text-left">Type</th>
+              <th className="p-3 border text-right">Amount</th>
+              <th className="p-3 border text-center">Status</th>
+              <th className="p-3 border text-left">Description</th>
+              <th className="p-3 border text-left">Created At</th>
             </tr>
           </thead>
           <tbody>
-            {wallet.transactions?.map((tx) => (
-              <tr key={tx._id}>
-                <td className="p-2 border">{tx.type}</td>
-                <td className="p-2 border">Rs.{tx.amount}</td>
-                <td className="p-2 border">{tx.status}</td>
-                <td className="p-2 border">{tx.description}</td>
-                <td className="p-2 border">{new Date(tx.createdAt).toLocaleString()}</td>
+            {wallet?.transactions?.length ? (
+              wallet.transactions.map((tx) => (
+                <tr key={tx._id} className="hover:bg-gray-50">
+                  <td className="p-3 border align-top">{tx.type}</td>
+                  <td className="p-3 border text-right align-top">₹{Number(tx.amount).toLocaleString()}</td>
+                  <td className="p-3 border text-center align-top">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
+                        tx.status === "Completed"
+                          ? "bg-green-100 text-green-700"
+                          : tx.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {tx.status}
+                    </span>
+                  </td>
+                  <td className="p-3 border align-top break-words">{tx.description}</td>
+                  <td className="p-3 border align-top whitespace-nowrap">{new Date(tx.createdAt).toLocaleString()}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="p-6 text-center text-gray-500">
+                  No transactions found.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 /* ---------------- Teacher Settlement Requests Panel ---------------- */
@@ -517,39 +657,121 @@ function TeacherSettlementRequestsPanel() {
   if (loading) return <p>Loading teacher settlement requests...</p>;
   if (!requests.length) return <p>No pending teacher settlement requests.</p>;
 
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">👨‍🏫 Teacher Settlement Requests</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full border rounded text-center">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border">Teacher</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Requested At</th>
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests?.map((req) => (
-              <tr key={req._id}>
-                <td className="p-2 border">{getTeacherName(req.sourceOwnerId)}</td>
-                <td className="p-2 border">{getTeacherEmail(req.sourceOwnerId)}</td>
-                <td className="p-2 border">${req.amount}</td>
-                <td className="p-2 border">{req.status}</td>
-                {/* <td className="p-2 border">{req.sourceOwnerType}</td> */}
-                <td className="p-2 border">{new Date(req.createdAt).toLocaleString()}</td>
-                <td className="p-2 border flex gap-2 justify-center">
-                  <CustomButton onClick={() => handleApprove(req._id)} className="bg-green-600">Approve</CustomButton>
-                  <CustomButton onClick={() => handleReject(req._id)} className="bg-red-600">Reject</CustomButton>
+return (
+  <div className="p-4 sm:p-6">
+    <h2 className="text-lg sm:text-xl font-semibold mb-4">👨‍🏫 Teacher Settlement Requests</h2>
+
+    <div className="overflow-x-auto">
+      {/* Desktop / tablet table */}
+      <table className="w-full border-collapse hidden md:table">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-3 border text-left">Teacher</th>
+            <th className="p-3 border text-left">Email</th>
+            <th className="p-3 border text-right">Amount</th>
+            <th className="p-3 border text-center">Status</th>
+            <th className="p-3 border text-left">Requested At</th>
+            <th className="p-3 border text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {requests?.length ? (
+            requests.map((req) => (
+              <tr key={req._id} className="hover:bg-gray-50">
+                <td className="p-3 border align-top">{getTeacherName(req.sourceOwnerId)}</td>
+                <td className="p-3 border align-top">{getTeacherEmail(req.sourceOwnerId)}</td>
+                <td className="p-3 border text-right align-top">₹{Number(req.amount).toLocaleString()}</td>
+                <td className="p-3 border text-center align-top">
+                  <span
+                    className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
+                      req.status === "Approved"
+                        ? "bg-green-100 text-green-700"
+                        : req.status === "Rejected"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {req.status}
+                  </span>
+                </td>
+                <td className="p-3 border align-top whitespace-nowrap">{new Date(req.createdAt).toLocaleString()}</td>
+                <td className="p-3 border text-center align-top">
+                  <div className="inline-flex gap-2">
+                    <CustomButton onClick={() => handleApprove(req._id)} className="bg-green-600 px-3 py-1 text-sm">
+                      Approve
+                    </CustomButton>
+                    <CustomButton onClick={() => handleReject(req._id)} className="bg-red-600 px-3 py-1 text-sm">
+                      Reject
+                    </CustomButton>
+                  </div>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={6} className="p-6 text-center text-gray-500">
+                No settlement requests found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
-  );
+
+    {/* Mobile card list fallback */}
+    <div className="md:hidden space-y-3">
+      {requests?.length ? (
+        requests.map((req) => (
+          <div
+            key={req._id}
+            className="bg-white border rounded-lg p-4 shadow-sm"
+            role="group"
+            aria-label={`Settlement request ${req._id}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-semibold text-sm truncate">{getTeacherName(req.sourceOwnerId)}</div>
+                <div className="text-xs text-gray-500 truncate">{getTeacherEmail(req.sourceOwnerId)}</div>
+              </div>
+
+              <div className="text-right">
+                <div className="font-medium">₹{Number(req.amount).toLocaleString()}</div>
+                <div className="text-xs text-gray-400">{new Date(req.createdAt).toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <div>
+                <span
+                  className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
+                    req.status === "Approved"
+                      ? "bg-green-100 text-green-700"
+                      : req.status === "Rejected"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {req.status}
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <CustomButton onClick={() => handleApprove(req._id)} className="bg-green-600 px-3 py-1 text-sm">
+                  Approve
+                </CustomButton>
+                <CustomButton onClick={() => handleReject(req._id)} className="bg-red-600 px-3 py-1 text-sm">
+                  Reject
+                </CustomButton>
+              </div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="p-4 text-center text-gray-500 bg-white rounded-lg shadow-sm">No settlement requests found.</div>
+      )}
+    </div>
+  </div>
+);
+
 }

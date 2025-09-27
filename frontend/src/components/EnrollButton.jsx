@@ -1,6 +1,7 @@
 import React, { useState ,useEffect } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 const EnrollButton = ({ course, userId }) => {
 
@@ -94,7 +95,15 @@ useEffect(() => {
     }
   };
 
-  return <button onClick={handleEnroll}>Enroll</button>;
+  return (
+  <button
+    onClick={handleEnroll}
+    className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition-all"
+  >
+    Enroll
+  </button>
+);
+
 };
 
 export default EnrollButton;

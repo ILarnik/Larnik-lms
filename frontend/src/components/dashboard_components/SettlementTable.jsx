@@ -48,59 +48,59 @@ export default function SettlementTable (){
     );
   };
 
-  return (
-    <div className="p-6 bg-green-50 min-h-screen">
-        <div className="flex flex-col items-start ">
-                        <span className="text-3xl font-bold">Finance Management</span>
-                        <span className="text-sm pt-1">Monitor and approve settlements</span>
-                        <span className="text-xl font-bold mt-3 mb-2">Finance: Monitor & Approve Settlements</span>
-                      </div>
-                      
+return (
+  <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-green-100 via-white to-green-200 min-h-screen">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col">
+          <span className="text-2xl sm:text-3xl font-bold text-green-800">Finance Management</span>
+          <span className="text-sm text-gray-600 pt-1">Monitor and approve settlements</span>
+          <span className="text-lg sm:text-xl font-bold mt-3 mb-2 text-gray-800">Finance: Monitor &amp; Approve Settlements</span>
+        </div>
+      </div>
 
-     {/* cards view  */}
-            <div className="flex flex-row gap-5 w-[full]   p-5">
-                            {studentCards.map((studentCard, index) => (
-                                    <UserManagementCardDesign key={index} title={studentCard.title} subTitle={studentCard.subTitle} icon={studentCard.icon} value={studentCard.value} />
-                                    
-                                  ))}
-                            </div>
-            {/* cards view  */}
+      {/* cards view */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
+        {studentCards.map((studentCard, index) => (
+          <UserManagementCardDesign
+            key={index}
+            title={studentCard.title}
+            subTitle={studentCard.subTitle}
+            icon={studentCard.icon}
+            value={studentCard.value}
+          />
+        ))}
+      </div>
+      {/* end cards view */}
 
-
-      <div className="bg-white p-6 rounded-2xl shadow-md border">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border">
         {/* Header */}
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Clock size={18} /> Settlement Management
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
+            <Clock size={18} /> Settlement Management
+          </h2>
 
-        {/* Filters */}
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
-          {/* <div>
-            <label className="block text-sm text-gray-600">Date Range (From)</label>
-            <div className="flex items-center border rounded-lg p-2 bg-gray-50">
-              <Calendar size={16} className="text-gray-400 mr-2" />
-              <input type="date" className="bg-transparent outline-none w-full text-sm" />
-            </div>
-          </div> */}
-
-          <div>
-            <label className="block text-sm text-gray-600">Status</label>
-            <select className="w-full border rounded-lg p-2 bg-gray-50 text-sm">
+          {/* small filter/actions area for mobile */}
+          <div className="hidden md:flex items-center gap-3">
+            <label className="text-sm text-gray-600">Status</label>
+            <select className="border rounded-lg p-2 bg-gray-50 text-sm">
               <option>All Status</option>
               <option>Pending</option>
               <option>Completed</option>
               <option>Rejected</option>
             </select>
           </div>
+        </div>
 
-          {/* <div>
-            <label className="block text-sm text-gray-600">User Type</label>
-            <select className="w-full border rounded-lg p-2 bg-gray-50 text-sm">
-              <option>All Users</option>
-              <option>Teacher</option>
-              <option>Teacher</option>
-            </select>
-          </div> */}
+        {/* Filters (mobile-friendly) */}
+        <div className="block md:hidden mb-4">
+          <label className="block text-sm text-gray-600 mb-2">Status</label>
+          <select className="w-full border rounded-lg p-2 bg-gray-50 text-sm">
+            <option>All Status</option>
+            <option>Pending</option>
+            <option>Completed</option>
+            <option>Rejected</option>
+          </select>
         </div>
 
         {/* Table */}
@@ -120,27 +120,27 @@ export default function SettlementTable (){
               {transactions.map((t) => (
                 <tr
                   key={t.id}
-                  className={`${t.status === "Pending" ? "bg-yellow-50" : ""} border-t text-start`}
+                  className={`${t.status === "Pending" ? "bg-yellow-50" : "bg-white"} border-t text-start`}
                 >
-                  <td className="px-4 py-3 font-medium">{t.id}</td>
+                  <td className="px-4 py-3 font-medium max-w-[12rem] truncate">{t.id}</td>
                   <td className="px-4 py-3">
                     <p className="font-semibold">{t.user}</p>
                     <span className="text-xs text-gray-500">{t.role}</span>
                   </td>
-                  <td className="px-4 py-3">${t.amount.toLocaleString()}</td>
+                  <td className="px-4 py-3">₹{Number(t.amount).toLocaleString()}</td>
                   <td className="px-4 py-3">
                     {t.status === "Pending" && (
-                      <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+                      <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full inline-flex items-center gap-1">
                         <Clock size={12} /> Pending
                       </span>
                     )}
                     {t.status === "Completed" && (
-                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full inline-flex items-center gap-1">
                         <CheckCircle size={12} /> Completed
                       </span>
                     )}
                     {t.status === "Rejected" && (
-                      <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full w-fit">
+                      <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">
                         Rejected
                       </span>
                     )}
@@ -148,16 +148,16 @@ export default function SettlementTable (){
                   <td className="px-4 py-3">{t.date}</td>
                   <td className="px-4 py-3">
                     {t.status === "Pending" ? (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => handleApprove(t.id)}
-                          className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-600"
+                          className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleReject(t.id)}
-                          className="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs hover:bg-red-200"
+                          className="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs hover:bg-red-200 transition"
                         >
                           Reject
                         </button>
@@ -170,6 +170,45 @@ export default function SettlementTable (){
               ))}
             </tbody>
           </table>
+
+          {/* Responsive card fallback for very small screens */}
+          <div className="md:hidden mt-4 space-y-3">
+            {transactions.map((t) => (
+              <div key={`card-${t.id}`} className={`p-4 rounded-lg border ${t.status === "Pending" ? "bg-yellow-50" : "bg-white"} shadow-sm`}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold truncate">{t.user}</p>
+                    <p className="text-xs text-gray-500">{t.role}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">₹{Number(t.amount).toLocaleString()}</p>
+                    <p className="text-xs text-gray-400">{t.date}</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex gap-2">
+                  {t.status === "Pending" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove(t.id)}
+                        className="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(t.id)}
+                        className="flex-1 bg-red-100 text-red-600 px-3 py-2 rounded-lg text-sm"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500 text-sm">Completed</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Footer */}
@@ -178,7 +217,9 @@ export default function SettlementTable (){
         </div>
       </div>
     </div>
-  )
+  </div>
+);
+
 }
 
 

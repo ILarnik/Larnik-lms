@@ -117,83 +117,147 @@ export default function AdminDashboard() {
 
   const handleItemClick = (item) => setActiveItem(item.title);
 
-  return (
-    <div className="flex h-screen w-screen ">      
-      {/* Sidebar */}
-      <div className="w-64 bg-white border-r p-4 overflow-y-auto">
-        <div className="text-2xl font-bold border-b-2 p-1 border-gray-600 mb-8">Larnik</div>
-        {menuItems.map((item) => (
-          <div key={item.title}>
-            <div
-              onClick={() =>
-                item.children ? toggleSection(item.title) : handleItemClick(item)
-              }
-              className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
-                activeItem === item.title ? "bg-blue-50 text-blue-600" : "text-gray-700"
-              }`}
-            >
-              {item.icon}
-              <span className="flex-1">{item.title}</span>
-              {item.children && (
-                <span className="text-xs">{openSections[item.title] ? "▲" : "▼"}</span>
-              )}
-            </div>
+return (
+  <div className="flex min-h-screen w-screen bg-gray-50 flex-col md:flex-row">
+    {/* ---------------- Desktop Sidebar (md+) ---------------- */}
+    <aside className="hidden md:flex md:flex-col md:sticky md:top-0 md:h-screen w-64 bg-white border-r p-4 overflow-y-auto">
+      <div className="text-2xl font-bold border-b-2 p-1 border-gray-200 mb-6 lg:mb-8">Larnik</div>
 
-            {item.children && openSections[item.title] && (
-              <div className="ml-6 mt-1">
-                {item.children.map((child) => (
-                  <div
-                    key={child.title}
-                    onClick={() => handleItemClick(child)}
-                    className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
-                      activeItem === child.title
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {child.icon}
-                    {child.title}
-                  </div>
-                ))}
-              </div>
+      {menuItems.map((item) => (
+        <div key={item.title} className="mb-1">
+          <div
+            onClick={() =>
+              item.children ? toggleSection(item.title) : handleItemClick(item)
+            }
+            className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors
+              ${activeItem === item.title ? "bg-blue-50 text-blue-600" : "text-gray-700"}`}
+          >
+            <span className="flex-shrink-0">{item.icon}</span>
+            <span className="flex-1 truncate">{item.title}</span>
+            {item.children && (
+              <span className="text-xs opacity-70">{openSections[item.title] ? "▲" : "▼"}</span>
             )}
           </div>
-        ))}
-      </div>
 
-      {/* Dynamic Content Area */}
-      <div className="flex flex-col overflow-y-auto w-full items-center">
-        {/* Top bar */}
-        <div className="bg-white w-full h-16 flex items-center justify-between px-7">
-          <SearchBar />
-          <div className="flex gap-7 items-center">
-            <Sun className="hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32} />
-            <Bell className="hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32} />
-            <div className="flex gap-1 hover:bg-green-600 px-2 py-1 rounded-xl">
-              <User />
-              <span>Super Admin</span>
-              <ChevronDown />
+          {item.children && openSections[item.title] && (
+            <div className="ml-6 mt-1 space-y-1">
+              {item.children.map((child) => (
+                <div
+                  key={child.title}
+                  onClick={() => handleItemClick(child)}
+                  className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors
+                    ${activeItem === child.title ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                >
+                  <span className="flex-shrink-0">{child.icon}</span>
+                  <span className="truncate">{child.title}</span>
+                </div>
+              ))}
             </div>
+          )}
+        </div>
+      ))}
+    </aside>
+
+    {/* ---------------- Mobile Sidebar (collapsible) ---------------- */}
+    <div className="md:hidden w-full sticky top-0 z-30">
+      <details className="bg-white border-b">
+        <summary className="flex items-center justify-between px-4 py-3 cursor-pointer select-none">
+          <div className="flex items-center gap-3">
+            <div className="text-lg font-bold">Larnik</div>
+            <span className="text-sm text-gray-500">Menu</span>
           </div>
+          <div className="text-gray-700">☰</div>
+        </summary>
+
+        <div className="p-3 space-y-2 max-h-[60vh] overflow-y-auto">
+          {menuItems.map((item) => (
+            <div key={item.title}>
+              <div
+                onClick={() =>
+                  item.children ? toggleSection(item.title) : handleItemClick(item)
+                }
+                className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors
+                  ${activeItem === item.title ? "bg-blue-50 text-blue-600" : "text-gray-700"}`}
+              >
+                <span className="flex-shrink-0">{item.icon}</span>
+                <span className="flex-1">{item.title}</span>
+                {item.children && (
+                  <span className="text-xs opacity-70">{openSections[item.title] ? "▲" : "▼"}</span>
+                )}
+              </div>
+
+              {item.children && openSections[item.title] && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {item.children.map((child) => (
+                    <div
+                      key={child.title}
+                      onClick={() => handleItemClick(child)}
+                      className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors
+                        ${activeItem === child.title ? "bg-blue-50 text-blue-600" : "text-gray-600"}`}
+                    >
+                      <span className="flex-shrink-0">{child.icon}</span>
+                      <span>{child.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    {/* ---------------- Main Content Area ---------------- */}
+    <main className="flex-1 flex flex-col overflow-y-auto">
+      {/* Top bar */}
+      <div className="bg-white w-full h-14 sm:h-16 flex items-center justify-between px-3 sm:px-4 md:px-7 border-b sticky top-0 z-20">
+        {/* Left: Search (on mobile this appears left) */}
+        <div className="flex-1 min-w-0">
+          <SearchBar />
         </div>
 
-        {/* Main content */}
-        <div className="w-full flex justify-center items-start bg-white mt-1 p-3 overflow-y-auto">
+        {/* Right: icons + profile */}
+        <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4">
+          <button
+            className="hidden md:inline-flex items-center justify-center rounded-xl p-2 hover:bg-gray-100 transition"
+            aria-label="Toggle theme"
+            type="button"
+          >
+            <Sun size={20} />
+          </button>
+
+          <button
+            className="hidden md:inline-flex items-center justify-center rounded-xl p-2 hover:bg-gray-100 transition"
+            aria-label="Notifications"
+            type="button"
+          >
+            <Bell size={20} />
+          </button>
+
+          <div className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-gray-100 transition cursor-pointer">
+            <User />
+            <span className="hidden sm:inline text-sm">Super Admin</span>
+            <ChevronDown />
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="w-full flex justify-center items-start bg-transparent p-3 sm:p-4 md:p-6">
+        <div className="w-full max-w-7xl">
+          {/* Dashboard */}
           {activeItem === "Dashboard" && (
-            <div className="w-full flex flex-col gap-1 items-center">
-              <div className="w-full flex items-center justify-center mt-2">
-                <div className="bg-red-600 h-32 rounded-xl w-[98%] flex flex-col items-start justify-center p-5 text-white">
-                  <span className="text-2xl font-bold">Admin Control Center 🛡️</span>
-                  <span>Monitor and manage the entire platform</span>
+            <div className="flex flex-col gap-4">
+              <div className="w-full">
+                <div className="bg-red-600 h-28 sm:h-32 rounded-xl w-full flex flex-col items-start justify-center p-4 sm:p-5 text-white">
+                  <span className="text-xl sm:text-2xl font-bold">Admin Control Center 🛡️</span>
+                  <span className="text-xs sm:text-sm opacity-90">Monitor and manage the entire platform</span>
                 </div>
               </div>
 
-              <span className="font-bold text-start w-full pl-4 mt-2 text-xl shadow-2xl">
-                Quick Links
-              </span>
+              <h3 className="font-bold text-lg sm:text-xl mt-2">Quick Links</h3>
 
-              {/* ✅ Real API Data in Cards */}
-              <div className="flex w-full px-5 gap-2 mt-2 flex-wrap">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mt-2">
                 <DashboardCard title={counts.students} subtitle="Students" icon={GraduationCap} colour="blue" />
                 <DashboardCard title={counts.teachers} subtitle="Teachers" icon={Users} colour="purple" />
                 <DashboardCard title={counts.universities} subtitle="Universities" icon={Building2} colour="orange" />
@@ -202,18 +266,15 @@ export default function AdminDashboard() {
                 <DashboardCard title={counts.subadmin} subtitle="Sub Admins" icon={Shield} colour="red" />
               </div>
 
-              <div className="w-full">
+              <div className="w-full mt-3 sm:mt-4">
                 <CouponManager />
               </div>
             </div>
           )}
 
-          {/* User Management */}          
-          {["Students", "Teachers", "University", "Referral","Partners", "Sub-Admin"].includes(
-            activeItem
-          ) && (
-            <div className="w-full p-2">
-               
+          {/* User Management */}
+          {["Students", "Teachers", "University", "Referral","Partners", "Sub-Admin"].includes(activeItem) && (
+            <div className="p-0 sm:p-2">
               <UserManagement role={activeItem} />
             </div>
           )}
@@ -223,12 +284,12 @@ export default function AdminDashboard() {
 
           {/* Certificate Management */}
           {activeItem === "Certificate" && (
-            <div className="w-full flex flex-col gap-4 p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Certificate Management</h2>
+            <div className="flex flex-col gap-4 p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4 gap-2">
+                <h2 className="text-xl sm:text-2xl font-bold">Certificate Management</h2>
               </div>
 
-              <div className="w-full bg-white rounded-xl shadow p-4">
+              <div className="w-full bg-white rounded-xl shadow p-3 sm:p-4">
                 <CertificateManagerPage />
               </div>
             </div>
@@ -237,6 +298,7 @@ export default function AdminDashboard() {
           {/* Reports */}
           {activeItem === "Report" && <ReportsDashboard />}
 
+          {/* Notifications */}
           {activeItem === "Notifications" && <NotificationDashboard />}
 
           {/* Add User */}
@@ -247,18 +309,21 @@ export default function AdminDashboard() {
 
           {/* Governance */}
           {activeItem === "Governance" && (
-            <div className="w-full flex flex-col gap-4 p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Governance Management</h2>
+            <div className="flex flex-col gap-4 p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4 gap-2">
+                <h2 className="text-xl sm:text-2xl font-bold">Governance Management</h2>
               </div>
 
-              <div className="w-full bg-white rounded-xl shadow p-4">
+              <div className="w-full bg-white rounded-xl shadow p-3 sm:p-4">
                 <GovernanceDashboard />
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
-  );
+    </main>
+  </div>
+);
+
+
 }

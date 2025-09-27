@@ -77,119 +77,131 @@ export default function CouponManager() {
     }
   };
 
-  return (
-    <div className="p-6 w-full mx-auto">
-      <h2 className="text-4xl font-bold mb-6">Coupon Management</h2>
+return (
+  <div className="p-4 sm:p-6 lg:p-8 w-full mx-auto max-w-6xl">
+    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
+      Coupon Management
+    </h2>
 
-      {/* Create Coupon Form */}
-      <div className="bg-white p-5 rounded-2xl shadow-lg border mb-6">
-        <h3 className="font-semibold mb-3 text-2xl">Create New Coupon</h3>
-        <div className="flex gap-3 mb-3">
-          <input
-            type="text"
-            placeholder="Coupon Code"
-            value={newCode}
-            onChange={(e) => setNewCode(e.target.value)}
-            className="border p-2 rounded-lg w-1/2 focus:ring-2 focus:ring-green-400"
-          />
-          <input
-            type="text"
-            placeholder="Discount (e.g. 20% or 100)"
-            value={newDiscount}
-            onChange={(e) => setNewDiscount(e.target.value)}
-            className="border p-2 rounded-lg w-1/2 focus:ring-2 focus:ring-green-400"
-          />
-        </div>
-        {/* <button
-          onClick={addCoupon}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 shadow-md"
+    {/* Create Coupon Form */}
+    <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border mb-6">
+      <h3 className="font-semibold mb-4 text-xl sm:text-2xl">
+        Create New Coupon
+      </h3>
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Coupon Code"
+          value={newCode}
+          onChange={(e) => setNewCode(e.target.value)}
+          className="border p-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-green-400"
+        />
+        <input
+          type="text"
+          placeholder="Discount (e.g. 20% or 100)"
+          value={newDiscount}
+          onChange={(e) => setNewDiscount(e.target.value)}
+          className="border p-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-green-400"
+        />
+      </div>
+      <div className="w-full sm:w-auto">
+        <CustomButton
+          label={"Add Coupon"}
+          className={"w-full sm:w-auto bg-green-700 text-white"}
         >
-          <Plus size={18} /> Add Coupon
-        </button> */}
-        <CustomButton label={"Add Coupon"} className={"bg-green-700"}><Plus className="inline-block" size={18} onClick={addCoupon} />Add Coupon</CustomButton>
+          <Plus className="inline-block mr-2" size={18} onClick={addCoupon} />
+          Add Coupon
+        </CustomButton>
       </div>
+    </div>
 
-      {/* Coupon List */}
-      <div>
-        <h3 className="font-semibold mb-3 text-2xl pl-4">Available Coupons</h3>
-        {coupons.length === 0 ? (
-          <p className="text-gray-500">No coupons available.</p>
-        ) : (
-          <div className="grid gap-4 pl-2">
-            {coupons.map((coupon) => (
-              <div
-                key={coupon._id}
-                className="flex justify-between items-center bg-white rounded-2xl shadow-lg border p-4 hover:shadow-xl transition"
-              >
-                {/* Coupon Info */}
-                <div>
-                  <p className="font-bold text-2xl">{coupon.couponName}</p>
-                  <p className="text-gray-500 text-xl">
-                    {coupon.discountType === "percentage"
-                      ? `Discount: ${coupon.discountValue}%`
-                      : `Discount: ₹${coupon.discountValue}`}
-                  </p>
-                  <span
-                    className={`mt-1 inline-block px-2 py-1 text-base font-medium rounded-full ${
-                      coupon.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {coupon.status}
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 items-center">
-                  <button
-                    onClick={() => toggleCoupon(coupon._id, coupon.status)}
-                    className="text-blue-500 hover:text-blue-700 shadow-2xl"
-                  >
-                    {coupon.status === "active" ? (
-                      <ToggleRight size={36} />
-                    ) : (
-                      <ToggleLeft size={36} />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => confirmDelete(coupon._id)}
-                    className="text-red-500 hover:text-red-700 shadow-2xl"
-                  >
-                    <Trash2 size={36} />
-                  </button>
-                </div>
+    {/* Coupon List */}
+    <div>
+      <h3 className="font-semibold mb-4 text-xl sm:text-2xl pl-1 sm:pl-4">
+        Available Coupons
+      </h3>
+      {coupons.length === 0 ? (
+        <p className="text-gray-500">No coupons available.</p>
+      ) : (
+        <div className="grid gap-4">
+          {coupons.map((coupon) => (
+            <div
+              key={coupon._id}
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white rounded-2xl shadow-lg border p-4 hover:shadow-xl transition"
+            >
+              {/* Coupon Info */}
+              <div className="mb-3 sm:mb-0">
+                <p className="font-bold text-lg sm:text-2xl">
+                  {coupon.couponName}
+                </p>
+                <p className="text-gray-500 text-sm sm:text-base lg:text-xl">
+                  {coupon.discountType === "percentage"
+                    ? `Discount: ${coupon.discountValue}%`
+                    : `Discount: ₹${coupon.discountValue}`}
+                </p>
+                <span
+                  className={`mt-1 inline-block px-2 py-1 text-xs sm:text-sm lg:text-base font-medium rounded-full ${
+                    coupon.status === "active"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {coupon.status}
+                </span>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Delete Confirmation Modal */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 w-96 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">Delete Coupon</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this coupon? This action cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 rounded-lg border"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={removeCoupon}
-                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
-              >
-                Delete
-              </button>
+              {/* Actions */}
+              <div className="flex gap-3 items-center">
+                <button
+                  onClick={() => toggleCoupon(coupon._id, coupon.status)}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  {coupon.status === "active" ? (
+                    <ToggleRight size={28} className="sm:size-36" />
+                  ) : (
+                    <ToggleLeft size={28} className="sm:size-36" />
+                  )}
+                </button>
+                <button
+                  onClick={() => confirmDelete(coupon._id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 size={28} className="sm:size-36" />
+                </button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
-  );
+
+    {/* Delete Confirmation Modal */}
+    {showConfirm && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+          <h3 className="text-lg font-semibold mb-4">Delete Coupon</h3>
+          <p className="text-gray-600 mb-6 text-sm sm:text-base">
+            Are you sure you want to delete this coupon? This action cannot be
+            undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowConfirm(false)}
+              className="px-4 py-2 rounded-lg border text-sm sm:text-base"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={removeCoupon}
+              className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm sm:text-base"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 }
