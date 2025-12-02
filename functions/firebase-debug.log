@@ -1,0 +1,217 @@
+[debug] [2025-12-01T18:01:59.934Z] ----------------------------------------------------------------------
+[debug] [2025-12-01T18:01:59.937Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Tanisha Mukherjee\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2025-12-01T18:01:59.937Z] CLI Version:   14.17.0
+[debug] [2025-12-01T18:01:59.937Z] Platform:      win32
+[debug] [2025-12-01T18:01:59.938Z] Node Version:  v22.17.1
+[debug] [2025-12-01T18:01:59.938Z] Time:          Mon Dec 01 2025 23:31:59 GMT+0530 (India Standard Time)
+[debug] [2025-12-01T18:01:59.938Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-12-01T18:01:59.944Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-12-01T18:02:00.288Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-01T18:02:00.288Z] > authorizing via signed-in user (tanishamukherjee15.05@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[info] i  emulators: Detected demo project ID "demo-no-project", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-no-project\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
+[debug] [2025-12-01T18:02:00.302Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-12-01T18:02:00.302Z] assigned listening specs for emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-12-01T18:02:00.311Z] Emulator locator file path: C:\Users\TANISH~1\AppData\Local\Temp\hub-demo-no-project.json
+[debug] [2025-12-01T18:02:00.312Z] [hub] writing locator at C:\Users\TANISH~1\AppData\Local\Temp\hub-demo-no-project.json
+[debug] [2025-12-01T18:02:00.347Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-12-01T18:02:00.347Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-12-01T18:02:00.347Z] late-assigned ports for functions and eventarc emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[debug] [2025-12-01T18:02:00.368Z] defaultcredentials: writing to file C:\Users\Tanisha Mukherjee\AppData\Roaming\firebase\tanishamukherjee15_05_gmail.com_application_default_credentials.json
+[debug] [2025-12-01T18:02:00.370Z] Setting GAC to C:\Users\Tanisha Mukherjee\AppData\Roaming\firebase\tanishamukherjee15_05_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Tanisha Mukherjee\\AppData\\Roaming\\firebase\\tanishamukherjee15_05_gmail.com_application_default_credentials.json"}}
+[info] i  functions: Watching "C:\Users\Tanisha Mukherjee\Downloads\test\test\backend" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Tanisha Mukherjee\\Downloads\\test\\test\\backend\" for Cloud Functions..."}}
+[debug] [2025-12-01T18:02:00.419Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-12-01T18:02:01.798Z] > [functions] package.json contents: {
+  "name": "larnik-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "atlas": "^1.0.0-alpha.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "docx": "^9.5.1",
+    "dotenv": "^17.2.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.2",
+    "express-upload": "^0.1.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
+    "transporter": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
+[debug] [2025-12-01T18:02:01.798Z] Building nodejs source
+[debug] [2025-12-01T18:02:01.798Z] Failed to find version of module node: reached end of search path C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-12-01T18:02:01.809Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-12-01T18:02:01.824Z] Found firebase-functions binary at 'C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules\.bin\firebase-functions'
+[debug] [2025-12-01T18:02:02.153Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-12-01T18:02:02.154Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] Serving at port 8997
+
+[info] [dotenv@17.2.2] injecting env (1) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+[debug] [2025-12-01T18:02:03.012Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"MONGO_URI"},{"key":"JWT_SECRET"},{"key":"SMTP_HOST"},{"key":"SMTP_PORT"},{"key":"SMTP_USER"},{"key":"SMTP_PASS"},{"key":"SUPPORT_EMAIL"},{"key":"RAZORPAY_KEY_ID"},{"key":"RAZORPAY_KEY_SECRET"},{"key":"ADMIN_SECRET"}],"labels":{},"httpsTrigger":{},"entryPoint":"api"},"health":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"health"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"type":"secret","name":"MONGO_URI"},{"type":"secret","name":"JWT_SECRET"},{"type":"secret","name":"SMTP_HOST"},{"type":"secret","name":"SMTP_PORT"},{"type":"secret","name":"SMTP_USER"},{"type":"secret","name":"SMTP_PASS"},{"type":"secret","name":"SUPPORT_EMAIL"},{"type":"secret","name":"RAZORPAY_KEY_ID"},{"type":"secret","name":"RAZORPAY_KEY_SECRET"},{"type":"secret","name":"ADMIN_SECRET"}]}
+[info] +  functions: Loaded functions definitions from source: api, health. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api, health."}}
+[info] +  functions[us-central1-api]: http function initialized (http://127.0.0.1:5001/demo-no-project/us-central1/api). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/demo-no-project/us-central1/api)."}}
+[info] +  functions[us-central1-health]: http function initialized (http://127.0.0.1:5001/demo-no-project/us-central1/health). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/demo-no-project/us-central1/health)."}}
+[debug] [2025-12-01T18:02:07.090Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2025-12-01T18:06:29.941Z] File C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\src\controllers\authcontroller.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Tanisha Mukherjee\\Downloads\\test\\test\\backend\\src\\controllers\\authcontroller.js changed, reloading triggers"}}
+[debug] [2025-12-01T18:06:30.953Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-12-01T18:06:32.171Z] > [functions] package.json contents: {
+  "name": "larnik-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "atlas": "^1.0.0-alpha.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "docx": "^9.5.1",
+    "dotenv": "^17.2.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.2",
+    "express-upload": "^0.1.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
+    "transporter": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
+[debug] [2025-12-01T18:06:32.172Z] Building nodejs source
+[debug] [2025-12-01T18:06:32.172Z] Failed to find version of module node: reached end of search path C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-12-01T18:06:32.176Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-12-01T18:06:32.189Z] Found firebase-functions binary at 'C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules\.bin\firebase-functions'
+[info] Serving at port 8724
+
+[info] [dotenv@17.2.2] injecting env (1) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+[debug] [2025-12-01T18:06:33.133Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"MONGO_URI"},{"key":"JWT_SECRET"},{"key":"SMTP_HOST"},{"key":"SMTP_PORT"},{"key":"SMTP_USER"},{"key":"SMTP_PASS"},{"key":"SUPPORT_EMAIL"},{"key":"RAZORPAY_KEY_ID"},{"key":"RAZORPAY_KEY_SECRET"},{"key":"ADMIN_SECRET"}],"labels":{},"httpsTrigger":{},"entryPoint":"api"},"health":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"health"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"type":"secret","name":"MONGO_URI"},{"type":"secret","name":"JWT_SECRET"},{"type":"secret","name":"SMTP_HOST"},{"type":"secret","name":"SMTP_PORT"},{"type":"secret","name":"SMTP_USER"},{"type":"secret","name":"SMTP_PASS"},{"type":"secret","name":"SUPPORT_EMAIL"},{"type":"secret","name":"RAZORPAY_KEY_ID"},{"type":"secret","name":"RAZORPAY_KEY_SECRET"},{"type":"secret","name":"ADMIN_SECRET"}]}
+[info] +  functions: Loaded functions definitions from source: api, health. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api, health."}}
+[debug] [2025-12-01T18:07:06.332Z] File C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\src\controllers\contactController.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Tanisha Mukherjee\\Downloads\\test\\test\\backend\\src\\controllers\\contactController.js changed, reloading triggers"}}
+[debug] [2025-12-01T18:07:07.340Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-12-01T18:07:08.599Z] > [functions] package.json contents: {
+  "name": "larnik-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "atlas": "^1.0.0-alpha.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "docx": "^9.5.1",
+    "dotenv": "^17.2.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.2",
+    "express-upload": "^0.1.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
+    "transporter": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
+[debug] [2025-12-01T18:07:08.599Z] Building nodejs source
+[debug] [2025-12-01T18:07:08.599Z] Failed to find version of module node: reached end of search path C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-12-01T18:07:08.602Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-12-01T18:07:08.611Z] Found firebase-functions binary at 'C:\Users\Tanisha Mukherjee\Downloads\test\test\backend\node_modules\.bin\firebase-functions'
+[info] Serving at port 8371
+
+[info] [dotenv@17.2.2] injecting env (1) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+
+[debug] [2025-12-01T18:07:09.526Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","secretEnvironmentVariables":[{"key":"MONGO_URI"},{"key":"JWT_SECRET"},{"key":"SMTP_HOST"},{"key":"SMTP_PORT"},{"key":"SMTP_USER"},{"key":"SMTP_PASS"},{"key":"SUPPORT_EMAIL"},{"key":"RAZORPAY_KEY_ID"},{"key":"RAZORPAY_KEY_SECRET"},{"key":"ADMIN_SECRET"}],"labels":{},"httpsTrigger":{},"entryPoint":"api"},"health":{"availableMemoryMb":512,"timeoutSeconds":120,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"health"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"type":"secret","name":"MONGO_URI"},{"type":"secret","name":"JWT_SECRET"},{"type":"secret","name":"SMTP_HOST"},{"type":"secret","name":"SMTP_PORT"},{"type":"secret","name":"SMTP_USER"},{"type":"secret","name":"SMTP_PASS"},{"type":"secret","name":"SUPPORT_EMAIL"},{"type":"secret","name":"RAZORPAY_KEY_ID"},{"type":"secret","name":"RAZORPAY_KEY_SECRET"},{"type":"secret","name":"ADMIN_SECRET"}]}
+[info] +  functions: Loaded functions definitions from source: api, health. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api, health."}}
