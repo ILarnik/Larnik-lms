@@ -4,11 +4,13 @@ import CourseCard from "../components/CourseCard";
 import DiscountBar from "../components/DiscountBar";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
 export default function CoursePage() {
   const [courses, setCourses] = useState([]);
   const [coupons, setCoupons] = useState([]);
   const [userId, setUserId] = useState([]);
+  const location = useLocation();
 
    useEffect(() => {
     const fetchUser = async () => {
@@ -34,10 +36,20 @@ export default function CoursePage() {
       try {
         // Fetch approved courses
         const coursesRes = await getApproveCourses();
-        // console.log("Fetched courses:", coursesRes.data);
-        
-        setCourses(coursesRes.data);
+        let allCourses = coursesRes.data;
 
+        // Check for search param
+        const params = new URLSearchParams(location.search);
+        const searchId = params.get("search");
+        if (searchId) {
+          // Move searched course to top
+          const idx = allCourses.findIndex(c => c._id === searchId);
+          if (idx !== -1) {
+            const searchedCourse = allCourses[idx];
+            allCourses = [searchedCourse, ...allCourses.filter((c, i) => i !== idx)];
+          }
+        }
+        setCourses(allCourses);
         // Fetch coupons
         // const couponsRes = await getCoupons();
         // setCoupons(couponsRes.data);
@@ -45,9 +57,8 @@ export default function CoursePage() {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
-  }, []);
+  }, [location.search]);
 
 return (
   <>

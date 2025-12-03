@@ -50,10 +50,6 @@ export default function HomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         {/* LEFT SIDE - text area */}
         <div className="text-black text-left pt-6 sm:pt-10 space-y-6 relative">
-          <div className="absolute top-10 sm:top-20 left-4 sm:left-10 backdrop-blur-lg bg-white px-3 py-1 rounded-lg flex items-center gap-3 shadow-xl">
-            <p className="text-green-800 text-xs sm:text-sm opacity-80">Revolutionary Learning Platform</p>
-          </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">Where You</h1>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-green-700 leading-tight">Learn</h1>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">With Larnik</h1>
@@ -65,11 +61,16 @@ export default function HomePage() {
 
           {/* button area */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
-            <button className="w-full sm:w-1/3 h-10 bg-green-800 rounded-xl text-white flex items-center justify-center gap-1 shadow">
-              Start Your Journey <ArrowRight size={20} />
+            <button
+              className="min-w-[220px] max-w-xs h-10 bg-green-800 rounded-[16px] text-white flex items-center justify-center gap-2 shadow-md px-6 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 whitespace-nowrap"
+              onClick={() => window.location.href = '/courses'}
+            >
+              <span className="flex items-center justify-center">Start Your Journey</span>
+              <ArrowRight size={20} />
             </button>
-            <button className="w-full sm:w-48 h-10 bg-white rounded-xl text-black flex items-center justify-center gap-1 shadow">
-              Watch Preview <Play color="black" size={20} />
+            <button className="w-full sm:w-48 h-10 bg-white rounded-[16px] text-black flex items-center justify-center gap-2 shadow-md px-6 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+              <span className="flex items-center justify-center">Watch Preview</span>
+              <Play color="black" size={20} />
             </button>
           </div>
 

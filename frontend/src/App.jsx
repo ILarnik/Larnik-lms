@@ -7,6 +7,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import LogIn from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
 import SearchBar from "./components/SearchBar";
 import WhatsappButoon from "./components/WhatsappButoon";
 import CoursePage from "./pages/CoursePage";
@@ -35,7 +36,7 @@ export default function App() {
   const location = useLocation();
 
   const hiddenRoutesNavbar = ["/admin"]; 
-  const hiddenRoutesSearchbar = ["/login", "/signup", "/contact", "/about"];
+  const hiddenRoutesSearchbar = ["/login", "/signup", "/contact", "/about", "/forgot-password"];
 
   return (
     <div>
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/courses" element={<CoursePage />} />
           <Route path="/certificate" element={<CertificateManagerPage />} />
           {/* <Route path="/financemanager" element={<Financemanagerpage />} /> */}

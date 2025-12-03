@@ -217,21 +217,33 @@ return (
                 ))}
               </select>
 
-              {/* Rating */}
+              {/* Rating - Star Selector */}
               <div>
                 <label className="block mb-1 font-medium">Rating</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  className="w-full border p-2 rounded-md"
-                >
-                  <option value={0}>Select rating</option>
-                  {[1, 2, 3, 4, 5].map((r) => (
-                    <option key={r} value={r}>
-                      {r} Star{r > 1 ? "s" : ""}
-                    </option>
+                <div className="flex items-center gap-0.5 mt-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(rating === star ? 0 : star)}
+                      className="focus:outline-none bg-transparent p-0 border-none shadow-none outline-none"
+                      style={{ boxShadow: 'none', border: 'none', outline: 'none' }}
+                      aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill={star <= rating ? '#fbbf24' : 'none'}
+                        stroke="#fbbf24"
+                        strokeWidth={2}
+                        className="w-6 h-6 cursor-pointer transition"
+                        style={{ boxShadow: 'none', border: 'none', outline: 'none' }}
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
             </div>
 

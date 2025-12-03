@@ -113,6 +113,7 @@ export default function Navbar() {
           <nav className="flex items-center space-x-6 text-gray-700 font-medium">
             <Link to="/" className="hover:text-black hover:underline hover:scale-105 transition-all">Home</Link>
             <Link to="/courses" className="hover:text-black hover:underline hover:scale-105 transition-all">Courses</Link>
+            <Link to="/blogs" className="hover:text-black hover:underline hover:scale-105 transition-all">Blogs</Link>
             <Link to="/about" className="hover:text-black hover:underline hover:scale-105 transition-all">About</Link>
             <Link to="/contact" className="hover:text-black hover:underline hover:scale-105 transition-all">Contact</Link>
             <Link to={isLoggedIn ? dashboardPath : "/login"} className="hover:text-black hover:underline hover:scale-105 transition-all">Dashboard</Link>
@@ -163,6 +164,7 @@ export default function Navbar() {
           <nav className="flex flex-col gap-2 text-gray-700 font-medium">
             <Link onClick={() => setMobileOpen(false)} to="/" className="py-2 px-3 rounded hover:bg-gray-50">Home</Link>
             <Link onClick={() => setMobileOpen(false)} to="/courses" className="py-2 px-3 rounded hover:bg-gray-50">Courses</Link>
+            <Link onClick={() => setMobileOpen(false)} to="/blogs" className="py-2 px-3 rounded hover:bg-gray-50">Blogs</Link>
             <Link onClick={() => setMobileOpen(false)} to="/about" className="py-2 px-3 rounded hover:bg-gray-50">About</Link>
             <Link onClick={() => setMobileOpen(false)} to="/contact" className="py-2 px-3 rounded hover:bg-gray-50">Contact</Link>
             <Link onClick={() => setMobileOpen(false)} to={isLoggedIn ? dashboardPath : "/login"} className="py-2 px-3 rounded hover:bg-gray-50">Dashboard</Link>

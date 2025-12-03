@@ -61,25 +61,32 @@ return (
       </div>
 
       {/* Password */}
-      <div className="mb-6 relative">
+      <div className="mb-2 relative">
         <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
-        <input
-          type={passwordVisible ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
-          className="w-full border rounded-lg p-3 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-300"
-          aria-label="Password"
-        />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 bg-white p-1 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-300"
-          onClick={() => setPasswordVisible(!passwordVisible)}
-          aria-pressed={passwordVisible}
-          aria-label={passwordVisible ? "Hide password" : "Show password"}
-        >
-          {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button>
+        <div className="relative">
+          <input
+            type={passwordVisible ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            className="w-full border rounded-lg p-3 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            aria-label="Password"
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 bg-transparent p-0 m-0 hover:text-emerald-600 focus:outline-none border-none"
+            style={{ border: 'none' }}
+            onClick={() => setPasswordVisible(!passwordVisible)}
+            aria-pressed={passwordVisible}
+            aria-label={passwordVisible ? "Hide password" : "Show password"}
+            tabIndex={0}
+          >
+            {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        <div className="flex justify-end mt-1">
+          <Link to="/forgot-password" className="text-xs text-emerald-600 hover:underline focus:outline-none">Forgot password?</Link>
+        </div>
       </div>
 
       <div className="mb-4">
