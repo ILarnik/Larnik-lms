@@ -34,10 +34,16 @@ export default function SearchBar() {
     setSearchTerm(e.target.value);
   };
 
+
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && filteredCourses.length > 0) {
-      // Navigate to /courses with first matched course
-      window.location.href = `/courses?search=${filteredCourses[0]._id}`;
+    if (e.key === "Enter") {
+      // If there are matches, use the first matched course's ID
+      if (filteredCourses.length > 0) {
+        window.location.href = `/courses?search=${filteredCourses[0]._id}`;
+      } else if (searchTerm.trim() !== "") {
+        // If no matches, use the search term itself
+        window.location.href = `/courses?search=${encodeURIComponent(searchTerm.trim())}`;
+      }
       setShowDropdown(false);
     }
   };

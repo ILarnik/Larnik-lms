@@ -36,23 +36,45 @@ export default function CoursePage() {
       try {
         // Fetch approved courses
         const coursesRes = await getApproveCourses();
-        let allCourses = coursesRes.data;
+        const allCourses = coursesRes.data || [];
 
         // Check for search param
         const params = new URLSearchParams(location.search);
-        const searchId = params.get("search");
-        if (searchId) {
-          // Move searched course to top
-          const idx = allCourses.findIndex(c => c._id === searchId);
-          if (idx !== -1) {
-            const searchedCourse = allCourses[idx];
-            allCourses = [searchedCourse, ...allCourses.filter((c, i) => i !== idx)];
+        const searchParam = params.get("search");
+        let matchingCourses = [];
+        let otherCourses = [];
+
+        if (searchParam) {
+          // If searchParam looks like an ObjectId, match by ID, else match by keyword
+          const isObjectId = /^[a-f\d]{24}$/i.test(searchParam);
+          if (isObjectId) {
+            const idx = allCourses.findIndex(c => c._id === searchParam);
+            if (idx !== -1) {
+              matchingCourses = [allCourses[idx]];
+              otherCourses = allCourses.filter((c, i) => i !== idx);
+            } else {
+              matchingCourses = [];
+              otherCourses = allCourses;
+            }
+          } else {
+            // Keyword matching (title or description)
+            const keyword = searchParam.trim().toLowerCase();
+            matchingCourses = allCourses.filter(c =>
+              c.title?.toLowerCase().includes(keyword) ||
+              c.description?.toLowerCase().includes(keyword)
+            );
+            otherCourses = allCourses.filter(c =>
+              !(
+                c.title?.toLowerCase().includes(keyword) ||
+                c.description?.toLowerCase().includes(keyword)
+              )
+            );
           }
+        } else {
+          matchingCourses = [];
+          otherCourses = allCourses;
         }
-        setCourses(allCourses);
-        // Fetch coupons
-        // const couponsRes = await getCoupons();
-        // setCoupons(couponsRes.data);
+        setCourses({ matchingCourses, otherCourses });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -68,10 +90,31 @@ return (
           Available Courses
         </h1>
 
-        {/* Courses grid */}
+        {/* Matching Courses Section */}
+        {/* Only show matching section if a search has been performed */}
+        {location.search.includes('search=') && (
+          <>
+            <h2 className="text-xl font-semibold text-green-800 mb-4">Searched Results</h2>
+            {courses.matchingCourses && courses.matchingCourses.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {courses.matchingCourses.map((course) => (
+                  <CourseCard
+                    key={course._id}
+                    course={course}
+                    userId={userId}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600 text-center mb-8">No matching results found.</p>
+            )}
+          </>
+        )}
+
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Other Courses</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.length > 0 ? (
-            courses.map((course) => (
+          {courses.otherCourses && courses.otherCourses.length > 0 ? (
+            courses.otherCourses.map((course) => (
               <CourseCard
                 key={course._id}
                 course={course}

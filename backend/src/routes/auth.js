@@ -6,7 +6,9 @@ import {
   verifyOtp,
   loginWithPassword,
   requestOtp,
-  loginWithOtp
+  loginWithOtp,
+  forgotPassword,
+  resetPassword
 } from "../controllers/authcontroller.js";
 
 //import { authMiddleware } from "../middleware/auth.js"; // if needed for protected routes
@@ -26,5 +28,11 @@ router.post("/otp/request", requestOtp);
 
 // ---------------- LOGIN WITH OTP ----------------
 router.post("/otp/login", loginWithOtp);
+
+// ---------------- FORGOT PASSWORD ----------------
+router.post("/forgot-password", forgotPassword);
+
+// ---------------- RESET PASSWORD ----------------
+router.post("/reset-password", resetPassword);
 
 export default router;

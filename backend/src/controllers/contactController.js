@@ -1,5 +1,5 @@
  import Contact from "../models/Contact.js";
-import { transporter } from "../utils/email.js";
+import { createTransporter } from "../utils/email.js";
 
 export const createContact = async (req, res) => {
   try {
@@ -15,6 +15,7 @@ export const createContact = async (req, res) => {
     await contact.save();
 
     // Send email to support
+    const transporter = createTransporter();
     await transporter.sendMail({
       from: `"Website Contact" <${process.env.SMTP_USER}>`,  // sender
       to: process.env.SUPPORT_EMAIL,                        // your support email

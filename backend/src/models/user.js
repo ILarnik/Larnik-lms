@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
   dynamicSubRole: { type: String, enum: ["writer","reviewer"], default: null },
   status: { type: String, enum: ["pending","approved","rejected"], default: "pending" },
   walletBalance: { type: Number, default: 0 },
+  passwordResetToken: { type: String },
+  passwordResetOtp: { type: String },
+  passwordResetExpires: { type: Date },
 }, { timestamps: true });
 
 // pre-save hooks, password hashing, referral/university code generation, etc. (same as before)

@@ -1,7 +1,7 @@
  import User from "../models/user.js";
 import Otp from "../models/Otp.js";
 import jwt from "jsonwebtoken";
-import  transporter  from "../utils/email.js";
+import { createTransporter, sendEmailSafe } from "../utils/email.js";
 import crypto from "crypto";
 
 // ---------------- SIGNUP ----------------
@@ -359,5 +359,106 @@ export const loginWithOtp = async (req, res) => {
     res.json({ token, role: user.role });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// ---------------- FORGOT PASSWORD (Send OTP) ----------------
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+    
+    if (!user) {
+      return res.status(404).json({ message: "No account found with this email" });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Store OTP in user document
+    user.passwordResetOtp = otp;
+    user.passwordResetExpires = expiresAt;
+    await user.save();
+
+    const from = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || "no-reply@example.com";
+    const mailOptions = {
+      from,
+      to: normalizedEmail,
+      subject: "Password Reset Code - Larnik LMS",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #16a34a;">Password Reset Code</h2>
+          <p>Hello ${user.name || "User"},</p>
+          <p>You requested to reset your password. Use the code below to reset your password:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <div style="background: #f3f4f6; padding: 20px 40px; border-radius: 8px; display: inline-block;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #16a34a;">${otp}</span>
+            </div>
+          </div>
+          <p><strong>This code will expire in 10 minutes.</strong></p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
+          <p style="color: #999; font-size: 12px;">Larnik LMS Team</p>
+        </div>
+      `,
+      text: `Password Reset Code\n\nHello ${user.name || "User"},\n\nYou requested to reset your password. Use this code: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this, please ignore this email.\n\nLarnik LMS Team`,
+    };
+
+    const result = await sendEmailSafe(mailOptions);
+
+    if (!result.ok) {
+      console.error("forgotPassword: email send failed for", normalizedEmail, "reason:", result.error);
+      user.passwordResetOtp = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+      return res.status(502).json({ message: "Failed to send reset code. Please try again later." });
+    }
+
+    return res.status(200).json({ message: "Reset code sent to your email" });
+  } catch (err) {
+    console.error("forgotPassword: unexpected error:", err && err.stack ? err.stack : err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// ---------------- VERIFY OTP & RESET PASSWORD ----------------
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+    
+    if (!email || !otp || !password) {
+      return res.status(400).json({ message: "Email, OTP and new password are required" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({
+      email: normalizedEmail,
+      passwordResetOtp: otp,
+      passwordResetExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Update password and clear reset fields
+    user.password = password;
+    user.passwordResetOtp = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordResetToken = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset successfully. You can now login with your new password." });
+  } catch (err) {
+    console.error("resetPassword: unexpected error:", err && err.stack ? err.stack : err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
