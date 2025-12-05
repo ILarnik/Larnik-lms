@@ -27,6 +27,7 @@ import Careercellpage from "./pages/Careercellpage";
  import ReferralPage from "./pages/ReferralPartnerPage";
 import BlogPage from "./pages/BlogPage";
 import BlogManagerDashboard from "./components/dashboard_components/BlogManagerDashboard";
+import CourseDetailPage from "./pages/CourseDetailPage";
 //import Notificationpage from "./pages/Notificationpage";
 
 
@@ -72,6 +73,8 @@ export default function App() {
           {/* <Route path="/notification" element={<Notificationpage />} /> */}
           {/* <Route path="/FinanceManager" element={<Financemanagerpage />} /> */}
           <Route path="/ReferralPartner" element={<ReferralPage />} />
+          <Route path="/courses/:id" element={<CourseDetailPage />} />
+
          
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>

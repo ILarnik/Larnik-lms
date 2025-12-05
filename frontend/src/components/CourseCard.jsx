@@ -25,7 +25,7 @@ return (
       variant="course"
       title={course.title}
       description={`by ${course.createdBy?.name || "Unknown"}`}
-      btnName="Enroll"
+      btnName="Details"
       price={course.price === 0 ? "Free" : `₹${course.price}`}
       onClick={handleEnroll}
     />

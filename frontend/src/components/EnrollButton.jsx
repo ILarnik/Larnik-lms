@@ -3,11 +3,16 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
+
+
 const EnrollButton = ({ course, userId }) => {
 
 const [token, setToken] =useState("");
 
+
 // console.log("EnrollButton props:", { course, userId });
+
+
 
 
 useEffect(() => {
